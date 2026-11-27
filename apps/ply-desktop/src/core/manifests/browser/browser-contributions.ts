@@ -4,6 +4,7 @@ import { devPerfBrowserContributions } from '@core/features/dev-perf/contributio
 import { editorBrowserContributions } from '@core/features/editor/contributions/browser';
 import { libraryBrowserContributions } from '@core/features/library/contributions/browser';
 import { machinesBrowserContributions } from '@core/features/machines/contributions/browser';
+import { plansBrowserContributions } from '@core/features/plans/contributions/browser';
 import { projectsBrowserContributions } from '@core/features/projects/contributions/browser';
 import { settingsBrowserContributions } from '@core/features/settings/contributions/browser';
 import { skillsBrowserContributions } from '@core/features/skills/contributions/browser';
@@ -14,6 +15,7 @@ export const featureViewRuntimes = [
   ...workbenchBrowserContributions.views,
   ...automationsBrowserContributions.views,
   ...projectsBrowserContributions.views,
+  ...plansBrowserContributions.views,
   ...settingsBrowserContributions.views,
   ...tasksBrowserContributions.views,
 ] as const;

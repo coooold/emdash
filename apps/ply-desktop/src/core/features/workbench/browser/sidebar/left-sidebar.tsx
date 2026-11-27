@@ -1,7 +1,8 @@
-import { Clock, FolderInput, Settings } from 'lucide-react';
+import { CalendarRange, Clock, FolderInput, Settings } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import React from 'react';
 import { automationsViewDef } from '@core/features/automations/contributions/views';
+import { plansViewDef } from '@core/features/plans/contributions/views';
 import { settingsViewDef } from '@core/features/settings/contributions/views';
 import { BoundShortcut } from '@core/primitives/keybindings/browser/shortcut';
 import { WORKBENCH_BOTTOM_BAR_HEIGHT_PX } from '@core/primitives/layouts/api/workbench-layout';
@@ -83,6 +84,17 @@ export const LeftSidebar = observer(function LeftSidebar({ files }: { files?: Re
               <span className="flex min-w-0 items-center gap-2">
                 <Clock className="h-5 w-5 shrink-0 sm:h-4 sm:w-4" />
                 <span className="truncate">自动化</span>
+              </span>
+            </SidebarMenuButton>
+            <SidebarMenuButton
+              isActive={isCurrentView(currentView, 'plans')}
+              onClick={() => navigate(plansViewDef())}
+              aria-label="计划"
+              className="w-full justify-between"
+            >
+              <span className="flex min-w-0 items-center gap-2">
+                <CalendarRange className="h-5 w-5 shrink-0 sm:h-4 sm:w-4" />
+                <span className="truncate">计划</span>
               </span>
             </SidebarMenuButton>
             <SidebarMenuButton
