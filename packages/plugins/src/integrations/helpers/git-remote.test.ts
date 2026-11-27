@@ -24,8 +24,8 @@ describe('parseGitRemoteUrl', () => {
   });
 
   it('parses https remotes', () => {
-    expect(parseGitRemoteUrl('https://forgejo.example.com/org/repo.git')).toEqual({
-      host: 'forgejo.example.com',
+    expect(parseGitRemoteUrl('https://code.example.com/org/repo.git')).toEqual({
+      host: 'code.example.com',
       slug: 'org/repo',
     });
   });

@@ -20,64 +20,35 @@ describe('ProviderAccountService', () => {
   });
   afterEach(() => fixture?.close());
 
-  it('keeps unnamed identities distinguishable through reconnects and account lifecycle changes', async () => {
-    const connect = (id: string) =>
-      fixture.connections.connectVerified('notion', {
-        connected: true,
-        account: { id },
-        credentials: { apiToken: `token-${id}` },
-      });
-    const first = await connect('bot-one');
-    const second = await connect('bot-two');
-    if (!first.success || !second.success) throw new Error('Connection failed');
-    expect(first.account.displayName).toBe('Account 1');
-    expect(second.account.displayName).toBe('Account 2');
-    const before = await fixture.registry.getAccount('notion', second.accountId);
-
-    await service.setDefaultAccount('notion', second.accountId);
-    expect((await service.listAccounts('notion')).map((account) => account.displayName)).toEqual([
-      'Account 2',
-      'Account 1',
-    ]);
-    await service.removeAccount('notion', first.accountId);
-    await expect(connect('bot-two')).resolves.toMatchObject({
-      account: { accountId: second.accountId, displayName: 'Account 2' },
-    });
-    expect((await service.listAccounts('notion'))[0]?.displayName).toBe('Account 2');
-    expect((await fixture.registry.getAccount('notion', second.accountId))?.credentialRef).toBe(
-      before?.credentialRef
-    );
-  });
-
   it('assigns names to legacy unnamed accounts without overwriting secrets or user labels', async () => {
     await fixture.registry.upsertAccount({
-      providerId: 'forgejo',
+      providerId: 'gitlab',
       accountId: 'named',
       secret: 'named-secret',
       meta: { label: 'Account 1' },
     });
     await fixture.registry.upsertAccount({
-      providerId: 'forgejo',
-      accountId: 'codeberg.org:985170',
+      providerId: 'gitlab',
+      accountId: 'gitlab.example.com:985170',
       secret: 'legacy-secret',
     });
     fixture.db
       .update(providerAccounts)
       .set({ meta: null })
-      .where(eq(providerAccounts.accountId, 'codeberg.org:985170'))
+      .where(eq(providerAccounts.accountId, 'gitlab.example.com:985170'))
       .run();
 
-    const inventory = await service.listAccounts('forgejo');
+    const inventory = await service.listAccounts('gitlab');
     expect(inventory.map((account) => account.displayName)).toEqual(['Account 1', 'Account 2']);
     const stored = fixture.db
       .select()
       .from(providerAccounts)
-      .where(eq(providerAccounts.accountId, 'codeberg.org:985170'))
+      .where(eq(providerAccounts.accountId, 'gitlab.example.com:985170'))
       .get();
     expect(stored?.meta).toMatchObject({ fallbackDisplayName: 'Account 2' });
-    await expect(fixture.registry.resolveSecret('forgejo', 'codeberg.org:985170')).resolves.toBe(
-      'legacy-secret'
-    );
+    await expect(
+      fixture.registry.resolveSecret('gitlab', 'gitlab.example.com:985170')
+    ).resolves.toBe('legacy-secret');
   });
 
   it.each(['github', 'jira'])('applies the same account lifecycle to %s', async (providerId) => {

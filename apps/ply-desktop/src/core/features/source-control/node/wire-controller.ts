@@ -11,10 +11,6 @@ import {
   type LiveSource,
 } from '@ply/wire/rpc';
 import { createController, type CallMeta, type Controller } from '@ply/wire/rpc';
-import type {
-  GitOperationCredentialsLease,
-  GitCredentialsService,
-} from '@core/features/github/api/node/services/git-credentials-service';
 import type { ProjectAttachmentError } from '@core/features/projects/api';
 import {
   requireAttachedProjectOrThrow,
@@ -22,6 +18,10 @@ import {
 } from '@core/features/projects/api/node/attached-project';
 import type { ProjectAttachmentManager } from '@core/features/projects/api/node/project-attachment-manager';
 import type { ProjectProvider } from '@core/features/projects/api/node/project-provider';
+import type {
+  GitOperationCredentialsLease,
+  GitCredentialsService,
+} from '@core/features/source-control/api/node/git-credentials-service';
 import { hostPathFromNative } from '@core/primitives/desktop-runtime/api';
 import type { ProviderAccountRef } from '@core/primitives/provider-accounts/api';
 import { forwardModelMutation } from '@core/services/runtime-clients/node/forward-live-model';

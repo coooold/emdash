@@ -1,5 +1,5 @@
-import { renderToString } from 'react-dom/server';
 import { createElement } from 'react';
+import { renderToString } from 'react-dom/server';
 import { expect, it } from 'vitest';
 import {
   IntegrationsProvider,

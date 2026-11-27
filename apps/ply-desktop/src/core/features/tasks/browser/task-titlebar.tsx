@@ -26,7 +26,6 @@ import {
 } from '@core/features/projects/api/browser/stores/project-selectors';
 import { projectViewDef } from '@core/features/projects/contributions/views';
 import { OpenInMenu } from '@core/features/settings/contributions/browser/open-in-menu';
-import { getGitRepositoryStore } from '@core/features/source-control/api/browser/stores/source-control-selectors';
 import { useGitActions } from '@core/features/source-control/api/browser/use-git-actions';
 import { gitCheckoutStoreToken } from '@core/features/source-control/contributions/browser/workspace-store-tokens';
 import {
@@ -50,8 +49,8 @@ import { useNavigate } from '@core/primitives/navigation/browser/navigation-hook
 import { cn } from '@core/primitives/styling/browser/cn';
 import { ActivityBadge } from './components/activity-badge';
 import { AutomationRunPill } from './components/automation-run-pill';
-import { IssueSelector, ProviderLogo } from './components/issue-selector/issue-selector';
 import { PreviewServerPills } from './components/preview-servers/preview-server-pills';
+import { ProviderLogo } from './context-bar/legacy-issue-logo';
 
 export const TaskTitlebar = observer(function TaskTitlebar() {
   const { projectId, taskId } = useTaskViewContext();
@@ -270,16 +269,6 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
                   )}
                 </div>
               </div>
-              <IssueSelector
-                value={taskPayload.linkedIssue ?? null}
-                onValueChange={(issue) => {
-                  void taskStore.updateLinkedIssue(issue ?? undefined);
-                }}
-                projectId={projectId}
-                repositoryUrl={getGitRepositoryStore(projectId)?.canonicalRepositoryUrl ?? ''}
-                projectPath={workspace.path}
-                excludeTaskId={taskId}
-              />
             </Popover.Content>
           </Popover.Root>
           {taskPayload.linkedIssue ? <LinkedIssueBadge issue={taskPayload.linkedIssue} /> : null}

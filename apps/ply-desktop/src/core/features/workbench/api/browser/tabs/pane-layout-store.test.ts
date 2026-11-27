@@ -18,7 +18,6 @@ vi.mock('@core/features/browser/api/browser/client', () => ({
   }),
 }));
 
-
 vi.mock('@core/features/browser/browser/browser-tab-item', () => ({
   BrowserTabBarItem: () => null,
   BrowserTabBarItemDragPreview: () => null,

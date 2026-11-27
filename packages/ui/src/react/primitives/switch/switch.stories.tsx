@@ -58,7 +58,9 @@ export const InFormRow: Story = {
       className={s.w72}
     >
       <Box display="flex" flexDirection="column" gap="1">
-        <span style={{ fontSize: 'var(--em-text-sm)', fontWeight: 400 }}>Show desktop notifications</span>
+        <span style={{ fontSize: 'var(--em-text-sm)', fontWeight: 400 }}>
+          Show desktop notifications
+        </span>
         <span style={{ fontSize: 'var(--em-text-xs)', color: 'var(--em-foreground-muted)' }}>
           Show a notification when a background task completes.
         </span>

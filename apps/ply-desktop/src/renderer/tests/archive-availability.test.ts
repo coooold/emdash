@@ -171,7 +171,7 @@ describe('archive UI availability for provisioned tasks on an unreachable host',
   it('enables bulk archive with a provisioned task selected', () => {
     renderToStaticMarkup(createElement(TaskList));
     const buttons = mocks.button.mock.calls.map(([props]) => props);
-    const archive = buttons.find((props) => props['aria-label']?.startsWith('Archive'));
+    const archive = buttons.find((props) => props['aria-label']?.startsWith('归档'));
     expect(archive).toBeDefined();
     expect(archive?.disabled).not.toBe(true);
     archive?.onClick();

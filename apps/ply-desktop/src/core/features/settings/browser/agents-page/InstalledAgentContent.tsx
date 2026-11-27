@@ -153,14 +153,14 @@ export const InstalledAgentContent = observer(function InstalledAgentContent({
               <Field.Root>
                 <div className="flex items-center gap-2">
                   <Label htmlFor="sheet-extraArgs">Additional parameters</Label>
-                  <FieldTooltip content="Extra flags appended to the command (e.g. --enable-all-github-mcp-tools)" />
+                  <FieldTooltip content="Extra flags appended to the command (e.g. --verbose)" />
                 </div>
                 <Input
                   id="sheet-extraArgs"
                   value={field.state.value}
                   onChange={(e) => field.handleChange(e.target.value)}
                   onBlur={() => commit()}
-                  placeholder="e.g. --enable-all-github-mcp-tools"
+                  placeholder="e.g. --verbose"
                   className="font-mono text-sm"
                 />
               </Field.Root>

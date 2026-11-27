@@ -5,6 +5,7 @@ import z from 'zod';
 // v0 schema — unversioned legacy format stored in tasks.linked_issue
 // ---------------------------------------------------------------------------
 
+// Historical snapshot identifiers only. None of these platforms is enabled as an integration.
 export const issueProviderIdSchema = z.enum([
   'github',
   'linear',
@@ -12,7 +13,6 @@ export const issueProviderIdSchema = z.enum([
   'gitlab',
   'plane',
   'plain',
-  'forgejo',
   'featurebase',
   'asana',
   'monday',

@@ -72,7 +72,7 @@ describe('describeWorktreeGitPlan — create-branch', () => {
       fromBranch: { type: 'remote', branch: 'develop', remote: { name: 'upstream', url: 'u' } },
     });
     const create = steps.find((step) => step.id === 'create-worktree');
-    expect(create?.title).toBe('Create worktree');
+    expect(create?.title).toBe('创建工作树');
     expect(create?.description).toBe(
       'Create a worktree on new branch feature/x based on upstream/develop'
     );
@@ -86,7 +86,7 @@ describe('describeWorktreeGitPlan — create-branch', () => {
       pushBranch: true,
     });
     const push = steps.find((step) => step.id === 'push-branch');
-    expect(push?.title).toBe('Push branch');
+    expect(push?.title).toBe('推送分支');
     expect(push?.description).toBe('Push feature/x to fork and set upstream tracking');
   });
 });
@@ -116,11 +116,11 @@ describe('describeWorktreeGitPlan — checkout-pr, same-repo PR', () => {
 
   it('describes the head-branch fetch and upstream tracking', () => {
     const steps = stepsFor(prBranch());
-    expect(steps[0]?.title).toBe('Fetch branch');
+    expect(steps[0]?.title).toBe('获取分支');
     expect(steps[0]?.description).toBe('Fetch refs/heads/feat/my-pr from origin into feat/my-pr');
     expect(steps[1]?.description).toBe('Create a worktree on the fetched branch feat/my-pr');
     const configure = steps.find((step) => step.id === 'configure-branch');
-    expect(configure?.title).toBe('Configure branch');
+    expect(configure?.title).toBe('配置分支');
     expect(configure?.description).toBe('Set feat/my-pr to track refs/heads/feat/my-pr on origin');
   });
 });

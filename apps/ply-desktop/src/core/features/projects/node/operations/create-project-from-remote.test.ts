@@ -1,6 +1,7 @@
 import { hostRef } from '@ply/core/primitives/host/api';
 import { err, ok } from '@ply/shared';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { createProjectFromRemoteInputSchema } from '@core/features/projects/api/wire-contract';
 import { hostPathFromNative } from '@core/primitives/desktop-runtime/api';
 import { createProjectFromRemote } from './create-project-from-remote';
 
@@ -21,6 +22,27 @@ vi.mock('@core/services/runtime-clients/node/live-job', () => ({
 }));
 
 describe('createProjectFromRemote', () => {
+  it('only accepts native clones, not hosted repository creation or managed accounts', () => {
+    const clone = {
+      projectId: 'project',
+      host: { type: 'local' },
+      mode: 'clone',
+      repositoryUrl: 'https://code.example.com/team/repo.git',
+      targetPath: '/repo',
+      name: 'Repo',
+    };
+    expect(createProjectFromRemoteInputSchema.safeParse(clone).success).toBe(true);
+    for (const retired of [
+      { mode: 'create' },
+      { account: { providerId: 'retired-platform', accountId: 'saved-account' } },
+      { initialIntegrationAccounts: { 'retired-platform': { kind: 'none' } } },
+    ]) {
+      expect(createProjectFromRemoteInputSchema.safeParse({ ...clone, ...retired }).success).toBe(
+        false
+      );
+    }
+  });
+
   const exists = vi.fn();
   const stat = vi.fn();
   const enumerate = {};
@@ -150,37 +172,6 @@ describe('createProjectFromRemote', () => {
     });
   });
 
-  it('passes the selected account to clone credentials and its preferences to registration', async () => {
-    const account = { providerId: 'github', accountId: 'selected-work' };
-    const initialIntegrationAccounts = {
-      github: { kind: 'account' as const, accountId: account.accountId },
-      linear: { kind: 'none' as const },
-    };
-    const result = await createProjectFromRemote(
-      dependencies,
-      {
-        projectId: 'project-1',
-        host: { type: 'local' },
-        mode: 'create',
-        repositoryUrl: 'https://github.com/acme/private.git',
-        targetPath: '/repo',
-        name: 'Private',
-        account,
-        initialIntegrationAccounts,
-      },
-      { signal: new AbortController().signal, progress: vi.fn() } as never,
-      vi.fn()
-    );
-    expect(result.success).toBe(true);
-    expect(dependencies.mintCloneCredentials).toHaveBeenCalledWith(
-      expect.objectContaining({ account })
-    );
-    expect(mocks.createProject).toHaveBeenCalledWith(
-      dependencies,
-      expect.objectContaining({ initialIntegrationAccounts })
-    );
-  });
-
   it('explains disabled credential prompts as missing Git authentication', async () => {
     const rawMessage =
       "fatal: could not read Username for 'https://github.com': terminal prompts disabled";
@@ -298,7 +289,7 @@ describe('createProjectFromRemote', () => {
         err({
           type: 'registration-failed',
           path: '/repo',
-          message: 'Account settings could not be saved.',
+          message: 'Project registration failed.',
         })
       );
       if (scenario === 'preexisting') {
@@ -317,12 +308,10 @@ describe('createProjectFromRemote', () => {
         {
           projectId: 'project-1',
           host: { type: 'local' },
-          mode: 'create',
+          mode: 'clone',
           repositoryUrl: 'https://github.com/acme/private.git',
           targetPath: '/repo',
           name: 'Private',
-          account: { providerId: 'github', accountId: 'selected-work' },
-          initialIntegrationAccounts: { github: { kind: 'account', accountId: 'selected-work' } },
         },
         { signal: new AbortController().signal, progress: vi.fn() } as never,
         publish
@@ -352,7 +341,7 @@ describe('createProjectFromRemote', () => {
         {
           projectId: 'project-1',
           host: { type: 'local' },
-          mode: 'create',
+          mode: 'clone',
           repositoryUrl: 'https://github.com/acme/private.git',
           targetPath: '/repo',
           name: 'Private',

@@ -1,5 +1,4 @@
 import { LOCAL_HOST_REF } from '@ply/core/primitives/host/api';
-import { splitNameWithOwner } from '@ply/core/primitives/repository/api';
 import { isRuntimeResolveError } from '@ply/core/services/runtime-broker/api';
 import { err, ok, type Result } from '@ply/shared';
 import { createScope, type Scope } from '@ply/shared/concurrency';
@@ -10,7 +9,6 @@ import {
 } from '@ply/wire/live';
 import { remote, type RemoteModel } from '@ply/wire/state';
 import { makeObservable, observable, runInAction } from 'mobx';
-import { getGithubClient } from '@core/features/github/api/browser/client';
 import { projectsWireContract, type ProjectCreationProgress } from '@core/features/projects/api';
 import { getProjectsWireClient } from '@core/features/projects/api/browser/client';
 import {
@@ -24,7 +22,6 @@ import { ProjectContext } from '@core/features/projects/browser/stores/project-c
 import type { ProjectScopedStoreContext } from '@core/features/projects/contributions/project-stores';
 import { projectSubject } from '@core/features/projects/contributions/subject';
 import { projectViewDef } from '@core/features/projects/contributions/views';
-import { getRepositoryClient } from '@core/features/repository/api/client';
 import { taskManagerStoreToken } from '@core/features/tasks/contributions/browser/project-store-tokens';
 import { taskSubject } from '@core/features/tasks/contributions/subject';
 import { homeViewDef } from '@core/features/workbench/contributions/views';
@@ -34,9 +31,7 @@ import {
   getNavigation,
   getNavigationHistory,
 } from '@core/primitives/navigation/browser/navigation-selectors';
-import type { StoredIntegrationAccounts } from '@core/primitives/project-settings/api/project-settings';
 import { type LocalProject, type SshProject } from '@core/primitives/projects/api';
-import type { ProviderAccountRef } from '@core/primitives/provider-accounts/api/provider-account-summary';
 import type { ScopedStoreContribution } from '@core/primitives/scoped-stores/browser';
 import { observeReadableInAction } from '@core/primitives/wire/browser/mobx-readable';
 import { hostsContract } from '@core/services/hosts/api';
@@ -369,6 +364,9 @@ export class ProjectManagerStore {
     if (projectType.type !== 'local') {
       throw new Error('此版本不再支持通过 SSH 开发。');
     }
+    if (data.mode !== 'pick' && data.mode !== 'clone') {
+      throw new Error('此版本不再支持创建托管仓库，请通过 Git URL 克隆已有仓库。');
+    }
     const projectId = options.id ?? crypto.randomUUID();
     const targetPathResult =
       data.mode === 'pick'
@@ -438,17 +436,12 @@ export class ProjectManagerStore {
     try {
       switch (data.mode) {
         case 'pick': {
-          const initialIntegrationAccounts: StoredIntegrationAccounts | undefined =
-            data.initGitRepository && data.githubAccountId
-              ? { github: { kind: 'account', accountId: data.githubAccountId } }
-              : undefined;
           const projectResult = await projectsClient.createProject({
             type: 'local',
             id: projectId,
             path: targetPath,
             name: data.name,
             initGitRepository: data.initGitRepository,
-            initialIntegrationAccounts,
           });
           if (!projectResult.success) {
             result = err(projectResult.error);
@@ -475,62 +468,6 @@ export class ProjectManagerStore {
           }
 
           this._applyRegisteredProjectSnapshot(projectResult.data);
-          result = ok();
-          break;
-        }
-
-        case 'create': {
-          const provider = data.repositoryProvider ?? 'github';
-          const accountId = data.repositoryAccountId ?? data.githubAccountId;
-          const repoResult =
-            provider === 'gitlab'
-              ? await (
-                  await getRepositoryClient()
-                ).gitLabCreate({
-                  name: data.repositoryName,
-                  owner: data.repositoryOwner,
-                  isPrivate: data.repositoryVisibility === 'private',
-                  accountId: accountId ?? '',
-                })
-              : await (
-                  await getGithubClient()
-                ).createRepository({
-                  name: data.repositoryName,
-                  owner: data.repositoryOwner,
-                  isPrivate: data.repositoryVisibility === 'private',
-                  accountId: accountId ?? undefined,
-                });
-          if (!repoResult.success) {
-            result = err({
-              type: 'repository-create-failed',
-              message: repoResult.error?.trim() || 'Repository creation failed',
-            });
-            break;
-          }
-          if (!repoResult.nameWithOwner || !repoResult.cloneUrl) {
-            result = err({
-              type: 'repository-response-incomplete',
-              message: 'Repository creation response was incomplete',
-            });
-            break;
-          }
-
-          const projectResult = await this._cloneAndCreateHostedProject({
-            projectId,
-            targetPath,
-            name: data.name,
-            cloneUrl: repoResult.cloneUrl,
-            repositoryNameWithOwner: repoResult.nameWithOwner,
-            provider,
-            accountId,
-          });
-          if (!projectResult.success) {
-            result = err(projectResult.error);
-            break;
-          }
-
-          const project = projectResult.data;
-          this._applyRegisteredProjectSnapshot(project);
           result = ok();
           break;
         }
@@ -646,48 +583,9 @@ export class ProjectManagerStore {
     void this._projectCreationJobs.get(projectId)?.cancel();
   }
 
-  private async _rollbackCreatedHostedRepository(
-    nameWithOwner: string,
-    provider: 'github' | 'gitlab',
-    accountId?: string
-  ): Promise<void> {
-    try {
-      const { owner, repo } = splitNameWithOwner(nameWithOwner);
-      const result =
-        provider === 'gitlab'
-          ? await (
-              await getRepositoryClient()
-            ).gitLabDelete({
-              owner,
-              name: repo,
-              accountId: accountId ?? '',
-            })
-          : await (
-              await getGithubClient()
-            ).deleteRepository({
-              owner,
-              name: repo,
-              accountId: accountId ?? undefined,
-            });
-      if (!result.success) {
-        log.error('Failed to delete repository after project creation failure', {
-          nameWithOwner,
-          error: result.error,
-        });
-      }
-    } catch (error) {
-      log.error('Failed to delete repository after project creation failure', {
-        nameWithOwner,
-        error,
-      });
-    }
-  }
-
   private async _createProjectFromRemote(opts: {
     projectId: string;
-    mode: 'clone' | 'create';
-    account?: ProviderAccountRef;
-    initialIntegrationAccounts?: StoredIntegrationAccounts;
+    mode: 'clone';
     repositoryUrl: string;
     targetPath: string;
     name: string;
@@ -698,8 +596,6 @@ export class ProjectManagerStore {
       projectId: opts.projectId,
       host: { type: 'local' },
       mode: opts.mode,
-      account: opts.account,
-      initialIntegrationAccounts: opts.initialIntegrationAccounts,
       repositoryUrl: opts.repositoryUrl,
       targetPath: opts.targetPath,
       name: opts.name,
@@ -726,49 +622,6 @@ export class ProjectManagerStore {
       await lease.release();
       await jobs.dispose();
     }
-  }
-
-  private async _cloneAndCreateHostedProject(opts: {
-    projectId: string;
-    targetPath: string;
-    name: string;
-    cloneUrl: string;
-    repositoryNameWithOwner: string;
-    provider: 'github' | 'gitlab';
-    accountId?: string;
-  }): Promise<Result<LocalProject | SshProject, ProjectCreationError>> {
-    let result: Result<LocalProject | SshProject, ProjectCreationError>;
-    try {
-      result = await this._createProjectFromRemote({
-        projectId: opts.projectId,
-        mode: 'create',
-        account: opts.accountId
-          ? { providerId: opts.provider, accountId: opts.accountId }
-          : undefined,
-        initialIntegrationAccounts: opts.accountId
-          ? { [opts.provider]: { kind: 'account', accountId: opts.accountId } }
-          : undefined,
-        repositoryUrl: opts.cloneUrl,
-        targetPath: opts.targetPath,
-        name: opts.name,
-      });
-    } catch (error) {
-      await this._rollbackCreatedHostedRepository(
-        opts.repositoryNameWithOwner,
-        opts.provider,
-        opts.accountId
-      );
-      throw error;
-    }
-
-    if (!result.success) {
-      await this._rollbackCreatedHostedRepository(
-        opts.repositoryNameWithOwner,
-        opts.provider,
-        opts.accountId
-      );
-    }
-    return result;
   }
 
   private _updatePhase(
@@ -815,8 +668,6 @@ function initialCreationStage(mode: ModeData['mode']): ProjectCreationStage {
       return 'registering';
     case 'clone':
       return 'cloning';
-    case 'create':
-      return 'creating-repo';
   }
 }
 

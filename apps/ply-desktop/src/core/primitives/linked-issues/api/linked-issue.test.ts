@@ -16,6 +16,11 @@ describe('linked issue source persistence', () => {
   it('reads old snapshots without inventing a source account', () => {
     expect(linkedIssue.parseJson(JSON.stringify(legacy))).toEqual(legacy);
   });
+  it('rejects links from unsupported providers', () => {
+    expect(linkedIssue.schema.safeParse({ ...legacy, provider: 'removed-provider' }).success).toBe(
+      false
+    );
+  });
   it('round-trips the account that supplied an issue', () => {
     const current = linkedIssue.schema.parse({ ...legacy, accountId: 'workspace-a' });
     expect(linkedIssue.parseJson(linkedIssue.serialize(current))).toEqual(current);
@@ -59,7 +64,7 @@ describe('linked issue source persistence', () => {
       'https://linear.app/other/issue/ENG-1/name',
     ],
     ['gitlab', 'https://gitlab.com/acme/a/-/issues/1', 'https://gitlab.com/acme/b/-/issues/1'],
-    ['forgejo', 'https://forgejo.example/a/b/issues/1', 'https://other.example/a/b/issues/1'],
+    ['github', 'https://github.example/a/b/issues/1', 'https://other.example/a/b/issues/1'],
   ] as const)('rejects a different %s resource or scope', (provider, before, after) => {
     expect(linkedIssueResourcesMatch(provider, before, after)).toBe(false);
   });

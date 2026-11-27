@@ -10,13 +10,13 @@ import type { Logger } from '@ply/shared/logger';
 import { type LiveSource } from '@ply/wire/rpc';
 import { createController, type CallMeta, type Controller } from '@ply/wire/rpc';
 import { and, eq, isNull, sql } from 'drizzle-orm';
-import type { GitCredentialsService } from '@core/features/github/api/node/services/git-credentials-service';
 import type { ProjectAttachmentError } from '@core/features/projects/api';
 import {
   requireAttachedProjectOrThrow,
   withAttachedProject,
 } from '@core/features/projects/api/node/attached-project';
 import type { ProjectAttachmentManager } from '@core/features/projects/api/node/project-attachment-manager';
+import type { GitCredentialsService } from '@core/features/source-control/api/node/git-credentials-service';
 import type { TaskSessionLaunchContextResolver } from '@core/features/tasks/api/node/task-session-launch-context';
 import {
   terminalsContract,

@@ -34,7 +34,6 @@ vi.mock('@core/primitives/modals/react/modal-store', () => ({
   modalStore: { dismissAll: dismissModal },
 }));
 
-
 function handle<T>(value: T, options: { hasStoredValue?: boolean } = {}): MementoHandle<T> {
   let current = value;
   return {

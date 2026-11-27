@@ -12,22 +12,15 @@ export type DefaultBranchSetting = z.infer<typeof defaultBranchSettingSchema>;
 export type ShareableProjectSettings = EmdashConfig;
 
 /**
- * Per-project git credential behavior (spec: github-git-settings §4). Absence
- * means the default, `effective-account`.
- *
- * - `effective-account`: agent/terminal sessions and emdash's own git
- *   operations authenticate as the effective account where one resolves.
- * - `system`: both use the machine's native git credentials.
- * - `none`: sessions get no credential helpers; emdash's own operations still
- *   authenticate as the effective account.
- *
- * The stored name predates operations following the setting.
+ * Native Git credential policy. `none` disables helpers in agent/terminal sessions;
+ * app Git operations otherwise use the system's own authentication.
+ * The legacy `effective-account` value remains readable and behaves as `system`.
  */
 export const agentGitCredentialsSettingSchema = z.enum(['effective-account', 'system', 'none']);
 
 export type AgentGitCredentialsSetting = z.infer<typeof agentGitCredentialsSettingSchema>;
 
-export const DEFAULT_AGENT_GIT_CREDENTIALS: AgentGitCredentialsSetting = 'effective-account';
+export const DEFAULT_AGENT_GIT_CREDENTIALS: AgentGitCredentialsSetting = 'system';
 
 // --- Stored model (spec: github-git-settings §10) -------------------------
 // The persisted per-project base settings after lazy migration. Apart from

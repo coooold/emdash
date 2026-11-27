@@ -124,9 +124,6 @@ vi.mock('@core/features/agents/api/browser/use-agent-metadata', () => ({
 vi.mock('@core/features/agents/contributions/browser/agent-icon', () => ({
   AgentIcon: () => null,
 }));
-vi.mock('@core/features/integrations/api/browser/use-connected-issue-providers', () => ({
-  useConnectedIssueProviders: () => ({ connectedProviders: [], isProviderUsable: () => false }),
-}));
 vi.mock('@core/features/integrations/contributions/browser/integration-icon', () => ({
   IntegrationIcon: () => null,
 }));
@@ -197,7 +194,7 @@ it('attaches diff comments only through the mention menu and preserves unsent dr
     });
     const item = page.getByRole('option', { name: /Diff comments/ });
     await expect.element(item).toBeVisible();
-    await expect.element(item).toHaveTextContent(`${count} pending comment`);
+    await expect.element(item).toHaveTextContent(`${count} 条待发送评论`);
     await act(async () => item.click());
     expect(store.draftText).toContain(`@${diffCommentsMention.id}`);
     expect(parent.querySelector(`[data-mention-id="${diffCommentsMention.id}"]`)).not.toBeNull();
@@ -305,7 +302,7 @@ it('starts a fresh session in place when the saved provider session is missing',
 });
 
 it.each([false, true])(
-  'restores the sign-in screen with retained history=%s',
+  'blocks the composer on authentication failure and retries without a sign-in modal (history=%s)',
   async (populated) => {
     await page.viewport(1100, 800);
     fixture.restored = populated;
@@ -377,35 +374,18 @@ it.each([false, true])(
           };
         });
       });
-      await expect.element(page.getByText('Droid needs you to sign in.')).toBeVisible();
+      await expect.element(page.getByText('无法加载聊天')).toBeVisible();
       await expect
-        .element(page.getByText('Open droid in a terminal and complete the provider sign-in flow.'))
+        .element(page.getByText('Authentication required: Click the Login button to authenticate.'))
         .toBeVisible();
       expect(parent.querySelector('[contenteditable="true"]')).toBeNull();
       expect(store.draftText).toBe('Keep this draft');
-      vi.mocked(openModal).mockResolvedValueOnce({
-        success: false,
-        error: { type: 'modal_dismissed', reason: 'explicit' },
-      });
-      await act(async () => page.getByRole('button', { name: 'Sign in', exact: true }).click());
-      expect(openModal).toHaveBeenLastCalledWith('agentSignInModal', {
-        providerId: 'droid',
-        methodId: 'cli-login',
-        providerName: 'Droid',
-        host: { type: 'local', id: 'local' },
-      });
-      expect(retry).not.toHaveBeenCalled();
-      const authError = store.loadError;
+      await expect
+        .element(page.getByRole('button', { name: 'Sign in', exact: true }))
+        .not.toBeInTheDocument();
       await act(async () => page.getByRole('button', { name: '重试', exact: true }).click());
       expect(retry).toHaveBeenCalledOnce();
-      await act(async () =>
-        runInAction(() => {
-          store.loadError = authError;
-        })
-      );
-      vi.mocked(openModal).mockResolvedValueOnce({ success: true, data: undefined });
-      await act(async () => page.getByRole('button', { name: 'Sign in', exact: true }).click());
-      await vi.waitFor(() => expect(retry).toHaveBeenCalledTimes(2));
+      expect(openModal).not.toHaveBeenCalled();
       await vi.waitFor(() =>
         expect(parent.querySelector('[contenteditable="true"]')).not.toBeNull()
       );

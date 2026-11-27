@@ -28,7 +28,6 @@ import {
 import type { EditorBufferService } from '@core/features/editor/node/editor-buffer-service';
 import { createEditorWireController } from '@core/features/editor/node/wire-controller';
 import { createFilesWireController } from '@core/features/files/node/wire-controller';
-import type { GitCredentialsService } from '@core/features/github/api/node/services/git-credentials-service';
 import { createIntegrationsWireController } from '@core/features/integrations/node/wire-controller';
 import {
   createLegacyPortWireController,
@@ -49,6 +48,7 @@ import { createRepositoryWireController } from '@core/features/repository/node/w
 import type { SearchService } from '@core/features/search/node/search-service';
 import { createSearchWireController } from '@core/features/search/node/wire-controller';
 import { createSkillsWireController } from '@core/features/skills/node/wire-controller';
+import type { GitCredentialsService } from '@core/features/source-control/api/node/git-credentials-service';
 import { createSourceControlWireController } from '@core/features/source-control/node/wire-controller';
 import type { TaskService } from '@core/features/tasks/api/node/task-service';
 import type { TaskSessionLaunchContextResolver } from '@core/features/tasks/api/node/task-session-launch-context';

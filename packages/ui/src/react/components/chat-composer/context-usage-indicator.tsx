@@ -104,7 +104,10 @@ export function ContextUsageIndicator({
             />
           </div>
           {usage.cost ? (
-            <div className={styles.usageCostRow}>{chinese ? '费用：' : 'Cost: '}{formatCost(usage.cost)}</div>
+            <div className={styles.usageCostRow}>
+              {chinese ? '费用：' : 'Cost: '}
+              {formatCost(usage.cost)}
+            </div>
           ) : null}
         </div>
       </Popover.Content>

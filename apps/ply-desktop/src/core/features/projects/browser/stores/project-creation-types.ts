@@ -9,7 +9,6 @@ interface BaseModeData {
 export interface PickModeData extends BaseModeData {
   mode: 'pick';
   initGitRepository?: boolean;
-  githubAccountId?: string;
 }
 
 export interface CloneModeData extends BaseModeData {
@@ -17,17 +16,7 @@ export interface CloneModeData extends BaseModeData {
   repositoryUrl: string;
 }
 
-export interface CreateRepositoryModeData extends BaseModeData {
-  mode: 'create';
-  repositoryName: string;
-  repositoryOwner: string;
-  repositoryVisibility: 'public' | 'private';
-  githubAccountId?: string;
-  repositoryProvider?: 'github' | 'gitlab';
-  repositoryAccountId?: string;
-}
-
-export type ModeData = PickModeData | CloneModeData | CreateRepositoryModeData;
+export type ModeData = PickModeData | CloneModeData;
 
 export type ProjectType = { type: 'local' } | { type: 'ssh'; connectionId: string };
 

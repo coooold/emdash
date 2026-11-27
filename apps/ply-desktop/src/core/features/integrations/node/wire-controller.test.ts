@@ -1,23 +1,34 @@
-import { createTestWire } from '@ply/wire/testing';
-import { expect, it } from 'vitest';
-import { integrationsContract } from '../api/contract';
+import { describe, expect, it } from 'vitest';
 import { createIntegrationsWireController } from './wire-controller';
 
-it('exposes no connected accounts or provider sign-in through desktop Wire', async () => {
-  const wire = createTestWire(integrationsContract, createIntegrationsWireController());
-  try {
-    await expect(wire.client.listProviders()).resolves.toEqual([]);
-    await expect(wire.client.listAccounts()).resolves.toEqual({});
+describe('retired platform integrations', () => {
+  it('does not advertise providers or stored accounts', async () => {
+    const controller = createIntegrationsWireController();
+    await expect(controller.call('listProviders', undefined)).resolves.toEqual([]);
+    await expect(controller.call('listAccounts', undefined)).resolves.toEqual({});
+  });
+
+  it.each([
+    'github',
+    'gitlab',
+    'linear',
+    'jira',
+    'plane',
+    'trello',
+    'asana',
+    'monday',
+    'notion',
+    'featurebase',
+    'plain',
+    'youtrack',
+  ])('rejects credentials and device authorization for %s', async (integrationId) => {
+    const controller = createIntegrationsWireController();
+    const unavailable = { success: false, error: 'Account integrations are unavailable.' };
     await expect(
-      wire.client.connect({
-        integrationId: 'jira',
-        credentials: { siteUrl: 'https://example.atlassian.net', accessToken: 'test-token' },
-      })
-    ).resolves.toMatchObject({ success: false });
-    await expect(wire.client.startDeviceFlow({ integrationId: 'github' })).resolves.toMatchObject({
-      success: false,
-    });
-  } finally {
-    await wire.dispose();
-  }
+      controller.call('connect', { integrationId, credentials: { apiToken: 'test-token' } })
+    ).resolves.toEqual(unavailable);
+    await expect(controller.call('startDeviceFlow', { integrationId })).resolves.toEqual(
+      unavailable
+    );
+  });
 });

@@ -1,4 +1,4 @@
-import { isGitHubDotComHost, parseRepositoryRef } from '@ply/core/primitives/repository/api';
+import { parseRepositoryRef } from '@ply/core/primitives/repository/api';
 import { StatusIcon } from '@ply/ui/react/components';
 import { EntityHeader } from '@ply/ui/react/patterns';
 import { Button, DropdownMenu, Heading, Separator } from '@ply/ui/react/primitives';
@@ -7,7 +7,6 @@ import {
   ExternalLink,
   FolderInput,
   FolderOpen,
-  GithubIcon,
   Globe,
   Pencil,
   Trash2,
@@ -32,8 +31,7 @@ export const ProjectHeader = observer(function ProjectHeader({ projectId }: { pr
   const repositoryStore = getGitRepositoryStore(projectId);
   const baseRemoteUrl = repositoryStore?.baseRemote?.url;
   const repository = parseRepositoryRef(repositoryStore?.canonicalRepositoryUrl);
-  const isGithubUrl = repository ? isGitHubDotComHost(repository.host) : false;
-  const repositoryUrl = isGithubUrl ? (repository?.repositoryUrl ?? baseRemoteUrl) : baseRemoteUrl;
+  const repositoryUrl = repository?.repositoryUrl ?? baseRemoteUrl;
   const repositoryLabel = repository?.nameWithOwner ?? baseRemoteUrl?.replace(/^https?:\/\//, '');
 
   if (!project) return null;
@@ -66,11 +64,7 @@ export const ProjectHeader = observer(function ProjectHeader({ projectId }: { pr
                   className="group flex max-w-64 items-center gap-1.5 text-sm text-foreground-muted transition-colors hover:text-foreground"
                   onClick={() => void openExternal(repositoryUrl)}
                 >
-                  {isGithubUrl ? (
-                    <GithubIcon aria-hidden="true" className="size-3.5" />
-                  ) : (
-                    <Globe aria-hidden="true" className="size-3.5" />
-                  )}
+                  <Globe aria-hidden="true" className="size-3.5" />
                   <span className="truncate">{repositoryLabel}</span>
                   <ExternalLink
                     aria-hidden="true"

@@ -71,5 +71,4 @@ export function installGateway(
       detach: (host) => tuiAgentStatusBridge.detachHost(host),
     })
   );
-
 }

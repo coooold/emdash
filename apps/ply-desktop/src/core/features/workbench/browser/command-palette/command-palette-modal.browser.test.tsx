@@ -81,7 +81,7 @@ describe('CommandPaletteView', () => {
 
     await vi.waitFor(() => {
       expect(
-        host.querySelector<HTMLButtonElement>('button[aria-label="Clear @commands mode"]')
+        host.querySelector<HTMLButtonElement>('button[aria-label="退出 @commands 模式"]')
       ).not.toBeNull();
       expect(host.textContent).toContain('Toggle Theme');
     });
@@ -90,7 +90,7 @@ describe('CommandPaletteView', () => {
     expect(fileSearch).not.toHaveBeenCalled();
 
     await act(async () => {
-      host.querySelector<HTMLButtonElement>('button[aria-label="Clear @commands mode"]')!.click();
+      host.querySelector<HTMLButtonElement>('button[aria-label="退出 @commands 模式"]')!.click();
     });
     await vi.waitFor(() => expect(host.textContent).toContain('theme.ts'));
     expect(fileSearch).toHaveBeenLastCalledWith({ query: 'theme', context: {} });
@@ -186,7 +186,7 @@ describe('CommandPaletteView', () => {
     ).entries()) {
       if (index > 0) {
         await act(async () => {
-          host.querySelector<HTMLButtonElement>('button[aria-label^="Clear @"]')?.click();
+          host.querySelector<HTMLButtonElement>('button[aria-label^="退出 @"]')?.click();
         });
       }
       await act(async () => {

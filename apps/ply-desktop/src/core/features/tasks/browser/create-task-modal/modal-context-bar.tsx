@@ -5,7 +5,7 @@ import {
   type PromptContextAction,
 } from '@core/features/tasks/browser/context-bar/context-actions';
 import { PromptActionsMenu } from '@core/features/tasks/browser/context-bar/prompt-actions-menu';
-import { ProviderLogo } from '../components/issue-selector/issue-selector';
+import { ProviderLogo } from '../context-bar/legacy-issue-logo';
 
 interface ModalContextBarProps {
   actions: ContextAction[];

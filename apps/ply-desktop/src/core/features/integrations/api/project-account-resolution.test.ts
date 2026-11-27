@@ -13,7 +13,7 @@ function remote(
   return { name, host: 'github.com', headBranch: null, branches: [], ...overrides };
 }
 
-describe.each(['github', 'gitlab', 'forgejo'])('project account policy for %s', (providerId) => {
+describe.each(['github', 'gitlab'])('project account policy for %s', (providerId) => {
   function account(
     accountId: string,
     overrides: Partial<ProviderAccountSummary> = {}

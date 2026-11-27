@@ -79,7 +79,7 @@ describe('WorktreeDestinationPreviewView', () => {
       worktreeRoot: '/home/me/emdash/worktrees',
       branchName: 'feature/x',
     }).worktreePath;
-    expect(host.textContent).toContain('Worktree:');
+    expect(host.textContent).toContain('工作树：');
     expect(host.textContent).toContain(expected);
   });
 
@@ -95,7 +95,7 @@ describe('WorktreeDestinationPreviewView', () => {
     });
 
     expect(host.textContent).toContain('/home/me/fast-pool/');
-    expect(host.textContent).not.toContain('is not usable');
+    expect(host.textContent).not.toContain('不可用');
   });
 
   it('degrades a broken configured root with a visible warning, never blocking', async () => {
@@ -112,7 +112,7 @@ describe('WorktreeDestinationPreviewView', () => {
     // Destination still resolves (to the built-in layer) and the warning names
     // the stale value and the fallback.
     expect(host.textContent).toContain('/home/me/emdash/worktrees/');
-    expect(host.textContent).toContain("'relative/never-works' is not usable");
+    expect(host.textContent).toContain('根目录「relative/never-works」不可用');
     expect(host.textContent).toContain('/home/me/emdash/worktrees');
   });
 

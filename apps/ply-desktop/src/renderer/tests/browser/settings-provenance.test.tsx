@@ -9,12 +9,12 @@ import {
   ProvenanceSourceLine,
   ResetProvenanceButton,
 } from '@core/features/projects/contributions/browser/settings-provenance';
-import type { GitHubAccountSummary } from '@core/primitives/github/api';
 import {
   resolveEffectiveSettings,
   type RepoFacts,
   type StoredBaseProjectSettings,
 } from '@core/primitives/project-settings/api';
+import type { ProviderAccountSummary } from '@core/primitives/provider-accounts/api';
 
 beforeAll(() => {
   (
@@ -30,7 +30,7 @@ const repoFacts: RepoFacts = {
   localBranches: ['main'],
 };
 
-const accounts: GitHubAccountSummary[] = [
+const accounts: ProviderAccountSummary[] = [
   {
     providerId: 'github',
     displayName: '@dkonopka',

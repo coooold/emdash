@@ -12,7 +12,7 @@ ply 是一款开源桌面应用，可在本机的独立 Git 工作树中并行�
 
 ## 当前分支的功能
 
-- 无需登录即可打开本地项目、通过 URL 克隆仓库，以及查看和提交 Git 改动。应用内登录与依赖账号的议题和拉取请求集成已移除。
+- 无需登录即可打开本地项目、通过 URL 克隆仓库，以及查看和提交 Git 改动。应用内登录，以及 GitHub、GitLab、Linear、Jira、Plane、Trello 等仓库托管与议题平台集成已移除；克隆、拉取和推送使用本机 Git 凭据。
 - 在独立的 Git 工作树和分支中并行运行多个智能体，可直接在应用内管理任务和终端。
 - 开发任务、工作区和应用预览均在本机运行。SSH 远程开发与端口转发已移除。已有的 SSH 项目会显示为不可用，可手动移除本机记录。
 - 首页、菜单、项目、任务、设置、编辑器、终端和聊天的主要界面采用简体中文。
@@ -23,13 +23,27 @@ ply 是一款开源桌面应用，可在本机的独立 Git 工作树中并行�
 
 ### 从源码构建
 
-在 Apple Silicon Mac 上检出 `main2` 后，在仓库根目录运行以下命令。安装包生成在 `apps/ply-desktop/release/`。
+在 Mac 上检出 `main2` 后，在仓库根目录运行以下命令。安装包生成在 `apps/ply-desktop/release/`。
 
 ```bash
 pnpm install
-pnpm exec nx build @ply/ply-desktop
-pnpm --dir apps/ply-desktop run package:mac
+make build
 ```
+
+`make build` 默认生成当前 Mac 架构的 DMG（Apple Silicon 为 `arm64`，Intel 为
+`x64`），使用临时签名，不公证、不上传、不发布。也可用 `make build ARCH=arm64`
+或 `make build ARCH=x64` 指定目标架构；跨架构构建无法在本机执行打包后的运行验证。
+
+### 本地开发
+
+首次运行先执行 `pnpm install`，随后在仓库根目录执行：
+
+```bash
+make dev
+```
+
+这会启动 Electron 应用并自动打开开发者工具，支持渲染页面热更新；不是独立浏览器网页。
+在终端按 `Ctrl+C` 停止。执行 `make help` 查看命令说明。
 
 ### 自动发布
 

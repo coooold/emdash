@@ -15,7 +15,6 @@ import { tuiAgentsWorker } from '../../../../../../packages/core/src/runtimes/tu
 import { workspaceRegistryWorker } from '../../../../../../packages/core/src/runtimes/workspace-registry/api/worker';
 import { fsWatchWorker } from '../../../../../../packages/core/src/services/fs-watch/api/worker';
 import { mementosWorker } from '../../services/mementos/contributions/worker';
-import { pullRequestsWorker } from '../../services/pull-requests/contributions/worker';
 
 function desktopRuntimeWorker<const Id extends string>(
   worker: Readonly<{ id: Id; artifact: string }>,
@@ -71,7 +70,6 @@ export const desktopWorkers = {
     '../../packages/core/src/runtimes/host-settings/node/runtime-entry.ts'
   ),
   [mementosWorker.id]: mementosWorker,
-  [pullRequestsWorker.id]: pullRequestsWorker,
   [resourceUsageWorker.id]: desktopRuntimeWorker(
     resourceUsageWorker,
     '../../packages/core/src/runtimes/resource-usage/node/runtime-entry.ts'

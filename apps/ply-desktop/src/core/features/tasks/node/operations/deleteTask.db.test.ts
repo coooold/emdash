@@ -136,13 +136,13 @@ describe('deleteTask', () => {
       getMementosRuntimeClient: async () => mementos as unknown as MementosRuntimeClient,
       evictFileSearchRoot,
     };
-    return { dependencies, sessionCleanup, mementos,  evictFileSearchRoot };
+    return { dependencies, sessionCleanup, mementos, evictFileSearchRoot };
   }
 
   it('deletes desktop rows immediately and removes the worktree through the verb when reachable', async () => {
     await seedTask();
     const { registry, runtimes } = makeRuntimes();
-    const { dependencies,  mementos } = makeDependencies(runtimes);
+    const { dependencies, mementos } = makeDependencies(runtimes);
 
     const result = await deleteTask(dependencies, { taskId: 'task-1' });
 

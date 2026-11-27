@@ -18,8 +18,8 @@ import type {
   AcpProcessHandle,
   AcpProcessHost,
   AcpTerminalProcess,
-} from '@emdash/core/runtimes/acp/api/transport';
-import { ChildAcpProcessHost } from '@emdash/core/runtimes/acp/node';
+} from '@ply/core/runtimes/acp/api/transport';
+import { ChildAcpProcessHost } from '@ply/core/runtimes/acp/node';
 
 class RecordingProcessHandle implements AcpProcessHandle {
   constructor(private readonly child: ReturnType<typeof spawn>) {}

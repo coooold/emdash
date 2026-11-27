@@ -51,5 +51,4 @@ describe('viewCatalog', () => {
     expect(taskViewDef({ projectId: 'project-1', taskId: 'task-1' }).key).toBe('task:task-1');
     expect(taskViewDef({ projectId: 'project-1', taskId: 'task-2' }).key).toBe('task:task-2');
   });
-
 });

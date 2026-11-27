@@ -34,6 +34,7 @@ const nodeSetupFiles = [
 export default defineConfig({
   resolve: { alias },
   test: {
+    maxWorkers: 4,
     projects: [
       {
         // All existing tests that run in a Node.js environment.
@@ -130,6 +131,8 @@ export default defineConfig({
               },
               test: {
                 name: 'browser',
+                // Layout, Monaco workers and hover timing share browser resources.
+                fileParallelism: false,
                 browser: {
                   enabled: true,
                   provider: playwright(),

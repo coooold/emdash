@@ -5,7 +5,6 @@ import type { HostRuntimesClient } from '@ply/core/services/runtime-broker/api';
 import { err, ok, type Result } from '@ply/shared';
 import { log } from '@ply/shared/logger';
 import { LiveJobCancelledError, type LiveJobContext } from '@ply/wire/live';
-import type { GitCredentialsService } from '@core/features/github/api/node/services/git-credentials-service';
 import type {
   CreateProjectFromRemoteInput,
   ProjectCreationJobError,
@@ -18,6 +17,7 @@ import {
   createProject,
 } from '@core/features/projects/node/operations/create-project';
 import { formatCloneErrorDetail } from '@core/features/source-control/api/git-error-messages';
+import type { GitCredentialsService } from '@core/features/source-control/api/node/git-credentials-service';
 import { fileKeyForAbsolutePath, hostPathFromNative } from '@core/primitives/desktop-runtime/api';
 import type { Project } from '@core/primitives/projects/api';
 import { fsErrorMessage } from '@core/services/runtime-broker/node/files';

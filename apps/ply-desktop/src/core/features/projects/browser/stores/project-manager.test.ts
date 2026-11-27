@@ -1,5 +1,5 @@
 import { ok } from '@ply/shared';
-import { createEventStreamHost, LiveJobCancelledError, LiveJobFailedError } from '@ply/wire/live';
+import { createEventStreamHost, LiveJobCancelledError } from '@ply/wire/live';
 import type * as WireLive from '@ply/wire/live';
 import { cell, expose } from '@ply/wire/state';
 import { createTestWire } from '@ply/wire/testing';
@@ -25,12 +25,8 @@ import { hostsContract, type HostAvailabilityState } from '@core/services/hosts/
 const mocks = vi.hoisted(() => ({
   attachmentTrack: vi.fn(),
   hostAvailabilityTrack: vi.fn(),
-  createGithubRepository: vi.fn(),
-  createGitlabRepository: vi.fn(),
   createLiveJobReplicaCache: vi.fn(),
   createProject: vi.fn(),
-  deleteGithubRepository: vi.fn(),
-  deleteGitlabRepository: vi.fn(),
   inspectProjectPath: vi.fn(),
   logError: vi.fn(),
   projectWireCreate: vi.fn(),
@@ -83,20 +79,6 @@ class ProjectManagerStore extends BrowserProjectManagerStore {
     super(projectStoreContributions);
   }
 }
-
-vi.mock('@core/features/github/api/browser/client', () => ({
-  getGithubClient: async () => ({
-    createRepository: mocks.createGithubRepository,
-    deleteRepository: mocks.deleteGithubRepository,
-  }),
-}));
-
-vi.mock('@core/features/repository/api/client', () => ({
-  getRepositoryClient: async () => ({
-    gitLabCreate: mocks.createGitlabRepository,
-    gitLabDelete: mocks.deleteGitlabRepository,
-  }),
-}));
 
 vi.mock('@ply/wire/live', async (importOriginal) => {
   const actual = await importOriginal<typeof WireLive>();
@@ -347,20 +329,6 @@ describe('ProjectManagerStore project creation', () => {
       },
       dispose: async () => {},
     });
-    mocks.createGithubRepository.mockResolvedValue({
-      success: true,
-      repoUrl: 'https://github.com/acme/project.git',
-      cloneUrl: 'https://github.com/acme/project.git',
-      nameWithOwner: 'acme/project',
-    });
-    mocks.deleteGithubRepository.mockResolvedValue({ success: true });
-    mocks.createGitlabRepository.mockResolvedValue({
-      success: true,
-      repositoryUrl: 'https://gitlab.com/parent/nested/project',
-      cloneUrl: 'https://gitlab.com/parent/nested/project.git',
-      nameWithOwner: 'parent/nested/project',
-    });
-    mocks.deleteGitlabRepository.mockResolvedValue({ success: true });
     mocks.updateProjectSettings.mockResolvedValue({
       success: true,
       data: { githubAccountId: 'github.com:42' },
@@ -1028,29 +996,6 @@ describe('ProjectManagerStore project creation', () => {
     expect(store.projects.has('optimistic-project')).toBe(false);
   });
 
-  it('inspects the final repository-creation path instead of the parent directory', async () => {
-    const store = new ProjectManagerStore();
-
-    const result = await store.startProjectCreation(
-      { type: 'local' },
-      {
-        mode: 'create',
-        name: 'child-project',
-        path: '/parent',
-        repositoryName: 'child-project',
-        repositoryOwner: 'acme',
-        repositoryVisibility: 'private',
-      },
-      { id: 'optimistic-project' }
-    );
-
-    if (result.kind === 'creating') void result.completion;
-    expect(mocks.inspectProjectPath).toHaveBeenCalledWith({
-      type: 'local',
-      path: '/parent/child-project',
-    });
-  });
-
   it('does not let a project registered at the clone parent path short-circuit creation', async () => {
     const parentProject = localProject({ id: 'parent-project', path: '/parent' });
     mocks.inspectProjectPath.mockImplementation(async ({ path }: { path: string }) => ({
@@ -1076,65 +1021,7 @@ describe('ProjectManagerStore project creation', () => {
     expect(store.projects.has('optimistic-project')).toBe(true);
   });
 
-  it('does not let a project at the repository-creation parent path short-circuit creation', async () => {
-    const parentProject = localProject({ id: 'parent-project', path: '/parent' });
-    mocks.inspectProjectPath.mockImplementation(async ({ path }: { path: string }) => ({
-      isDirectory: true,
-      isGitRepo: true,
-      existingProject: path === '/parent' ? parentProject : undefined,
-    }));
-    const store = new ProjectManagerStore();
-
-    const result = await store.startProjectCreation(
-      { type: 'local' },
-      {
-        mode: 'create',
-        name: 'child-project',
-        path: '/parent',
-        repositoryName: 'child-project',
-        repositoryOwner: 'acme',
-        repositoryVisibility: 'private',
-      },
-      { id: 'optimistic-project' }
-    );
-
-    if (result.kind === 'creating') void result.completion;
-    expect(result.kind).toBe('creating');
-    expect(store.projects.has('optimistic-project')).toBe(true);
-  });
-
-  it('carries the selected account into clone authentication and atomic project registration', async () => {
-    const store = new ProjectManagerStore();
-
-    const result = await store.startProjectCreation(
-      { type: 'local' },
-      {
-        mode: 'create',
-        name: 'Project',
-        path: '/parent',
-        repositoryName: 'project',
-        repositoryOwner: 'acme',
-        repositoryVisibility: 'private',
-        githubAccountId: 'github.com:42',
-      },
-      { id: 'optimistic-project' }
-    );
-
-    if (result.kind === 'creating') await result.completion;
-
-    expect(mocks.projectWireCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        account: { providerId: 'github', accountId: 'github.com:42' },
-        initialIntegrationAccounts: { github: { kind: 'account', accountId: 'github.com:42' } },
-      })
-    );
-    expect(mocks.updateProjectSettings).not.toHaveBeenCalled();
-    await vi.waitFor(() =>
-      expect(store.projects.get('optimistic-project')?.context?.kind).toBe('available')
-    );
-  });
-
-  it('does not write GitHub account settings when creation did not specify one', async () => {
+  it('does not write account settings when picking a local project', async () => {
     mocks.createProject.mockResolvedValueOnce(
       okProject(localProject({ id: 'optimistic-project' }))
     );
@@ -1225,253 +1112,5 @@ describe('ProjectManagerStore project creation', () => {
         message: 'Could not inspect directory: Permission denied',
       });
     }
-  });
-
-  it('includes initial account preferences when registering a newly initialized folder', async () => {
-    mocks.createProject.mockResolvedValueOnce(
-      okProject(localProject({ id: 'optimistic-project' }))
-    );
-    const store = new ProjectManagerStore();
-
-    const result = await store.startProjectCreation(
-      { type: 'local' },
-      {
-        mode: 'pick',
-        name: 'Project',
-        path: '/project',
-        initGitRepository: true,
-        githubAccountId: 'github.com:42',
-      },
-      { id: 'optimistic-project' }
-    );
-
-    if (result.kind === 'creating') await result.completion;
-
-    expect(mocks.createProject).toHaveBeenCalledWith(
-      expect.objectContaining({
-        initialIntegrationAccounts: { github: { kind: 'account', accountId: 'github.com:42' } },
-      })
-    );
-    expect(mocks.updateProjectSettings).not.toHaveBeenCalled();
-  });
-
-  it('does not persist a GitHub account for picked repositories that were already git repos', async () => {
-    mocks.createProject.mockResolvedValueOnce(
-      okProject(localProject({ id: 'optimistic-project' }))
-    );
-    const store = new ProjectManagerStore();
-
-    const result = await store.startProjectCreation(
-      { type: 'local' },
-      {
-        mode: 'pick',
-        name: 'Project',
-        path: '/project',
-        githubAccountId: 'github.com:42',
-      },
-      { id: 'optimistic-project' }
-    );
-
-    if (result.kind === 'creating') await result.completion;
-
-    expect(mocks.updateProjectSettings).not.toHaveBeenCalled();
-  });
-
-  it('uses the selected GitHub account when creating a repository for the project', async () => {
-    const store = new ProjectManagerStore();
-
-    const result = await store.startProjectCreation(
-      { type: 'local' },
-      {
-        mode: 'create',
-        name: 'Project',
-        path: '/parent',
-        repositoryName: 'project',
-        repositoryOwner: 'acme',
-        repositoryVisibility: 'private',
-        githubAccountId: 'github.com:42',
-      },
-      { id: 'optimistic-project' }
-    );
-
-    if (result.kind === 'creating') void result.completion;
-
-    await vi.waitFor(() =>
-      expect(mocks.createGithubRepository).toHaveBeenCalledWith(
-        expect.objectContaining({ accountId: 'github.com:42' })
-      )
-    );
-  });
-
-  it('creates a GitLab repository in a nested group and pins the selected account', async () => {
-    const store = new ProjectManagerStore();
-    const result = await store.startProjectCreation(
-      { type: 'local' },
-      {
-        mode: 'create',
-        name: 'Project',
-        path: '/parent',
-        repositoryName: 'project',
-        repositoryOwner: 'parent/nested',
-        repositoryVisibility: 'private',
-        repositoryProvider: 'gitlab',
-        repositoryAccountId: 'gitlab-selected',
-      },
-      { id: 'gitlab-project' }
-    );
-    if (result.kind === 'creating') await result.completion;
-
-    expect(mocks.createGitlabRepository).toHaveBeenCalledWith({
-      accountId: 'gitlab-selected',
-      owner: 'parent/nested',
-      name: 'project',
-      isPrivate: true,
-    });
-    expect(mocks.projectWireCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        repositoryUrl: 'https://gitlab.com/parent/nested/project.git',
-        account: { providerId: 'gitlab', accountId: 'gitlab-selected' },
-        initialIntegrationAccounts: {
-          gitlab: { kind: 'account', accountId: 'gitlab-selected' },
-        },
-      })
-    );
-    expect(mocks.createGithubRepository).not.toHaveBeenCalled();
-  });
-
-  it('rolls back a GitLab repository with the selected account when cloning fails', async () => {
-    mocks.projectWireResult = Promise.reject(new LiveJobFailedError('clone failed'));
-    const store = new ProjectManagerStore();
-    const result = await store.startProjectCreation(
-      { type: 'local' },
-      {
-        mode: 'create',
-        name: 'Project',
-        path: '/parent',
-        repositoryName: 'project',
-        repositoryOwner: 'parent/nested',
-        repositoryVisibility: 'private',
-        repositoryProvider: 'gitlab',
-        repositoryAccountId: 'gitlab-selected',
-      },
-      { id: 'gitlab-project' }
-    );
-    if (result.kind === 'creating') await result.completion;
-    expect(mocks.deleteGitlabRepository).toHaveBeenCalledWith({
-      accountId: 'gitlab-selected',
-      owner: 'parent/nested',
-      name: 'project',
-    });
-    expect(mocks.deleteGithubRepository).not.toHaveBeenCalled();
-  });
-
-  it('clones a newly created repository from the API-provided clone URL', async () => {
-    mocks.createGithubRepository.mockResolvedValueOnce({
-      success: true,
-      repoUrl: 'https://ghe.example.com/acme/project',
-      cloneUrl: 'https://ghe.example.com/acme/project.git',
-      nameWithOwner: 'acme/project',
-    });
-    const store = new ProjectManagerStore();
-
-    const result = await store.startProjectCreation(
-      { type: 'local' },
-      {
-        mode: 'create',
-        name: 'Project',
-        path: '/parent',
-        repositoryName: 'project',
-        repositoryOwner: 'acme',
-        repositoryVisibility: 'private',
-        githubAccountId: 'ghe.example.com:168',
-      },
-      { id: 'optimistic-project' }
-    );
-
-    if (result.kind === 'creating') await result.completion;
-
-    expect(mocks.projectWireCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        repositoryUrl: 'https://ghe.example.com/acme/project.git',
-        targetPath: '/parent/Project',
-      })
-    );
-  });
-
-  it('deletes a newly created GitHub repository with the selected account if clone fails', async () => {
-    let rejectResult: (error: unknown) => void = () => {};
-    mocks.projectWireResult = new Promise<LocalProject>((_, reject) => {
-      rejectResult = reject;
-    });
-    const store = new ProjectManagerStore();
-
-    const result = await store.startProjectCreation(
-      { type: 'local' },
-      {
-        mode: 'create',
-        name: 'Project',
-        path: '/parent',
-        repositoryName: 'project',
-        repositoryOwner: 'acme',
-        repositoryVisibility: 'private',
-        githubAccountId: 'github.com:42',
-      },
-      { id: 'optimistic-project' }
-    );
-
-    expect(result.kind).toBe('creating');
-    await vi.waitFor(() => expect(mocks.projectWireProgressCallbacks).toHaveLength(1));
-    mocks.projectWireProgressCallbacks[0]?.({ phase: 'cloning' });
-    rejectResult(new LiveJobFailedError({ type: 'clone-failed', message: 'Clone failed' }));
-    if (result.kind === 'creating') {
-      await expect(result.completion).resolves.toEqual({
-        success: false,
-        error: { type: 'clone-failed', message: 'Clone failed' },
-      });
-    }
-    expect(store.projects.get('optimistic-project')?.creation).toEqual({
-      kind: 'failed',
-      stage: 'cloning',
-      message: 'Clone failed',
-    });
-
-    expect(mocks.deleteGithubRepository).toHaveBeenCalledWith({
-      owner: 'acme',
-      name: 'project',
-      accountId: 'github.com:42',
-    });
-    expect(mocks.createProject).not.toHaveBeenCalled();
-  });
-
-  it('does not attempt GitHub repository rollback when repository creation fails', async () => {
-    mocks.createGithubRepository.mockResolvedValueOnce({
-      success: false,
-      error: 'Repository creation failed',
-    });
-    const store = new ProjectManagerStore();
-
-    const result = await store.startProjectCreation(
-      { type: 'local' },
-      {
-        mode: 'create',
-        name: 'Project',
-        path: '/parent',
-        repositoryName: 'project',
-        repositoryOwner: 'acme',
-        repositoryVisibility: 'private',
-        githubAccountId: 'github.com:42',
-      },
-      { id: 'optimistic-project' }
-    );
-
-    expect(result.kind).toBe('creating');
-    if (result.kind === 'creating') {
-      await expect(result.completion).resolves.toEqual({
-        success: false,
-        error: { type: 'repository-create-failed', message: 'Repository creation failed' },
-      });
-    }
-
-    expect(mocks.deleteGithubRepository).not.toHaveBeenCalled();
   });
 });

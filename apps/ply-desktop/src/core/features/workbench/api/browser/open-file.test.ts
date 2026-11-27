@@ -15,7 +15,6 @@ vi.mock('@core/primitives/navigation/browser/navigation-selectors', () => ({
   getNavigation: mocks.getNavigation,
 }));
 
-
 vi.mock('./task-composition-selectors', () => ({
   getTaskComposition: mocks.getTaskComposition,
 }));

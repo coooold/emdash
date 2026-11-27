@@ -33,9 +33,6 @@ vi.mock('electron', () => ({
 vi.mock('@core/features/workbench/node', () => ({
   desktopHostEvents: { emit: vi.fn() },
 }));
-vi.mock('@core/services/pull-requests/node/pull-requests-registration', () => ({
-  pullRequestsRegistration: { dispose: vi.fn() },
-}));
 vi.mock('@main/core/acp/agent-status-bridge', () => ({
   acpAgentStatusBridge: { dispose: vi.fn() },
 }));

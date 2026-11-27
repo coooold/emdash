@@ -70,21 +70,19 @@ describe('commands palette provider', () => {
     expect(provider.keyword).toBe('@commands');
     expect(provider.minQueryLength).toBe(1);
 
-    for (const query of ['theme', 'tth', 'appearance', 'color scheme', 'dark mode', 'light mode']) {
+    for (const query of ['主题', '切主', 'appearance', 'color scheme', 'dark mode', 'light mode']) {
       const matches = requireSynchronous(provider.search({ query, context: {} }));
       const themeMatch = matches.find(({ id }) => id === toggleThemeCommand.id);
       expect(themeMatch, query).toBeDefined();
       expect(themeMatch?.relevance.band, query).not.toBe('secondary');
     }
 
-    const descriptionMatches = requireSynchronous(
-      provider.search({ query: 'application', context: {} })
-    );
+    const descriptionMatches = requireSynchronous(provider.search({ query: '应用', context: {} }));
     expect(descriptionMatches.map(({ id }) => id)).toEqual([settingsCommand.id]);
     expect(descriptionMatches[0]?.relevance.band).toBe('secondary');
 
     const controller = new PaletteController(definePaletteProviderCatalog([provider]));
-    await controller.setInput('tth', {});
+    await controller.setInput('切主', {});
     expect(controller.getSnapshot().results[0]?.match.id).toBe(toggleThemeCommand.id);
 
     const fileSearch = vi.fn(() => []);
@@ -100,12 +98,12 @@ describe('commands palette provider', () => {
         },
       ])
     );
-    await unifiedController.setInput('@commands theme', {});
+    await unifiedController.setInput('@commands 主题', {});
     expect(unifiedController.getSnapshot().mode?.keyword).toBe('@commands');
     expect(unifiedController.getSnapshot().results[0]?.match.id).toBe(toggleThemeCommand.id);
     expect(fileSearch).not.toHaveBeenCalled();
 
-    await unifiedController.setInput('theme', {});
+    await unifiedController.setInput('主题', {});
     expect(unifiedController.getSnapshot().mode).toBeUndefined();
     expect(fileSearch).toHaveBeenCalledOnce();
     viewScopes.dispose();
@@ -223,7 +221,7 @@ describe('commands palette provider', () => {
     });
 
     expect(requireSynchronous(provider.search({ query: 'settings', context: {} }))).toEqual([]);
-    const disabledMatch = requireSynchronous(provider.search({ query: 'theme', context: {} }))[0];
+    const disabledMatch = requireSynchronous(provider.search({ query: '主题', context: {} }))[0];
     expect(disabledMatch?.disabledReason).toBe('Theme switching is unavailable');
     expect(disabledMatch?.execute()).toBe(false);
     expect(disabledExecute).not.toHaveBeenCalled();

@@ -473,7 +473,9 @@ function ComposerAgentSelector({
     ? locked
       ? lockedAgentLabel(selected.name, chinese)
       : selected.name
-    : chinese ? '选择代理' : 'Select agent';
+    : chinese
+      ? '选择代理'
+      : 'Select agent';
 
   // When locked or session closed, show a static disabled icon button.
   if (isDisabled) {
@@ -516,7 +518,10 @@ function ComposerAgentSelector({
       </Combobox.Trigger>
       {/* Portaled out of the composer root — must carry the theme-bridge scope. */}
       <Combobox.Content className={composerThemeScope} style={{ minWidth: '11.25rem' }}>
-        <Combobox.Input showTrigger={false} placeholder={chinese ? '搜索代理…' : 'Search agents…'} />
+        <Combobox.Input
+          showTrigger={false}
+          placeholder={chinese ? '搜索代理…' : 'Search agents…'}
+        />
         <Combobox.List>
           {groups.map((group) =>
             group.label ? (
@@ -887,8 +892,16 @@ export function ChatComposer({
   const hasBand = canShowQueuedPrompts || !!(permissionRequest ?? notice);
   const shouldHandleSubmitAttempt = !disabled && (isWorking ? !!onSubmitWhileWorking : canSubmit);
   const placeholders = chinese
-    ? { closed: '会话已关闭', followUp: '添加后续消息', idle: '发送消息，使用 @ 引用文件或 / 调用命令' }
-    : { closed: 'Session closed', followUp: 'Add a follow-up', idle: 'Send a message, tag @files or use /commands' };
+    ? {
+        closed: '会话已关闭',
+        followUp: '添加后续消息',
+        idle: '发送消息，使用 @ 引用文件或 / 调用命令',
+      }
+    : {
+        closed: 'Session closed',
+        followUp: 'Add a follow-up',
+        idle: 'Send a message, tag @files or use /commands',
+      };
   const resolvedPlaceholder = disabled
     ? placeholders.closed
     : isWorking
@@ -1087,7 +1100,9 @@ export function ChatComposer({
                             className={styles.effortRow}
                             disabled={disabled || !onEffortChange}
                           >
-                            <span className={styles.effortRowLabel}>{chinese ? '推理强度' : 'Effort'}</span>
+                            <span className={styles.effortRowLabel}>
+                              {chinese ? '推理强度' : 'Effort'}
+                            </span>
                             <span className={styles.effortRowValue}>
                               {selectedEffortItem?.name ?? (chinese ? '默认' : 'Default')}
                               <ChevronRight
@@ -1179,7 +1194,11 @@ export function ChatComposer({
                             <Tooltip.Root>
                               <Tooltip.Trigger
                                 render={<Button variant="ghost" size="xs" icon />}
-                                aria-label={chinese ? `${server.name} 启动失败` : `${server.name} startup error`}
+                                aria-label={
+                                  chinese
+                                    ? `${server.name} 启动失败`
+                                    : `${server.name} startup error`
+                                }
                               >
                                 <Info className={styles.mcpInfoIcon} aria-hidden="true" />
                               </Tooltip.Trigger>
@@ -1244,7 +1263,15 @@ export function ChatComposer({
                   className={styles.sendButtonRound}
                   onClick={() => handleSubmit(editorRef.current?.getText() ?? '')}
                   disabled={disabled || (!isWorking && !canSubmit)}
-                  aria-label={isWorking ? (chinese ? '将消息加入队列' : 'Queue message') : (chinese ? '发送消息' : 'Send message')}
+                  aria-label={
+                    isWorking
+                      ? chinese
+                        ? '将消息加入队列'
+                        : 'Queue message'
+                      : chinese
+                        ? '发送消息'
+                        : 'Send message'
+                  }
                 >
                   <ArrowUp />
                 </Button>

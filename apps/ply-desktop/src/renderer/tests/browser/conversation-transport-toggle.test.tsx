@@ -34,7 +34,7 @@ it('switches interfaces directly without a highlight and names the current inter
     expect(toggle.element().querySelectorAll('svg')).toHaveLength(1);
     expect(toggle.element().querySelector('.lucide-message-square')).not.toBeNull();
     await act(async () => toggle.hover());
-    await expect.element(page.getByText('Chat UI', { exact: true })).toBeVisible();
+    await expect.element(page.getByText('聊天界面', { exact: true })).toBeVisible();
     expect(getComputedStyle(toggle.element()).backgroundColor).toBe('rgba(0, 0, 0, 0)');
     await act(async () => toggle.click());
     expect(change).toHaveBeenLastCalledWith('pty');

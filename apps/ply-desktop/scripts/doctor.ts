@@ -7,10 +7,9 @@
  * - node / pnpm versions against the package.json pins.
  * - The system-Node better-sqlite3 side copy (tooling/node-deps) loads and can
  *   open a database.
- * - The app better-sqlite3 copy is built for the installed Electron's ABI.
- *   Loading an Electron-ABI binary from system Node is impossible, so this is
- *   an indirect probe: dlopen it and match the NODE_MODULE_VERSION in the
- *   failure against the expected Electron ABI (from node-abi).
+ * - The app better-sqlite3 copy supports the installed Electron runtime.
+ *   ABI-specific binaries are checked by their dlopen mismatch; N-API binaries
+ *   that also load in Node are verified directly with the installed Electron.
  * - node-pty loads (its N-API prebuild serves Node and Electron) and its macOS
  *   spawn-helper is executable.
  * - Playwright browsers are installed (chromium executablePath exists).
@@ -22,7 +21,7 @@ import { spawnSync } from 'node:child_process';
 import { accessSync, constants, existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import {
   checkEscapeHatches,
   checkPinnedVersion,
@@ -98,7 +97,34 @@ function checkAppSqliteElectronAbi(): CheckResult {
     // lazily, so the addon is only dlopen'd when a Database is constructed.
     const Database = appRequire('better-sqlite3') as new (path: string) => { close: () => void };
     new Database(':memory:').close();
-    return classifyElectronAbiProbe({ loaded: true, expectedElectronAbi });
+    // Do not require('electron'): recent versions download missing binaries on
+    // import, which would violate doctor's report-only contract.
+    const electronRoot = path.dirname(appRequire.resolve('electron/package.json'));
+    const relativeBinary = readFileSync(path.join(electronRoot, 'path.txt'), 'utf8').trim();
+    const executable = path.join(
+      process.env.ELECTRON_OVERRIDE_DIST_PATH ?? path.join(electronRoot, 'dist'),
+      relativeBinary
+    );
+    const sqliteUrl = pathToFileURL(appRequire.resolve('better-sqlite3')).href;
+    const probe = spawnSync(
+      executable,
+      [
+        '--input-type=module',
+        '-e',
+        `import Database from ${JSON.stringify(sqliteUrl)}; const db = new Database(':memory:'); db.prepare('SELECT 1').get(); db.close();`,
+      ],
+      {
+        env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' },
+        encoding: 'utf8',
+        timeout: 10_000,
+      }
+    );
+    return classifyElectronAbiProbe({
+      loaded: true,
+      expectedElectronAbi,
+      electronLoaded: probe.status === 0,
+      electronErrorMessage: probe.error?.message ?? (probe.stderr.trim() || undefined),
+    });
   } catch (error) {
     return classifyElectronAbiProbe({
       loaded: false,

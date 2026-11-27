@@ -2,9 +2,7 @@ import type { TaskService } from '@core/features/tasks/api/node/task-service';
 import type { CreateTaskParams, DeleteTaskOptions } from '@core/primitives/tasks/api';
 import { generateTaskName } from './name-generation/generateTaskName';
 
-export function createTaskOperations(dependencies: {
-  service: TaskService;
-}) {
+export function createTaskOperations(dependencies: { service: TaskService }) {
   const { service: taskService } = dependencies;
   return {
     async createTask(params: CreateTaskParams) {

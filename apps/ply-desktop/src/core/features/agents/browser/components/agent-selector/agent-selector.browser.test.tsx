@@ -90,13 +90,13 @@ describe('AgentSelector', () => {
     await act(async () => trigger!.click());
 
     const codexOption = page.getByRole('option', { name: 'Codex' }).element();
-    expect(codexOption.querySelector('[aria-label="Supports Chat UI"]')).not.toBeNull();
-    expect(codexOption.querySelector('[aria-label="Supports TUI"]')).not.toBeNull();
+    expect(codexOption.querySelector('[aria-label="支持聊天界面"]')).not.toBeNull();
+    expect(codexOption.querySelector('[aria-label="支持终端界面"]')).not.toBeNull();
     expect(codexOption.textContent).not.toContain('Chat UI');
 
     const grokOption = page.getByRole('option', { name: 'Grok' }).element();
-    expect(grokOption.querySelector('[aria-label="Supports Chat UI"]')).toBeNull();
-    expect(grokOption.querySelector('[aria-label="Supports TUI"]')).not.toBeNull();
+    expect(grokOption.querySelector('[aria-label="支持聊天界面"]')).toBeNull();
+    expect(grokOption.querySelector('[aria-label="支持终端界面"]')).not.toBeNull();
   });
 
   it('shows agent details when an uninstalled agent is hovered', async () => {

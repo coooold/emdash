@@ -44,9 +44,7 @@ describe('BranchSelector degraded actions', () => {
       trigger?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
 
-    const refresh = document.querySelector<HTMLButtonElement>(
-      'button[aria-label="刷新分支"]'
-    );
+    const refresh = document.querySelector<HTMLButtonElement>('button[aria-label="刷新分支"]');
     expect(refresh?.disabled).toBe(false);
     expect(refresh?.getAttribute('aria-disabled')).toBe('true');
     expect(refresh?.getAttribute('aria-description')).toContain('Machine is offline');

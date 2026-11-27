@@ -11,6 +11,7 @@ import type {
   ProviderPreferencePatch,
   ProviderSettingsSnapshot,
 } from '@core/features/conversations/api/provider-settings';
+import type * as WorkspaceConfigModule from '@core/features/tasks/api/browser/create-task-modal/use-workspace-config';
 import { MISSING_BRANCH_REASON } from '@core/features/tasks/api/browser/create-task-modal/use-workspace-config';
 import {
   InitialConversationField,
@@ -65,9 +66,7 @@ vi.mock('@core/features/tasks/api/browser/create-task-modal/use-task-name', () =
 vi.mock(
   '@core/features/tasks/api/browser/create-task-modal/use-workspace-config',
   async (importOriginal) => ({
-    ...(await importOriginal<
-      typeof import('@core/features/tasks/api/browser/create-task-modal/use-workspace-config')
-    >()),
+    ...(await importOriginal<typeof WorkspaceConfigModule>()),
     useWorkspaceConfig: () => ({
       isValid: !mocks.missingBranch && !mocks.branchConflict,
       missingBranch: mocks.missingBranch,
@@ -182,25 +181,12 @@ vi.mock('@core/features/integrations/contributions/browser/integration-icon', ()
   IntegrationIcon: () => null,
 }));
 
-vi.mock('@core/features/integrations/api/browser/use-connected-issue-providers', () => ({
-  useConnectedIssueProviders: () => ({
-    connectedProviders: [],
-    hasAnyIssueIntegration: false,
-    isProviderUsable: () => false,
-    isCheckingConnections: false,
-  }),
-}));
-
 vi.mock('@core/features/library/api/browser/prompts/use-prompt-library', () => ({
   usePromptLibrary: () => ({ value: [] }),
 }));
 
 vi.mock('@core/features/agents/contributions/browser/agent-selector', () => ({
   AgentSelector: () => null,
-}));
-
-vi.mock('@core/features/tasks/browser/components/issue-selector/issue-selector', () => ({
-  ProviderLogo: () => null,
 }));
 
 vi.mock('@core/features/tasks/browser/create-task-modal/use-prompt-file-drop', () => ({

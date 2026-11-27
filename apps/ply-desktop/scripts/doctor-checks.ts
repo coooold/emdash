@@ -50,23 +50,31 @@ export type ElectronAbiProbe = {
   loaded: boolean;
   errorMessage?: string;
   expectedElectronAbi: string;
+  /** Direct Electron probe for ABI-stable addons that also load under system Node. */
+  electronLoaded?: boolean;
+  electronErrorMessage?: string;
 };
 
 /**
  * Classifies the app's better-sqlite3 copy. An Electron-ABI binary cannot be
  * loaded from system Node, so the probe is indirect: a dlopen failure whose
  * NODE_MODULE_VERSION matches the installed Electron's ABI proves the copy is
- * correctly Electron-built; a clean load proves it was (wrongly) built for
- * system Node; anything else means missing or stale.
+ * correctly Electron-built. ABI-stable N-API addons can load under both runtimes,
+ * so a successful system-Node load requires a direct Electron probe instead.
  */
 export function classifyElectronAbiProbe(probe: ElectronAbiProbe): CheckResult {
   const name = 'better-sqlite3 (app copy, Electron ABI)';
   if (probe.loaded) {
+    if (probe.electronLoaded) {
+      return { name, status: 'ok', detail: 'loads and opens a database under Electron' };
+    }
     return {
       name,
       status: 'fail',
-      detail: 'loads under system Node, so it is not built for the Electron ABI',
-      fix: 'pnpm run rebuild  (from apps/ply-desktop)',
+      detail: probe.electronErrorMessage
+        ? `not loadable under Electron: ${probe.electronErrorMessage}`
+        : 'loads under system Node, but Electron compatibility has not been verified',
+      fix: 'pnpm install  (or pnpm run rebuild from apps/ply-desktop)',
     };
   }
   const binaryAbi = probe.errorMessage?.match(/NODE_MODULE_VERSION (\d+)/)?.[1];

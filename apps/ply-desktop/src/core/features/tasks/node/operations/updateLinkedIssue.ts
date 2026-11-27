@@ -26,7 +26,6 @@ export async function updateLinkedIssue(
     .where(and(eq(tasks.id, taskId), isNull(tasks.deletedAt)))
     .returning();
 
-
   if (updatedRow) appDbPokes.tasks.poke({ projectId: existingRow.projectId, taskId });
   return updatedRow ? mapTaskRowToTask(updatedRow) : undefined;
 }

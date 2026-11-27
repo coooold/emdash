@@ -14,8 +14,8 @@ describe('toProviderAccountSummary', () => {
   ] as const)('prefers real display metadata over a generated name: %j', (meta, name) => {
     expect(
       toProviderAccountSummary({
-        providerId: 'forgejo',
-        accountId: 'codeberg.org:985170',
+        providerId: 'gitlab',
+        accountId: 'gitlab.example.com:985170',
         isDefault: true,
         meta: { version: '1', fallbackDisplayName: 'Account 2', ...meta },
       }).displayName
@@ -26,21 +26,21 @@ describe('toProviderAccountSummary', () => {
     'keeps internal identifiers out of labels when display metadata is missing',
     (meta) => {
       const summary = toProviderAccountSummary({
-        providerId: 'forgejo',
-        accountId: 'codeberg.org:985170',
+        providerId: 'gitlab',
+        accountId: 'gitlab.example.com:985170',
         isDefault: true,
         meta,
       });
       expect(summary.displayName).toBe('Unnamed account');
-      expect(summary.accountId).toBe('codeberg.org:985170');
+      expect(summary.accountId).toBe('gitlab.example.com:985170');
     }
   );
 
   it('uses a login when labels are blank', () => {
     expect(
       toProviderAccountSummary({
-        providerId: 'forgejo',
-        accountId: 'codeberg.org:985170',
+        providerId: 'gitlab',
+        accountId: 'gitlab.example.com:985170',
         isDefault: true,
         meta: { version: '1', label: ' ', displayName: '', login: 'jona' },
       }).displayName

@@ -34,7 +34,9 @@ export const settingsViewDef = defineView({
   params: z.object({
     tab: z.preprocess(
       (value) =>
-        value === 'integrations' || value === 'usage' || value === 'connections' ? 'general' : value,
+        value === 'integrations' || value === 'usage' || value === 'connections'
+          ? 'general'
+          : value,
       settingsPageTabSchema.optional()
     ),
     detail: settingsDetailPathSchema.optional(),

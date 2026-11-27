@@ -1,5 +1,3 @@
-import { provider as github } from './impl/github';
-import { provider as gitlab } from './impl/gitlab';
 import type { PullRequestsPluginProvider } from './plugin';
 
 /**
@@ -16,7 +14,3 @@ export const pullRequestsPluginRegistry = {
   getAll: () => [...plugins.values()],
   ids: () => [...plugins.keys()],
 };
-
-for (const provider of [github, gitlab]) {
-  pullRequestsPluginRegistry.register(provider);
-}

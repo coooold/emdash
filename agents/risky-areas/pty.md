@@ -15,10 +15,12 @@
 - resize behavior
 - shell quoting and Windows command wrapping
 - tmux lifecycle
-- tmux capability negotiation: `PtySession` answers xterm.js DA1/DA2 queries on
+- tmux capability negotiation: `PtySession` answers xterm.js DA1/DA2 and synchronized-output
+  mode (DECRQM 2026) queries on
   the host and consumes them before logging output. Keep replies aligned with
   the renderer's actual capabilities; never filter user input or invent support
-  for protocols such as XTVERSION. Direct PTYs retain renderer negotiation.
+  for protocols such as XTVERSION. Mirror DECSET/DECRST and reset changes before
+  answering mode queries. Direct PTYs retain renderer negotiation.
 - historical replay: answered tmux DA queries are removed before retention.
   Do not mute all snapshot replies: initial snapshots can contain outstanding
   queries from a process started before subscription. Other queries keep their

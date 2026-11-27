@@ -4,6 +4,24 @@ import { PtyRegistry } from './pty-registry';
 import { TerminalCapabilityResponder } from './terminal-capability-responder';
 
 describe('TerminalCapabilityResponder', () => {
+  it('answers synchronized-output queries at every chunk boundary and mirrors mode changes', () => {
+    const input = 'before\x1b[?2026$p\x1b[?2026h\x1b[?2026$p\x1b[?2026l\x1b[?2026$pafter';
+    for (let split = 0; split <= input.length; split++) {
+      const replies: string[] = [];
+      const responder = new TerminalCapabilityResponder((reply) => replies.push(reply));
+      expect(responder.push(input.slice(0, split)) + responder.push(input.slice(split))).toBe(
+        'before\x1b[?2026h\x1b[?2026lafter'
+      );
+      expect(replies).toEqual(['\x1b[?2026;2$y', '\x1b[?2026;1$y', '\x1b[?2026;2$y']);
+    }
+  });
+
+  it.each(['\x1bc', '\x1b[!p'])('mirrors synchronized-output reset by %j', (reset) => {
+    const replies: string[] = [];
+    const responder = new TerminalCapabilityResponder((reply) => replies.push(reply));
+    expect(responder.push(`\x1b[?25;2026h${reset}\x9b?2026$p`)).toBe(`\x1b[?25;2026h${reset}`);
+    expect(replies).toEqual(['\x1b[?2026;2$y']);
+  });
   it.each(['\x1b[c', '\x1b[0c', '\x1b[000c', '\x9bc', '\x1b[;2c'])('answers DA1 %j', (query) => {
     const replies: string[] = [];
     const responder = new TerminalCapabilityResponder((reply) => replies.push(reply));
@@ -25,6 +43,8 @@ describe('TerminalCapabilityResponder', () => {
 
   it.each([
     '\x1b[6n',
+    '\x1b[?2004$p',
+    '\x1b[?9999$p',
     '\x1b[>q',
     '\x1b[1c',
     '\x1b[>1c',

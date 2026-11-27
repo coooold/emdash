@@ -87,16 +87,6 @@ export const catalogData: Record<string, CatalogEntryDef> = {
     docsUrl: 'https://help.figma.com/hc/en-us/articles/32132100833559',
     credentialKeys: [],
   },
-  linear: {
-    config: {
-      type: 'http',
-      url: 'https://mcp.linear.app/mcp',
-    },
-    name: 'Linear',
-    description: 'Manage issues, projects & team workflows in Linear',
-    docsUrl: 'https://linear.app/docs/mcp',
-    credentialKeys: [],
-  },
   slack: {
     config: {
       type: 'http',
@@ -136,28 +126,6 @@ export const catalogData: Record<string, CatalogEntryDef> = {
     name: 'Chrome DevTools',
     description: 'Browser automation, debugging and performance analysis with Chrome DevTools',
     docsUrl: 'https://github.com/ChromeDevTools/chrome-devtools-mcp',
-    credentialKeys: [],
-  },
-  atlassian: {
-    config: {
-      type: 'http',
-      url: 'https://mcp.atlassian.com/v1/mcp/authv2',
-    },
-    name: 'Atlassian',
-    description: 'Access Jira & Confluence from Claude',
-    docsUrl:
-      'https://support.atlassian.com/atlassian-rovo-mcp-server/docs/getting-started-with-the-atlassian-remote-mcp-server/',
-    credentialKeys: [],
-  },
-  notion: {
-    config: {
-      type: 'http',
-      url: 'https://mcp.notion.com/mcp',
-    },
-    name: 'Notion',
-    description:
-      'Connect your Notion workspace to search, update, and power workflows across tools',
-    docsUrl: 'https://developers.notion.com/docs/mcp',
     credentialKeys: [],
   },
   notra: {
@@ -328,16 +296,6 @@ export const catalogData: Record<string, CatalogEntryDef> = {
     name: 'Amplitude',
     description: 'Search, access, and get insights on your Amplitude data',
     docsUrl: 'https://amplitude.com/docs/amplitude-ai/amplitude-mcp',
-    credentialKeys: [],
-  },
-  asana: {
-    config: {
-      type: 'http',
-      url: 'https://mcp.asana.com/v2/mcp',
-    },
-    name: 'Asana',
-    description: 'Connect to Asana to coordinate tasks, projects, and goals',
-    docsUrl: 'https://developers.asana.com/docs/mcp-server',
     credentialKeys: [],
   },
   clickup: {
@@ -527,16 +485,6 @@ export const catalogData: Record<string, CatalogEntryDef> = {
     description: 'Query and manage MongoDB databases and Atlas clusters',
     docsUrl: 'https://www.mongodb.com/docs/mcp-server/',
     credentialKeys: [{ key: 'MDB_MCP_CONNECTION_STRING', required: true }],
-  },
-  monday: {
-    config: {
-      type: 'http',
-      url: 'https://mcp.monday.com/mcp',
-    },
-    name: 'monday.com',
-    description: 'Manage boards, items, and workflows in your monday.com workspace',
-    docsUrl: 'https://developer.monday.com/api-reference/docs/monday-mcp-overview',
-    credentialKeys: [],
   },
   shopify: {
     config: {

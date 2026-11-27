@@ -10,6 +10,47 @@ import { createXtermLogSink } from '@core/features/terminals/api/browser/pty/xte
 const exec = promisify(execFile);
 const hasTmux = process.platform !== 'win32' && spawnSync('tmux', ['-V']).status === 0;
 
+it('matches xterm synchronized-output mode replies through set, reset and terminal resets', async () => {
+  const hostReplies: string[] = [];
+  const rendererReplies: string[] = [];
+  let emitData: (data: string) => void = () => {};
+  const terminal = new Terminal({ cols: 80, rows: 24 });
+  terminal.onData((data) => rendererReplies.push(data));
+  const session = new PtySession(
+    'mode-parity',
+    {
+      invocation: { kind: 'argv', executable: '/bin/sh', argv: [] },
+      cwd: '/tmp',
+      env: {},
+      cols: 80,
+      rows: 24,
+    },
+    {
+      write: (data) => hostReplies.push(data),
+      resize: () => {},
+      kill: () => {},
+      onData: (handler) => {
+        emitData = handler;
+      },
+      onExit: () => {},
+    },
+    { tmux: true }
+  );
+  const output =
+    '\x1b[?2026$p\x1b[?25;2026h\x1b[?2026$p\x1b[?2026l\x1b[?2026$p' +
+    '\x1b[?2026h\x1b[!p\x1b[?2026$p\x1b[?2026h\x1bc\x1b[?2026$p';
+  try {
+    emitData(output);
+    await new Promise<void>((resolve) => terminal.write(output, resolve));
+    expect(hostReplies).toEqual(rendererReplies);
+    expect(hostReplies).toHaveLength(5);
+    expect(session.output.snapshot().data.text).not.toContain('\x1b[?2026$p');
+  } finally {
+    session.dispose();
+    terminal.dispose();
+  }
+});
+
 describe.skipIf(!hasTmux)('tmux with real xterm parsing', () => {
   it('preserves negotiation and pane input when renderer output arrives after the probe timeout', async () => {
     const baseline = await attach(false);
@@ -21,12 +62,16 @@ describe.skipIf(!hasTmux)('tmux with real xterm parsing', () => {
       const current = delayed;
       // tmux 3.5a's startup query timeout is five seconds. The host must reply
       // before that even when the renderer has not received a single byte.
-      await expect.poll(() => current.hostReplies).toEqual(['\x1b[?1;2c', '\x1b[>0;276;0c']);
+      await expect
+        .poll(() => current.hostReplies)
+        .toEqual(['\x1b[?1;2c', '\x1b[>0;276;0c', '\x1b[?2026;2$y']);
       expect(current.rendererReplies).toEqual([]);
       await new Promise((resolve) => setTimeout(resolve, 5_500));
       current.release();
       await expect.poll(() => current.screen()).toContain('PROBE>');
-      expect(await current.features()).toBe(baselineFeatures);
+      // Renderer replies may arrive after its first painted prompt. Wait for tmux
+      // to consume all replies before comparing the complete feature set.
+      await expect.poll(() => current.features()).toBe(baselineFeatures);
       expect(await current.capture()).not.toMatch(/1;2c|0;276;0c/);
       expect(current.rendererReplies).not.toContain('\x1b[?1;2c');
       expect(current.rendererReplies).not.toContain('\x1b[>0;276;0c');

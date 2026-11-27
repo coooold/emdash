@@ -53,6 +53,11 @@ can use the Nx cache.
   `migrations`, `scripts`, and `browser`). Setting `EMDASH_TEST_SKIP_BROWSER=1`
   omits the Playwright-backed `browser` project locally; CI omits it automatically.
 - Tests use per-file `vi.mock()` setup.
+- Core, workspace-server, and desktop suites cap file workers at four to avoid
+  oversubscribing real Git/PTY subprocesses. Desktop browser files run sequentially
+  so layout, Monaco workers, and hover timing do not compete across files.
+- The doctor verifies ABI-stable SQLite addons directly under the installed Electron;
+  successfully loading an addon under system Node is not an Electron ABI mismatch.
 - Integration-style tests create temporary repos and worktrees in `os.tmpdir()`.
 - `tooling/vitest/setup-isolated-home.mjs` (repo root) gives every test file in the app's `node`,
   `main-db`, `fixtures`, and `migrations` projects, `@ply/core`, and `@ply/workspace-server`

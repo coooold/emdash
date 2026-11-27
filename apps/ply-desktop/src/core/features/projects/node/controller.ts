@@ -1,8 +1,8 @@
 import type { HostRef } from '@ply/core/primitives/host/api';
-import type { GitCredentialsService } from '@core/features/github/api/node/services/git-credentials-service';
 import type { ProjectAttachmentManager } from '@core/features/projects/api/node/project-attachment-manager';
 import type { ProjectSettingsService } from '@core/features/projects/api/node/settings/project-settings-service';
 import type { ProjectSettingsDomainPatch } from '@core/features/projects/api/project-settings-page';
+import type { GitCredentialsService } from '@core/features/source-control/api/node/git-credentials-service';
 import type { WorkspacePlacementResolver } from '@core/features/workspaces/api/node/placement/workspace-placement-resolver';
 import type {
   MigrateProjectConfigRequest,

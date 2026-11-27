@@ -90,7 +90,9 @@ export const Horizontal: Story = {
       <Field.Root orientation="horizontal">
         <Field.Content>
           <Field.Label>Show desktop notifications</Field.Label>
-          <Field.Description>Show a notification when a background task completes.</Field.Description>
+          <Field.Description>
+            Show a notification when a background task completes.
+          </Field.Description>
         </Field.Content>
         <Switch defaultChecked aria-label="Show desktop notifications" />
       </Field.Root>

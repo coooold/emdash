@@ -112,7 +112,8 @@ export function QueuedPromptsBand({
     <div className={cx(styles.band, connectToBandBelow && styles.bandConnectedBelow, className)}>
       <div className={styles.header}>
         <span>
-          <span className={styles.headerStrong}>{chinese ? '排队消息' : 'Queued prompts'}</span> ({prompts.length})
+          <span className={styles.headerStrong}>{chinese ? '排队消息' : 'Queued prompts'}</span> (
+          {prompts.length})
         </span>
       </div>
 
@@ -138,7 +139,11 @@ export function QueuedPromptsBand({
                     type="button"
                     className={styles.dragHandle}
                     draggable
-                    aria-label={chinese ? `调整第 ${index + 1} 条消息的顺序` : `Reorder queued prompt ${index + 1}`}
+                    aria-label={
+                      chinese
+                        ? `调整第 ${index + 1} 条消息的顺序`
+                        : `Reorder queued prompt ${index + 1}`
+                    }
                     title={chinese ? '拖动调整顺序' : 'Drag to reorder'}
                     onClick={(event) => event.stopPropagation()}
                     onDragStart={(event) => handleDragStart(event, prompt.id)}
@@ -156,7 +161,9 @@ export function QueuedPromptsBand({
                     className={styles.editInput}
                     value={draft}
                     rows={2}
-                    aria-label={chinese ? `编辑第 ${index + 1} 条消息` : `Edit queued prompt ${index + 1}`}
+                    aria-label={
+                      chinese ? `编辑第 ${index + 1} 条消息` : `Edit queued prompt ${index + 1}`
+                    }
                     onChange={(event) => setDraft(event.currentTarget.value)}
                     onKeyDown={(event) => {
                       if (event.key === 'Escape') {
@@ -198,7 +205,9 @@ export function QueuedPromptsBand({
                   type="button"
                   className={cx(styles.promptText, !prompt.text.trim() && styles.emptyText)}
                   onClick={() => beginEdit(prompt)}
-                  aria-label={chinese ? `编辑第 ${index + 1} 条消息` : `Edit queued prompt ${index + 1}`}
+                  aria-label={
+                    chinese ? `编辑第 ${index + 1} 条消息` : `Edit queued prompt ${index + 1}`
+                  }
                   title={chinese ? '编辑排队消息' : 'Edit queued prompt'}
                 >
                   {prompt.text.trim() || 'Image-only prompt'}
@@ -213,7 +222,9 @@ export function QueuedPromptsBand({
                     size="xs"
                     icon
                     aria-label={chinese ? '立即发送排队消息' : 'Send queued prompt now'}
-                    title={chinese ? '立即发送并停止当前回复' : 'Send now - cancels the active turn'}
+                    title={
+                      chinese ? '立即发送并停止当前回复' : 'Send now - cancels the active turn'
+                    }
                     onClick={(event) => {
                       event.stopPropagation();
                       onSendNow(prompt.id);

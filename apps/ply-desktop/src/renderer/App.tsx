@@ -1,7 +1,6 @@
 import { Tooltip } from '@ply/ui/react/primitives';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { IntegrationsProvider } from '@core/features/integrations/contributions/browser/integrations-provider';
 import { useLegacyPortStatus } from '@core/features/legacy-port/api/browser/useLegacyPort';
 import { TerminalPoolProvider } from '@core/features/terminals/browser/pty/pty-pool-provider';
 import { confirmOpenExternalLink } from '@core/features/workbench/api/browser/open-external-link';
@@ -96,17 +95,15 @@ function AppContent() {
     <Tooltip.Provider delay={300}>
       <WorkspaceLayoutContextProvider>
         <TerminalPoolProvider>
-          <IntegrationsProvider>
-            <AppMenuEvents onOpenSettings={handleOpenSettingsFromMenu} />
-            <ExternalLinkProvider openExternalLink={confirmOpenExternalLink}>
-              <ThemeProvider>
-                <ModalRenderer />
-                <AppShutdownLifecycle />
-                <HostRecoveryWakeups />
-                {renderContent()}
-              </ThemeProvider>
-            </ExternalLinkProvider>
-          </IntegrationsProvider>
+          <AppMenuEvents onOpenSettings={handleOpenSettingsFromMenu} />
+          <ExternalLinkProvider openExternalLink={confirmOpenExternalLink}>
+            <ThemeProvider>
+              <ModalRenderer />
+              <AppShutdownLifecycle />
+              <HostRecoveryWakeups />
+              {renderContent()}
+            </ThemeProvider>
+          </ExternalLinkProvider>
         </TerminalPoolProvider>
       </WorkspaceLayoutContextProvider>
     </Tooltip.Provider>

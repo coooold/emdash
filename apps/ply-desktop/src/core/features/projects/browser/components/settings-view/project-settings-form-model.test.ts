@@ -281,7 +281,7 @@ describe('project settings form model', () => {
       remote: { name: 'gone', url: '' },
     });
     expect(projectSettingsDomainsToForm(domains(), [origin]).gitIdentity.agentGitCredentials).toBe(
-      'effective-account'
+      'system'
     );
   });
 

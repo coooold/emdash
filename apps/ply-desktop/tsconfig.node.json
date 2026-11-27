@@ -13,10 +13,7 @@
       "@main/*": ["./src/main/*"],
       "@root/*": ["./*"],
       "@/assets/*": ["./src/assets/*"],
-      "@tooling/*": ["./tooling/*"],
-      // The real cross-fetch d.ts pulls `/// <reference lib="dom" />` into the
-      // program; see the shim for the full chain.
-      "cross-fetch": ["./tooling/types/cross-fetch.node.d.ts"]
+      "@tooling/*": ["./tooling/*"]
     }
   },
   "include": [

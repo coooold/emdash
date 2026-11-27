@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { settingsPageTabSchema, settingsViewDef } from '@core/features/settings/contributions/views';
+import {
+  settingsPageTabSchema,
+  settingsViewDef,
+} from '@core/features/settings/contributions/views';
 import { settingsPageContributions } from './settings-page-contributions';
 
 describe('settings page contribution manifest', () => {

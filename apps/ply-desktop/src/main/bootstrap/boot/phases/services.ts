@@ -12,7 +12,6 @@ import { createConversationDeletionSweepKind } from '@core/features/conversation
 import { ConversationBackfillService } from '@core/features/conversations/node/sync/conversation-backfill';
 import { ConversationSyncService } from '@core/features/conversations/node/sync/conversation-sync-service';
 import { TuiConversationProvider } from '@core/features/conversations/node/tui-conversation-provider';
-import type { GitCredentialsService } from '@core/features/github/api/node/services/git-credentials-service';
 import {
   createPromptLibraryService,
   type PromptLibraryKV,
@@ -32,6 +31,10 @@ import { createProjectAttachmentAdapter } from '@core/features/projects/node/pro
 import { createProjectAttachmentManager } from '@core/features/projects/node/project-attachment-manager';
 import { migrateAppWorktreeRootToLocalHostDefault } from '@core/features/projects/node/settings/migrations/app-worktree-root';
 import { createSearchService } from '@core/features/search/node/search-service';
+import {
+  createGitCredentialsService,
+  type GitCredentialsService,
+} from '@core/features/source-control/api/node/git-credentials-service';
 import { TaskService } from '@core/features/tasks/api/node/task-service';
 import type { TaskSessionCleanup } from '@core/features/tasks/api/node/task-session-cleanup';
 import { TaskSessionLaunchContextResolver } from '@core/features/tasks/api/node/task-session-launch-context';
@@ -342,14 +345,10 @@ export async function bootServices(
     logger: log,
     createSystemSink: createSystemNotificationSink,
   });
-  const gitCredentials: GitCredentialsService = {
-    resolveSessionSpec: async ({ projectId }) => {
-      const settings = await loadStoredGitSettings(db, projectId);
-      return { mode: settings.agentGitCredentials === 'none' ? 'none' : 'system' };
-    },
-    mintOperationCredentials: async () => undefined,
-    mintCloneCredentials: async () => undefined,
-  };
+  const gitCredentials = createGitCredentialsService({
+    getAgentGitCredentialsSetting: async (projectId) =>
+      (await loadStoredGitSettings(db, projectId)).agentGitCredentials,
+  });
 
   setCoreServiceInstances({
     appSettings: appSettingsService,

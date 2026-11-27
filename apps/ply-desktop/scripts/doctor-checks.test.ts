@@ -52,10 +52,32 @@ describe('classifyElectronAbiProbe', () => {
     expect(result.status).toBe('ok');
   });
 
-  it('flags a copy that loads under system Node as wrongly built', () => {
+  it('does not infer Electron compatibility from a system Node load alone', () => {
     const result = classifyElectronAbiProbe({ loaded: true, expectedElectronAbi });
     expect(result.status).toBe('fail');
-    expect(result.fix).toContain('pnpm run rebuild');
+    expect(result.detail).toContain('has not been verified');
+    expect(result.fix).toBeDefined();
+  });
+
+  it('accepts an N-API build verified under both Node and Electron', () => {
+    const result = classifyElectronAbiProbe({
+      loaded: true,
+      expectedElectronAbi,
+      electronLoaded: true,
+    });
+    expect(result.status).toBe('ok');
+    expect(result.detail).toContain('under Electron');
+  });
+
+  it('reports a failed Electron probe even when the addon loads under Node', () => {
+    const result = classifyElectronAbiProbe({
+      loaded: true,
+      expectedElectronAbi,
+      electronLoaded: false,
+      electronErrorMessage: 'The Electron binary is missing',
+    });
+    expect(result.status).toBe('fail');
+    expect(result.detail).toContain('The Electron binary is missing');
   });
 
   it('flags a copy citing a different ABI as stale', () => {

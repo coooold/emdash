@@ -63,19 +63,19 @@ describe('checkRemoteHostMatchesInstance', () => {
 
   it('allows a remote whose non-default port matches the instance port (#3395)', () => {
     expect(
-      checkRemoteHostMatchesInstance('192.0.2.10:3100', 'http://192.0.2.10:3100', 'Forgejo')
+      checkRemoteHostMatchesInstance('192.0.2.10:3100', 'http://192.0.2.10:3100', 'GitLab')
     ).toEqual({ success: true, data: undefined });
   });
 
   it('rejects a remote whose non-default port differs from the instance port', () => {
     expect(
-      checkRemoteHostMatchesInstance('192.0.2.10:3101', 'http://192.0.2.10:3100', 'Forgejo')
+      checkRemoteHostMatchesInstance('192.0.2.10:3101', 'http://192.0.2.10:3100', 'GitLab')
     ).toEqual({
       success: false,
       error: {
         type: 'unsupported_host',
         message:
-          'Git remote host "192.0.2.10:3101" does not match configured Forgejo instance "192.0.2.10:3100".',
+          'Git remote host "192.0.2.10:3101" does not match configured GitLab instance "192.0.2.10:3100".',
       },
     });
   });
@@ -91,13 +91,13 @@ describe('checkRemoteHostMatchesInstance', () => {
 
   it('allows a portless (scp/ssh) remote against an instance with an explicit port', () => {
     expect(
-      checkRemoteHostMatchesInstance('192.0.2.10', 'http://192.0.2.10:3100', 'Forgejo')
+      checkRemoteHostMatchesInstance('192.0.2.10', 'http://192.0.2.10:3100', 'GitLab')
     ).toEqual({ success: true, data: undefined });
   });
 
   it('matches IPv6 hosts with ports', () => {
     expect(
-      checkRemoteHostMatchesInstance('[2001:db8::1]:3100', 'http://[2001:db8::1]:3100', 'Forgejo')
+      checkRemoteHostMatchesInstance('[2001:db8::1]:3100', 'http://[2001:db8::1]:3100', 'GitLab')
     ).toEqual({ success: true, data: undefined });
   });
 });

@@ -93,7 +93,8 @@ export function PermissionBand({
 
       {/* Context label */}
       <span className={styles.bandLabel}>
-        <span className={styles.bandLabelStrong}>{chinese ? '允许' : 'Allow'}</span> <span>{request.title}</span>
+        <span className={styles.bandLabelStrong}>{chinese ? '允许' : 'Allow'}</span>{' '}
+        <span>{request.title}</span>
         {queueCount > 1 && (
           <span className={styles.bandCounter}>
             {chinese ? `（1/${queueCount}）` : `(1 of ${queueCount})`}

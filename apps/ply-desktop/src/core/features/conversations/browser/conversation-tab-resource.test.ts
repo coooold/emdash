@@ -9,7 +9,6 @@ vi.mock('@core/features/conversations/api/browser/stores/conversation-registry',
   conversationRegistry: { get: registryGet },
 }));
 
-
 vi.mock('@core/features/conversations/browser/stores/conversation-session-manager', () => ({
   getConversationSessionManager: () => ({ retryHydration }),
 }));

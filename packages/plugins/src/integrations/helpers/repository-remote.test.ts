@@ -1,35 +1,31 @@
 import { describe, expect, it } from 'vitest';
 import { resolveInstanceRemote, resolveRemoteRepository } from './repository-remote';
 
-const instanceUrl = 'https://forgejo.example.com';
+const instanceUrl = 'https://code.example.com';
 
 describe('resolveInstanceRemote', () => {
   it('parses a remote on the configured instance', () => {
     expect(
-      resolveInstanceRemote(
-        'https://forgejo.example.com/group/sub/repo.git',
-        instanceUrl,
-        'Forgejo'
-      )
+      resolveInstanceRemote('https://code.example.com/group/sub/repo.git', instanceUrl, 'GitLab')
     ).toEqual({
       success: true,
-      data: { host: 'forgejo.example.com', slug: 'group/sub/repo' },
+      data: { host: 'code.example.com', slug: 'group/sub/repo' },
     });
   });
 
   it('requires a repository URL', () => {
-    expect(resolveInstanceRemote(undefined, instanceUrl, 'Forgejo')).toEqual({
+    expect(resolveInstanceRemote(undefined, instanceUrl, 'GitLab')).toEqual({
       success: false,
       error: { type: 'invalid_input', message: 'Repository URL is required.' },
     });
-    expect(resolveInstanceRemote('   ', instanceUrl, 'Forgejo')).toEqual({
+    expect(resolveInstanceRemote('   ', instanceUrl, 'GitLab')).toEqual({
       success: false,
       error: { type: 'invalid_input', message: 'Repository URL is required.' },
     });
   });
 
   it('requires a parseable repository URL', () => {
-    expect(resolveInstanceRemote('not-a-remote', instanceUrl, 'Forgejo')).toEqual({
+    expect(resolveInstanceRemote('not-a-remote', instanceUrl, 'GitLab')).toEqual({
       success: false,
       error: { type: 'invalid_input', message: 'Unable to parse repository URL.' },
     });
@@ -37,23 +33,23 @@ describe('resolveInstanceRemote', () => {
 
   it('requires the remote host to match the configured instance', () => {
     expect(
-      resolveInstanceRemote('https://other.example.com/org/repo.git', instanceUrl, 'Forgejo')
+      resolveInstanceRemote('https://other.example.com/org/repo.git', instanceUrl, 'GitLab')
     ).toEqual({
       success: false,
       error: {
         type: 'unsupported_host',
         message:
-          'Git remote host "other.example.com" does not match configured Forgejo instance "forgejo.example.com".',
+          'Git remote host "other.example.com" does not match configured GitLab instance "code.example.com".',
       },
     });
   });
 
   it('rejects an invalid instance URL', () => {
     expect(
-      resolveInstanceRemote('https://forgejo.example.com/org/repo.git', 'not a url', 'Forgejo')
+      resolveInstanceRemote('https://code.example.com/org/repo.git', 'not a url', 'GitLab')
     ).toEqual({
       success: false,
-      error: { type: 'invalid_input', message: 'A valid Forgejo instance URL is required.' },
+      error: { type: 'invalid_input', message: 'A valid GitLab instance URL is required.' },
     });
   });
 
@@ -62,7 +58,7 @@ describe('resolveInstanceRemote', () => {
       resolveInstanceRemote(
         'http://192.0.2.10:3100/owner/repo.git',
         'http://192.0.2.10:3100',
-        'Forgejo'
+        'GitLab'
       )
     ).toEqual({
       success: true,
@@ -72,7 +68,7 @@ describe('resolveInstanceRemote', () => {
       resolveRemoteRepository(
         'http://192.0.2.10:3100/owner/repo.git',
         'http://192.0.2.10:3100',
-        'Forgejo'
+        'GitLab'
       )
     ).toEqual({
       success: true,
@@ -84,7 +80,7 @@ describe('resolveInstanceRemote', () => {
 describe('resolveRemoteRepository', () => {
   it('resolves an owner/repo repository from an HTTPS remote', () => {
     expect(
-      resolveRemoteRepository('https://forgejo.example.com/org/repo.git', instanceUrl, 'Forgejo')
+      resolveRemoteRepository('https://code.example.com/org/repo.git', instanceUrl, 'GitLab')
     ).toEqual({
       success: true,
       data: { owner: 'org', repo: 'repo', slug: 'org/repo' },
@@ -93,7 +89,7 @@ describe('resolveRemoteRepository', () => {
 
   it('resolves an owner/repo repository from an scp-like SSH remote', () => {
     expect(
-      resolveRemoteRepository('git@forgejo.example.com:org/repo.git', instanceUrl, 'Forgejo')
+      resolveRemoteRepository('git@code.example.com:org/repo.git', instanceUrl, 'GitLab')
     ).toEqual({
       success: true,
       data: { owner: 'org', repo: 'repo', slug: 'org/repo' },
@@ -102,11 +98,7 @@ describe('resolveRemoteRepository', () => {
 
   it('rejects nested repository slugs', () => {
     expect(
-      resolveRemoteRepository(
-        'https://forgejo.example.com/org/team/repo.git',
-        instanceUrl,
-        'Forgejo'
-      )
+      resolveRemoteRepository('https://code.example.com/org/team/repo.git', instanceUrl, 'GitLab')
     ).toEqual({
       success: false,
       error: { type: 'invalid_input', message: 'Unable to extract owner/repo from remote URL.' },

@@ -28,5 +28,4 @@ export function bootBackground(runtimes: DesktopRuntimes): void {
       log.info('Microphone access request resolved:', { granted });
     });
   }
-
 }

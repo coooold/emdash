@@ -9,7 +9,6 @@ import { ActiveProject } from './active-project';
 
 const state = vi.hoisted(() => ({
   view: undefined as ProjectViewStore | undefined,
-  provider: 'github',
 }));
 
 vi.mock('@core/features/projects/api/browser/stores/project-selectors', () => ({
@@ -20,16 +19,8 @@ vi.mock('@core/features/projects/api/browser/stores/project-selectors', () => ({
   getProjectViewStore: () => state.view,
 }));
 
-vi.mock('@core/features/source-control/api/browser/stores/source-control-selectors', () => ({
-  getGitRepositoryStore: () => ({ providerRepository: { provider: state.provider } }),
-}));
-
 vi.mock('@core/primitives/navigation/browser/navigation-hooks', () => ({
   useCurrentViewParams: () => ({ params: { projectId: 'project-1' } }),
-}));
-
-vi.mock('@core/features/projects/browser/components/pr-view/pr-view', () => ({
-  PullRequestView: () => <div>Pull requests panel</div>,
 }));
 
 vi.mock('@core/features/projects/browser/components/settings-view/settings-panel', () => ({
@@ -59,7 +50,6 @@ describe('ActiveProject section state', () => {
   let handle: MementoHandle<ProjectViewState>;
 
   beforeEach(() => {
-    state.provider = 'github';
     handle = createHandle('settings');
     state.view = new ProjectViewStore(handle);
     host = document.createElement('div');
@@ -72,17 +62,18 @@ describe('ActiveProject section state', () => {
     host.remove();
   });
 
-  it.each([
-    ['github', 'Pull Requests'],
-    ['gitlab', 'Merge Requests'],
-  ])('uses the %s request label', async (provider, label) => {
-    state.provider = provider;
+  it('does not expose hosted pull-request or merge-request tabs', async () => {
     await act(async () => root.render(<ActiveProject />));
     const tabs = [...host.querySelectorAll<HTMLButtonElement>('[role="tab"]')];
-    expect(tabs.map((tab) => tab.textContent)).toContain(label);
-    expect(tabs.map((tab) => tab.textContent)).not.toContain(
-      provider === 'gitlab' ? 'Pull Requests' : 'Merge Requests'
-    );
+    expect(tabs.map((tab) => tab.textContent)).toEqual(['任务', '工作区', '设置']);
+  });
+
+  it('falls back to tasks for a persisted pull-request section', async () => {
+    handle = createHandle('pull-request');
+    state.view = new ProjectViewStore(handle);
+    await act(async () => root.render(<ActiveProject />));
+    expect(host.querySelector('[role="tabpanel"]')?.textContent).toBe('Tasks panel');
+    expect(host.querySelector('[role="tab"][aria-selected="true"]')?.textContent).toBe('任务');
   });
 
   it('starts from persisted selection and switches sections without changing the URL', async () => {
@@ -91,14 +82,14 @@ describe('ActiveProject section state', () => {
 
     const settings = host.querySelector<HTMLButtonElement>('[role="tab"][aria-selected="true"]');
     const panel = host.querySelector<HTMLElement>('[role="tabpanel"]');
-    expect(settings?.textContent).toBe('Settings');
+    expect(settings?.textContent).toBe('设置');
     expect(panel?.textContent).toBe('Settings panel');
     expect(panel?.getAttribute('aria-labelledby')).toBe('project-section-panel-tab-settings');
     // Settings is viewport-sized and scrolls internally, like tasks and PRs.
     expect(panel?.classList.contains('h-[calc(100vh-16rem)]')).toBe(true);
 
     const tasks = [...host.querySelectorAll<HTMLButtonElement>('[role="tab"]')].find(
-      (tab) => tab.textContent === 'Tasks'
+      (tab) => tab.textContent === '任务'
     );
     await act(async () => tasks?.click());
 
@@ -109,7 +100,7 @@ describe('ActiveProject section state', () => {
     ).toBe(true);
 
     const workspaces = [...host.querySelectorAll<HTMLButtonElement>('[role="tab"]')].find(
-      (tab) => tab.textContent === 'Workspaces'
+      (tab) => tab.textContent === '工作区'
     );
     await act(async () => workspaces?.click());
     expect(

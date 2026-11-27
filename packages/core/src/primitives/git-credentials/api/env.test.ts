@@ -273,7 +273,7 @@ describe.skipIf(process.platform === 'win32')('gitCredentialHelperCommand with g
     const result = await runGitCredential('fill', helperEnvFor(port), credentialRequest);
     expect(result.status).not.toBe(0);
     expect(result.stderr).toContain(
-      `emdash: cannot reach the ply Git credential service at 127.0.0.1:${port};`
+      `ply: cannot reach the ply Git credential service at 127.0.0.1:${port};`
     );
   });
 
@@ -287,7 +287,7 @@ describe.skipIf(process.platform === 'win32')('gitCredentialHelperCommand with g
         const result = await runGitCredential('fill', helperEnvFor(port), credentialRequest);
         expect(result.status).not.toBe(0);
         expect(result.stderr).toContain(
-          'emdash: ply did not return a Git credential for this session;'
+          'ply: ply did not return a Git credential for this session;'
         );
       }
     );
@@ -299,7 +299,7 @@ describe.skipIf(process.platform === 'win32')('gitCredentialHelperCommand with g
     delete env.EMDASH_GIT_CREDENTIAL_NONCE;
     const result = await runGitCredential('fill', env, credentialRequest);
     expect(result.status).not.toBe(0);
-    expect(result.stderr).toContain('emdash: this session has no ply Git credential channel;');
+    expect(result.stderr).toContain('ply: this session has no ply Git credential channel;');
   });
 
   it('keeps erase best-effort and quiet when the service is unreachable', async () => {
@@ -409,7 +409,7 @@ describe.skipIf(!realCurl)('the win32 gitCredentialHelperCommand with git', () =
       });
       expect(result.status).not.toBe(0);
       expect(result.stderr).toContain(
-        `emdash: cannot reach the ply Git credential service at 127.0.0.1:${port};`
+        `ply: cannot reach the ply Git credential service at 127.0.0.1:${port};`
       );
     });
   });

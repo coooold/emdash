@@ -68,7 +68,7 @@ describe('ProjectLiveActionGuard', () => {
     );
   });
 
-  it('uses the configured Machine name for an SSH Project', async () => {
+  it('treats legacy SSH projects as unavailable without offering remote recovery', async () => {
     machines.current = [{ id: 'ssh-1', name: 'Orion' }];
     context.current = {
       project: { type: 'ssh', id: 'project-1', connectionId: 'ssh-1' },
@@ -92,7 +92,7 @@ describe('ProjectLiveActionGuard', () => {
     });
 
     expect(host.querySelector('[role="note"]')?.getAttribute('aria-label')).toBe(
-      'Live actions are unavailable while Orion is offline.'
+      'Live actions are unavailable while this Project is unavailable on this device.'
     );
   });
 });

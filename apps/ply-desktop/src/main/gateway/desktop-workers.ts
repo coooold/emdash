@@ -47,6 +47,7 @@ import { workspaceRegistryWorkerSpec } from '@ply/core/runtimes/workspace-regist
 import { buildDescriptorFromProvider } from '@ply/core/services/agent-plugins/api/plugins';
 import { NodeExecutionContext } from '@ply/core/services/exec/api';
 import { fsWatchWorkerSpec } from '@ply/core/services/fs-watch/node';
+import { gitCredentialChannelsContract } from '@ply/core/services/git-credential-channels/api';
 import {
   CORE_DEPENDENCIES,
   createHostDependenciesComponent,
@@ -56,6 +57,7 @@ import { createUserShellEnvController } from '@ply/core/services/shell-env/node'
 import { pluginRegistry } from '@ply/plugins/agents';
 import type { Unsubscribe } from '@ply/shared';
 import type { Scope } from '@ply/shared/concurrency';
+import { createController } from '@ply/wire/rpc';
 import { queuedClient, type ContractClient } from '@ply/wire/rpc';
 import {
   createSpawnLoggingSpawner,
@@ -67,7 +69,6 @@ import { childProcessSpawner } from '@ply/wire/worker/node';
 import { app } from 'electron';
 import { createAutomationCreationAdmissionController } from '@core/features/automations/node/creation-admission';
 import { automationRuntimePaths } from '@core/features/automations/node/runtime-paths';
-import { createGitCredentialChannelsController } from '@core/features/github/node/services/git-credential-channels-controller';
 import { mementoSweepPolicies } from '@core/manifests/shared/memento-catalog';
 import { mementosWireContract, type MementosWireContract } from '@core/primitives/mementos/api';
 import { mementosComponent } from '@core/services/mementos/node';
@@ -186,7 +187,10 @@ function startDesktopWorkersWithHost(
 ): Omit<DesktopWorkersHandle, 'setSpawnLogging'> {
   const workersStartedAt = Date.now();
   const userShellEnv = createUserShellEnvController(() => userShellEnvManager.current());
-  const gitCredentialChannels = createGitCredentialChannelsController();
+  // No managed credentials are minted. Accept cleanup from legacy sessions only.
+  const gitCredentialChannels = createController(gitCredentialChannelsContract, {
+    release: async () => {},
+  });
   // Logs readiness timing and observes rejection so a background readiness
   // failure never surfaces as an unhandled rejection: the failure reaches
   // callers through the queued clients' per-call rejections.

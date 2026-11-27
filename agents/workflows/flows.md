@@ -36,6 +36,7 @@ browser test project are the one extra step, only needed for tests:
 | Flow | Command | Where |
 | --- | --- | --- |
 | Full workspace dev | `pnpm run dev` | root |
+| Electron dev with DevTools | `make dev` | root |
 | App-only dev | `pnpm run dev` | `apps/ply-desktop/` |
 | App dev, verbose Vite logs | `pnpm run dev:debug` | `apps/ply-desktop/` |
 | Main-only / renderer-only watch | `pnpm run dev:main` / `pnpm run dev:renderer` | `apps/ply-desktop/` |
@@ -131,6 +132,7 @@ running (doctor reports it). See
 | Flow | Command | Where |
 | --- | --- | --- |
 | Local packaging | `pnpm run package` / `package:mac` / `package:linux` / `package:win` | `apps/ply-desktop/` |
+| Local macOS DMG (native architecture) | `make build` (`ARCH=arm64` / `ARCH=x64` to override) | root |
 | Packaged language-server regression check | `EMDASH_TEST_PACKAGED_LSP=1 pnpm exec vitest run --project scripts scripts/release/lib/packaged-language-servers.test.ts` | `apps/ply-desktop/` |
 | Packaged SSH regression check | `EMDASH_TEST_PACKAGED_SSH=1 pnpm exec vitest run --project scripts scripts/release/lib/packaged-ssh.test.ts` | `apps/ply-desktop/` |
 | Rebuild native deps | `pnpm run rebuild` | `apps/ply-desktop/` |
