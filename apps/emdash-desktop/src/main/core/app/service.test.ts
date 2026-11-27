@@ -131,6 +131,12 @@ describe('AppService.openIn', () => {
     if (originalPlatform) Object.defineProperty(process, 'platform', originalPlatform);
   });
 
+  it('rejects legacy SSH targets before launching a local app', async () => {
+    await expect(
+      appService.openIn({ app: 'finder', path: '/remote', isRemote: true })
+    ).rejects.toThrow('此版本仅支持本地开发。');
+  });
+
   it('opens the platform file manager with Electron shell.openPath instead of a shell command', async () => {
     const target = 'C:/Users/Qwenzy/Desktop/ees_ams';
 
@@ -496,7 +502,7 @@ describe('AppService.showTerminalContextMenu', () => {
     });
 
     const template = mocks.menuBuildFromTemplate.mock.calls[0]?.[0];
-    const copyItem = template?.find((item) => item.label === 'Copy');
+    const copyItem = template?.find((item) => item.label === '复制');
 
     expect(copyItem?.enabled).toBe(true);
     copyItem?.click?.({} as Electron.MenuItem, undefined as never, undefined as never);
@@ -513,7 +519,7 @@ describe('AppService.showTerminalContextMenu', () => {
     });
 
     const template = mocks.menuBuildFromTemplate.mock.calls[0]?.[0];
-    const copyItem = template?.find((item) => item.label === 'Copy');
+    const copyItem = template?.find((item) => item.label === '复制');
 
     expect(copyItem?.enabled).toBe(true);
     copyItem?.click?.({} as Electron.MenuItem, undefined as never, undefined as never);

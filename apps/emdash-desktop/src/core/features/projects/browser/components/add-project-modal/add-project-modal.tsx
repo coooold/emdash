@@ -1,78 +1,42 @@
 import { Dialog, Input, ModalLayout, SelectableCard, toast } from '@emdash/ui/react/primitives';
 import { useQuery } from '@tanstack/react-query';
-import { DownloadIcon, FolderOpenIcon, PlusIcon } from 'lucide-react';
+import { DownloadIcon, FolderOpenIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useMemo, useState, type ReactNode } from 'react';
-import { useAccounts } from '@core/features/integrations/api/browser/use-provider-accounts';
-import { deriveConnectionMachineStatusKind } from '@core/features/machines/api/browser/machine-status-kind';
-import { getMachinesStore } from '@core/features/machines/contributions/app-stores';
-import type { ProjectHostParams } from '@core/features/projects/api';
+import { useMemo, useState, type ReactNode } from 'react';
 import { getProjectsWireClient } from '@core/features/projects/api/browser/client';
 import {
   getProjectManagerStore,
   getProjectSettingsStore,
 } from '@core/features/projects/api/browser/stores/project-selectors';
-import type {
-  ModeData as ProjectCreationModeData,
-  ProjectType,
-} from '@core/features/projects/browser/stores/project-creation-types';
+import type { ModeData as ProjectCreationModeData } from '@core/features/projects/browser/stores/project-creation-types';
 import { projectViewDef } from '@core/features/projects/contributions/views';
-import { settingsViewDef } from '@core/features/settings/contributions/views';
 import { useModalController, useOpenModal } from '@core/manifests/browser/modal-api';
-import { isGitHubAccountSummary } from '@core/primitives/github/api';
 import { ConfirmButton } from '@core/primitives/keybindings/browser/confirm-button';
 import { log } from '@core/primitives/logging/browser/logger';
 import { defineModal } from '@core/primitives/modals/react';
 import { useNavigate } from '@core/primitives/navigation/browser/navigation-hooks';
 import { basenameFromAnyPath } from '@core/primitives/path-name/api';
-import { createRequiredProviderAccountSelectState } from '@core/primitives/provider-accounts/api/account-select-state';
-import type { SshConfig } from '@core/primitives/ssh/api';
-import { ClonePanel, CreateRepositoryPanel, PickExistingPanel } from './content';
-import { LocationSelector } from './location-selector';
-import { extractRepoName, useCloneMode, useCreateRepositoryMode, usePickMode } from './modes';
+import { ClonePanel, PickExistingPanel } from './content';
+import { extractRepoName, useCloneMode, usePickMode } from './modes';
 import { UntrustedRepositoryNotice } from './untrusted-repository-notice';
 import { useProjectName } from './use-project-name';
 
-export type Strategy = 'local' | 'ssh';
-
-export type Mode = 'pick' | 'create' | 'clone';
-type MachineOption = SshConfig & { id: string };
+export type Mode = 'pick' | 'clone';
 
 export interface AddProjectModalProps {
-  strategy?: Strategy;
   mode?: Mode;
-  connectionId?: string;
 }
 
 export const AddProjectModal = observer(function AddProjectModal({
-  strategy: strategyProp,
   mode: modeProp,
-  connectionId: connectionIdProp,
 }: AddProjectModalProps) {
   const modal = useModalController('addProjectModal');
-  const [strategy, setStrategy] = useState<Strategy>(strategyProp ?? 'local');
-  const [mode, setMode] = useState<Mode>(modeProp ?? 'pick');
-  const [connectionId, setConnectionId] = useState<string | undefined>(connectionIdProp);
+  const [mode, setMode] = useState<Mode>(modeProp === 'clone' ? 'clone' : 'pick');
   const [submitState, setSubmitState] = useState<'idle' | 'creating'>('idle');
-  const { connections } = getMachinesStore();
-  const availableConnections = useMemo(
-    () =>
-      connections.filter((connection): connection is MachineOption => connection.id !== undefined),
-    [connections]
-  );
-  const availableConnectionIds = useMemo(
-    () => availableConnections.map((connection) => connection.id),
-    [availableConnections]
-  );
-  const selectedConnectionId =
-    strategy === 'ssh' ? (connectionId ?? availableConnectionIds[0]) : connectionId;
-
   const { navigate } = useNavigate();
 
   const openProjectConfigImportModal = useOpenModal('projectConfigImportModal');
-  const openIntegrationSetup = useOpenModal('integrationSetupModal');
   const openConfirmAction = useOpenModal('confirmActionModal');
-  const getProjectsClient = useCallback(async () => await getProjectsWireClient(), []);
 
   const maybeShowProjectConfigImportPrompt = async (projectId: string) => {
     const projectManager = getProjectManagerStore();
@@ -94,97 +58,43 @@ export const AddProjectModal = observer(function AddProjectModal({
       migrateProjectConfig: (request) => settingsStore.migrateProjectConfig(request),
     });
     if (outcome.success) {
-      toast(`${outcome.data.migration.label} config imported`, {
-        description: `${outcome.data.migration.files.join(', ')} was imported successfully.`,
+      toast(`${outcome.data.migration.label}配置已导入`, {
+        description: `${outcome.data.migration.files.join(', ')}已成功导入。`,
       });
     }
   };
 
   const defaultRepositoriesRootQuery = useQuery({
-    queryKey: ['projectDefaultRepositoriesRoot', strategy, selectedConnectionId],
+    queryKey: ['projectDefaultRepositoriesRoot'],
     queryFn: async () => {
-      let host: ProjectHostParams = { type: 'local' };
-      if (strategy === 'ssh') {
-        if (!selectedConnectionId) {
-          throw new Error('Select a machine connection before resolving the repositories root.');
-        }
-        host = { type: 'ssh', connectionId: selectedConnectionId };
-      }
-      const result = await (await getProjectsClient()).getDefaultRepositoriesRoot(host);
+      const result = await (
+        await getProjectsWireClient()
+      ).getDefaultRepositoriesRoot({ type: 'local' });
       if (!result.success) throw new Error(result.error.message);
       return result.data;
     },
-    enabled: strategy === 'local' || !!selectedConnectionId,
+    enabled: mode === 'clone',
   });
   const defaultPath = defaultRepositoriesRootQuery.data ?? '';
 
-  const githubAccountsQuery = useAccounts('github', isGitHubAccountSummary);
-  const gitlabAccountsQuery = useAccounts('gitlab');
-  const [repositoryProvider, setRepositoryProvider] = useState<'github' | 'gitlab'>('github');
-  const githubAccounts = githubAccountsQuery.data;
-  const gitlabAccounts = gitlabAccountsQuery.data;
-  const [githubAccountOverride, setGithubAccountOverride] = useState<string | undefined>(undefined);
-  const [gitlabAccountOverride, setGitlabAccountOverride] = useState<string | undefined>(undefined);
-  const githubAccountSelect = useMemo(
-    () => createRequiredProviderAccountSelectState(githubAccountOverride, githubAccounts ?? []),
-    [githubAccountOverride, githubAccounts]
-  );
-  const defaultGitHubAccountSelect = useMemo(
-    () => createRequiredProviderAccountSelectState(undefined, githubAccounts ?? []),
-    [githubAccounts]
-  );
-  const selectedGitHubAccountId = githubAccountSelect.selectedAccountId;
-  const defaultGitHubAccountId = defaultGitHubAccountSelect.selectedAccountId;
-  const gitlabAccountSelect = useMemo(
-    () => createRequiredProviderAccountSelectState(gitlabAccountOverride, gitlabAccounts ?? []),
-    [gitlabAccountOverride, gitlabAccounts]
-  );
-  const defaultGitlabAccountSelect = useMemo(
-    () => createRequiredProviderAccountSelectState(undefined, gitlabAccounts ?? []),
-    [gitlabAccounts]
-  );
-  const repositoryAccountSelect =
-    repositoryProvider === 'github' ? githubAccountSelect : gitlabAccountSelect;
-  const defaultRepositoryAccountSelect =
-    repositoryProvider === 'github' ? defaultGitHubAccountSelect : defaultGitlabAccountSelect;
-
   const pickState = usePickMode();
-  const createRepositoryState = useCreateRepositoryMode(
-    defaultPath,
-    repositoryProvider,
-    mode === 'create' ? repositoryAccountSelect.selectedAccountId : null
-  );
   const cloneState = useCloneMode(defaultPath);
   const generatedProjectName = useMemo(() => {
     switch (mode) {
       case 'pick':
         return basenameFromAnyPath(pickState.path);
-      case 'create':
-        return createRepositoryState.repositoryName;
       case 'clone':
         return extractRepoName(cloneState.repositoryUrl);
     }
-  }, [cloneState.repositoryUrl, createRepositoryState.repositoryName, mode, pickState.path]);
+  }, [cloneState.repositoryUrl, mode, pickState.path]);
   const projectName = useProjectName(generatedProjectName);
 
-  const activeMode = { pick: pickState, create: createRepositoryState, clone: cloneState }[mode];
-  const shouldCheckPickPathStatus =
-    mode === 'pick' &&
-    pickState.path.trim().length > 0 &&
-    (strategy === 'local' || !!selectedConnectionId);
+  const activeMode = { pick: pickState, clone: cloneState }[mode];
+  const shouldCheckPickPathStatus = mode === 'pick' && pickState.path.trim().length > 0;
   const pickPathStatusQuery = useQuery({
-    queryKey: ['projectPathStatus', strategy, selectedConnectionId, pickState.path],
+    queryKey: ['projectPathStatus', pickState.path],
     queryFn: async () =>
-      strategy === 'ssh'
-        ? (await getProjectsWireClient()).inspectProjectPath({
-            type: 'ssh',
-            path: pickState.path,
-            connectionId: selectedConnectionId!,
-          })
-        : (await getProjectsWireClient()).inspectProjectPath({
-            type: 'local',
-            path: pickState.path,
-          }),
+      (await getProjectsWireClient()).inspectProjectPath({ type: 'local', path: pickState.path }),
     enabled: shouldCheckPickPathStatus,
   });
   const pickPathInspectionError = mode === 'pick' ? pickPathStatusQuery.data?.error : undefined;
@@ -199,21 +109,13 @@ export const AddProjectModal = observer(function AddProjectModal({
     if (pickPathInspectionError?.type !== 'inspect-failed') return undefined;
     const { path, dubiousOwnership } = pickPathInspectionError;
     if (!dubiousOwnership) return undefined;
-    const host: ProjectHostParams =
-      strategy === 'ssh' && selectedConnectionId
-        ? { type: 'ssh', connectionId: selectedConnectionId }
-        : { type: 'local' };
-    const machineName = availableConnections.find(
-      (connection) => connection.id === selectedConnectionId
-    )?.name;
     return (
       <UntrustedRepositoryNotice
         dubiousOwnership={dubiousOwnership}
-        hostLabel={host.type === 'ssh' ? (machineName ?? 'the remote machine') : 'this computer'}
         confirm={async (confirmation) => (await openConfirmAction(confirmation)).success}
         trust={async () =>
           (await getProjectsWireClient()).trustRepository({
-            host,
+            host: { type: 'local' },
             path,
             safeDirectory: dubiousOwnership.safeDirectory,
           })
@@ -226,16 +128,8 @@ export const AddProjectModal = observer(function AddProjectModal({
   const canSubmit =
     activeMode.isValid &&
     projectName.effectiveName.length > 0 &&
-    (strategy === 'local' || !!selectedConnectionId) &&
     !isCheckingPickPathStatus &&
     !pickPathInspectionError &&
-    (mode !== 'create' ||
-      (!(repositoryProvider === 'github' ? githubAccountsQuery : gitlabAccountsQuery).isPending &&
-        !!repositoryAccountSelect.selectedAccountId)) &&
-    (mode !== 'pick' ||
-      !requiresGitInitialization ||
-      !pickState.initGitRepository ||
-      !githubAccountsQuery.isPending) &&
     submitState === 'idle';
 
   const handleSubmit = async () => {
@@ -244,11 +138,6 @@ export const AddProjectModal = observer(function AddProjectModal({
     modal.setCloseGuard(true);
 
     const id = crypto.randomUUID();
-    const projectType: ProjectType =
-      strategy === 'ssh' && selectedConnectionId
-        ? { type: 'ssh' as const, connectionId: selectedConnectionId }
-        : { type: 'local' as const };
-
     let data: ProjectCreationModeData;
     switch (mode) {
       case 'pick':
@@ -257,23 +146,6 @@ export const AddProjectModal = observer(function AddProjectModal({
           name: projectName.effectiveName,
           path: pickState.path,
           initGitRepository: pickState.initGitRepository,
-          githubAccountId: pickState.initGitRepository
-            ? (defaultGitHubAccountId ?? undefined)
-            : undefined,
-        };
-        break;
-      case 'create':
-        data = {
-          mode: 'create',
-          name: projectName.effectiveName,
-          path: createRepositoryState.path,
-          repositoryName: createRepositoryState.repositoryName,
-          repositoryOwner: createRepositoryState.repositoryOwner?.value ?? '',
-          repositoryVisibility: createRepositoryState.repositoryVisibility,
-          repositoryProvider,
-          repositoryAccountId: repositoryAccountSelect.selectedAccountId ?? undefined,
-          githubAccountId:
-            repositoryProvider === 'github' ? (selectedGitHubAccountId ?? undefined) : undefined,
         };
         break;
       case 'clone':
@@ -287,7 +159,9 @@ export const AddProjectModal = observer(function AddProjectModal({
     }
 
     try {
-      const result = await getProjectManagerStore().startProjectCreation(projectType, data, { id });
+      const result = await getProjectManagerStore().startProjectCreation({ type: 'local' }, data, {
+        id,
+      });
       modal.setCloseGuard(false);
 
       if (result.kind === 'existing') {
@@ -315,7 +189,7 @@ export const AddProjectModal = observer(function AddProjectModal({
       log.error(error);
       modal.setCloseGuard(false);
       setSubmitState('idle');
-      toast.error('Failed to check project', { description: String(error) });
+      toast.error('无法检查项目', { description: String(error) });
     }
   };
 
@@ -323,7 +197,7 @@ export const AddProjectModal = observer(function AddProjectModal({
     <ModalLayout
       header={
         <Dialog.Header showCloseButton={submitState === 'idle'}>
-          <Dialog.Title>Add Project</Dialog.Title>
+          <Dialog.Title>添加项目</Dialog.Title>
         </Dialog.Header>
       }
       footer={
@@ -334,7 +208,7 @@ export const AddProjectModal = observer(function AddProjectModal({
             onClick={() => void handleSubmit()}
             disabled={!canSubmit}
           >
-            {submitState === 'creating' ? 'Creating...' : 'Create'}
+            {submitState === 'creating' ? '正在创建…' : '创建'}
           </ConfirmButton>
         </Dialog.Footer>
       }
@@ -351,97 +225,32 @@ export const AddProjectModal = observer(function AddProjectModal({
               className="min-w-0 flex-1 px-0 text-lg!"
               onChange={(e) => projectName.handleNameChange(e.target.value)}
             />
-            <LocationSelector
-              strategy={strategy}
-              connectionId={selectedConnectionId}
-              machines={availableConnections}
-              getMachineStatusKind={(machineId) =>
-                machineId
-                  ? deriveConnectionMachineStatusKind(getMachinesStore().stateFor(machineId))
-                  : 'idle'
-              }
-              onSelectLocal={() => setStrategy('local')}
-              onSelectMachine={(nextConnectionId) => {
-                setStrategy('ssh');
-                setConnectionId(nextConnectionId);
-              }}
-              onManageMachines={() => {
-                modal.dismiss();
-                navigate(settingsViewDef({ tab: 'connections' }));
-              }}
-            />
           </div>
           <div className="flex w-full gap-2">
             <ModeCard
               mode="pick"
               selected={mode === 'pick'}
               icon={<FolderOpenIcon className="size-3" />}
-              label="Pick Directory"
-              onSelect={setMode}
-            />
-            <ModeCard
-              mode="create"
-              selected={mode === 'create'}
-              icon={<PlusIcon className="size-3" />}
-              label="Create Repository"
+              label="选择目录"
               onSelect={setMode}
             />
             <ModeCard
               mode="clone"
               selected={mode === 'clone'}
               icon={<DownloadIcon className="size-2" />}
-              label="Clone Repository"
+              label="克隆仓库"
               onSelect={setMode}
             />
           </div>
           {mode === 'pick' && (
             <PickExistingPanel
-              strategy={strategy}
-              connectionId={selectedConnectionId}
               state={pickState}
-              getProjectsClient={getProjectsClient}
               inspectionError={pickPathInspectionError?.message}
               untrustedRepositoryNotice={renderUntrustedRepositoryNotice()}
               showInitializeGitPrompt={requiresGitInitialization}
             />
           )}
-          {mode === 'create' && (
-            <CreateRepositoryPanel
-              strategy={strategy}
-              connectionId={selectedConnectionId}
-              state={createRepositoryState}
-              getProjectsClient={getProjectsClient}
-              accounts={repositoryAccountSelect.accounts}
-              selectedAccount={repositoryAccountSelect.selectedAccount}
-              defaultAccount={defaultRepositoryAccountSelect.selectedAccount}
-              onAccountChange={
-                repositoryProvider === 'github'
-                  ? setGithubAccountOverride
-                  : setGitlabAccountOverride
-              }
-              provider={repositoryProvider}
-              onProviderChange={setRepositoryProvider}
-              onConnectProvider={() =>
-                void openIntegrationSetup({ integration: repositoryProvider })
-              }
-              ensureDefaultRoot={
-                defaultRepositoriesRootQuery.data !== undefined &&
-                createRepositoryState.path === defaultRepositoriesRootQuery.data
-              }
-            />
-          )}
-          {mode === 'clone' && (
-            <ClonePanel
-              strategy={strategy}
-              connectionId={selectedConnectionId}
-              state={cloneState}
-              getProjectsClient={getProjectsClient}
-              ensureDefaultRoot={
-                defaultRepositoriesRootQuery.data !== undefined &&
-                cloneState.path === defaultRepositoriesRootQuery.data
-              }
-            />
-          )}
+          {mode === 'clone' && <ClonePanel state={cloneState} />}
         </div>
       </Dialog.Body>
     </ModalLayout>

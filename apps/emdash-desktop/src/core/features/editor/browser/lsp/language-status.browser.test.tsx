@@ -63,8 +63,8 @@ async function fixture(fallbackAvailable: boolean, dialog = false) {
 it('shows basic support, retries the host, and updates when full services recover', async () => {
   const f = await fixture(true);
   const button = f.container.querySelector('button');
-  expect(button?.textContent).toBe('Retry');
-  expect(f.container.textContent).toContain('Basic support is available for loaded files');
+  expect(button?.textContent).toBe('重试');
+  expect(f.container.textContent).toContain('已加载文件可使用基础功能');
   await act(async () => button?.click());
   expect(f.restartServer).toHaveBeenCalledWith(f.file);
   await act(async () =>
@@ -84,18 +84,18 @@ it('shows basic support, retries the host, and updates when full services recove
       })
     )
   );
-  expect(button?.textContent).toBe('Restart language services');
-  expect(f.container.textContent).toContain('Language services are ready');
+  expect(button?.textContent).toBe('重启语言服务');
+  expect(f.container.textContent).toContain('语言服务已就绪');
 });
 
 it('shows unavailable services for languages without a Monaco fallback', async () => {
   const f = await fixture(false);
-  expect(f.container.textContent).toContain('Language services unavailable.');
+  expect(f.container.textContent).toContain('语言服务不可用。');
 });
 
 it('shows troubleshooting in the file-menu dialog', async () => {
   await fixture(true, true);
   await expect.element(page.getByRole('dialog')).toBeVisible();
-  await expect.element(page.getByRole('heading', { name: 'Language services' })).toBeVisible();
-  await expect.element(page.getByRole('button', { name: 'Retry', exact: true })).toBeVisible();
+  await expect.element(page.getByRole('heading', { name: '语言服务' })).toBeVisible();
+  await expect.element(page.getByRole('button', { name: '重试', exact: true })).toBeVisible();
 });

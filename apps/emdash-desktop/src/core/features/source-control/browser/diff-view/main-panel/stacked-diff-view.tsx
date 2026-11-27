@@ -128,7 +128,7 @@ const StackedDiffPanel = observer(function StackedDiffPanel({ panelStore }: Stac
 
   if (visibleSlots.length === 0) {
     return (
-      <EmptyState label="No changes" description="Select or make changes to files to see diffs." />
+      <EmptyState label="没有变更" description="选择或修改文件以查看差异。" />
     );
   }
 

@@ -27,7 +27,7 @@ export const GitStatusSection = observer(function GitStatusSection() {
   const context = asAvailableProject(project);
   const hostActionReason = context
     ? projectAvailabilityUi.getLiveActionDisabledReason(projectId)
-    : 'Unavailable until access to this Project is restored.';
+    : '恢复项目访问后可用。';
   const hostActionDisabled = hostActionReason !== null;
   const repositoryStore = getGitRepositoryStore(projectId);
   const openAddRemoteModal = useOpenModal('addRemoteModal');
@@ -95,7 +95,7 @@ export const GitStatusSection = observer(function GitStatusSection() {
                     }
                   />
                   <Tooltip.Content>
-                    {hostActionReason ?? (isFetching ? 'Fetching...' : 'Fetch changes')}
+                    {hostActionReason ?? (isFetching ? '正在获取…' : '获取变更')}
                   </Tooltip.Content>
                 </Tooltip.Root>
                 <Tooltip.Root>
@@ -119,10 +119,10 @@ export const GitStatusSection = observer(function GitStatusSection() {
                   <Tooltip.Content>
                     {hostActionReason ??
                       (isPulling
-                        ? 'Pulling...'
+                        ? '正在拉取…'
                         : behindCount === 0
-                          ? 'Nothing to pull'
-                          : 'Pull changes')}
+                          ? '没有需要拉取的变更'
+                          : '拉取变更')}
                   </Tooltip.Content>
                 </Tooltip.Root>
                 <Tooltip.Root>
@@ -146,10 +146,10 @@ export const GitStatusSection = observer(function GitStatusSection() {
                   <Tooltip.Content>
                     {hostActionReason ??
                       (isPushing
-                        ? 'Pushing...'
+                        ? '正在推送…'
                         : aheadCount === 0
-                          ? 'Nothing to push'
-                          : 'Push changes')}
+                          ? '没有需要推送的变更'
+                          : '推送变更')}
                   </Tooltip.Content>
                 </Tooltip.Root>
               </>
@@ -168,10 +168,10 @@ export const GitStatusSection = observer(function GitStatusSection() {
                       >
                         <ArrowUp className="size-3" />
                         {isPublishing
-                          ? 'Publishing...'
+                          ? '正在发布…'
                           : shouldOfferAddRemote
-                            ? 'Add Remote'
-                            : 'Publish'}
+                            ? '添加远端'
+                            : '发布'}
                       </Button>
                     }
                   />

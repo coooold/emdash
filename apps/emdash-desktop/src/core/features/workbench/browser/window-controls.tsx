@@ -52,19 +52,19 @@ export function WindowControls() {
   return (
     <div className="flex h-full items-center [-webkit-app-region:no-drag]">
       <ControlButton
-        label="Minimize"
+        label="最小化"
         onClick={() => void getHostClient().then((client) => client.minimizeWindow())}
       >
         <Minus className="h-4 w-4" />
       </ControlButton>
       <ControlButton
-        label={isMaximized ? 'Restore' : 'Maximize'}
+        label={isMaximized ? '还原' : '最大化'}
         onClick={() => void getHostClient().then((client) => client.toggleMaximizeWindow())}
       >
         {isMaximized ? <Copy className="h-3.5 w-3.5" /> : <Square className="h-3.5 w-3.5" />}
       </ControlButton>
       <ControlButton
-        label="Close"
+        label="关闭"
         danger
         onClick={() => void getHostClient().then((client) => client.closeWindow())}
       >

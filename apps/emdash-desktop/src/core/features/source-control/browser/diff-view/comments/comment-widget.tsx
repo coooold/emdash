@@ -54,7 +54,7 @@ export const CommentWidget: React.FC<CommentWidgetProps> = ({ comment, onEdit, o
     <Comment.Root>
       <Comment.Header>
         <Comment.Title>
-          {isEditing ? 'Edit comment' : 'Comment'}
+          {isEditing ? '编辑评论' : 'Comment'}
           <Comment.Meta className="ml-2">(Line {comment.lineNumber})</Comment.Meta>
         </Comment.Title>
         <Comment.Actions>
@@ -66,8 +66,8 @@ export const CommentWidget: React.FC<CommentWidgetProps> = ({ comment, onEdit, o
                 icon
                 className="h-8 w-8"
                 onClick={handleCancel}
-                title="Cancel (Esc)"
-                aria-label="Cancel edit comment"
+                title="取消（Esc）"
+                aria-label="取消编辑评论"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -78,8 +78,8 @@ export const CommentWidget: React.FC<CommentWidgetProps> = ({ comment, onEdit, o
                 className="h-8 w-8"
                 onClick={handleSave}
                 disabled={!editContent.trim()}
-                title="Save (Cmd/Ctrl+Enter)"
-                aria-label="Save comment"
+                title="保存（Cmd/Ctrl+Enter）"
+                aria-label="保存评论"
               >
                 <Check className="h-4 w-4 text-foreground-success" />
               </Button>
@@ -92,8 +92,8 @@ export const CommentWidget: React.FC<CommentWidgetProps> = ({ comment, onEdit, o
                 icon
                 className="h-8 w-8"
                 onClick={handleStartEditing}
-                title="Edit"
-                aria-label="Edit comment"
+                title="编辑"
+                aria-label="编辑评论"
               >
                 <Pencil className="h-4 w-4" />
               </Button>
@@ -103,8 +103,8 @@ export const CommentWidget: React.FC<CommentWidgetProps> = ({ comment, onEdit, o
                 icon
                 className="text-destructive hover:text-destructive h-8 w-8"
                 onClick={() => void onDelete()}
-                title="Delete"
-                aria-label="Delete comment"
+                title="删除"
+                aria-label="删除评论"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -129,7 +129,7 @@ export const CommentWidget: React.FC<CommentWidgetProps> = ({ comment, onEdit, o
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Update the note..."
+            placeholder="更新备注…"
           />
         )}
       </Comment.Body>

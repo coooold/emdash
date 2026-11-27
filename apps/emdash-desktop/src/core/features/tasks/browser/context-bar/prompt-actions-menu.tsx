@@ -61,7 +61,7 @@ export function PromptActionsMenu({
               className="relative flex h-7 max-w-full items-center gap-1.5 self-center rounded-md border border-border bg-background-1 px-2 text-xs font-normal text-foreground hover:bg-background-1/80 disabled:pointer-events-none disabled:opacity-50"
             >
               <FileSearch className="size-3.5 shrink-0" />
-              <span className="max-w-72 truncate">Prompts</span>
+              <span className="max-w-72 truncate">提示词</span>
               <ChevronDown className="size-3 shrink-0" />
             </Popover.Trigger>
           }
@@ -74,7 +74,7 @@ export function PromptActionsMenu({
         className="max-h-[min(var(--available-height),420px,80vh)] w-[min(420px,92vw)] gap-0 p-0"
       >
         <div className="shrink-0 border-b px-4 py-3">
-          <div className="text-sm font-semibold">Prompts</div>
+          <div className="text-sm font-semibold">提示词</div>
           <div className="text-muted-foreground text-xs">{actionTooltip}</div>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-1">
@@ -113,7 +113,7 @@ export function PromptActionsMenu({
                       type="button"
                       className="rounded-sm p-1 text-foreground-muted hover:bg-background-quaternary-2 hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-foreground/30"
                       onClick={() => toggleExpanded(action.id)}
-                      aria-label={`${expanded ? 'Collapse' : 'Expand'} ${action.prompt.title}`}
+                      aria-label={`${expanded ? '收起' : '展开'}${action.prompt.title}`}
                     >
                       {expanded ? (
                         <ChevronUp className="size-3.5" />
@@ -126,7 +126,7 @@ export function PromptActionsMenu({
                     type="button"
                     className="rounded-sm p-1 text-foreground-muted hover:bg-background-quaternary-2 hover:text-foreground focus:outline-none focus-visible:ring-1 focus-visible:ring-foreground/30"
                     onClick={() => handleActionClick(action)}
-                    aria-label={`Add ${action.prompt.title}`}
+                    aria-label={`添加${action.prompt.title}`}
                   >
                     <ArrowUp className="size-3.5" />
                   </button>

@@ -23,18 +23,15 @@ import {
 } from '@core/primitives/keybindings/browser';
 import { resolveDetailLevels, type ResolvedDetailLevel } from './settings-detail-path';
 
-const LOCAL_SECTION: PageNavSection = { kind: 'section', id: 'local', label: 'Local' };
-const REMOTE_SECTION: PageNavSection = { kind: 'section', id: 'remote', label: 'Remote' };
+const LOCAL_SECTION: PageNavSection = { kind: 'section', id: 'local', label: '本机' };
 const SETTINGS_SEARCH_HOTKEY = chord('Mod+F');
 
 const SIDEBAR_ITEMS: PageSidebarMenuItem[] = [
   navItemFor('general'),
-  navItemFor('integrations'),
   navItemFor('interface'),
   navItemFor('browser'),
   navItemFor('repository'),
   navItemFor('prompts'),
-  navItemFor('usage'),
   LOCAL_SECTION,
   navItemFor('system'),
   navItemFor('workspaces-local'),
@@ -42,8 +39,6 @@ const SIDEBAR_ITEMS: PageSidebarMenuItem[] = [
   navItemFor('clis-models'),
   navItemFor('mcp'),
   navItemFor('skills'),
-  REMOTE_SECTION,
-  navItemFor('connections'),
 ];
 
 function navItemFor(id: Exclude<SettingsPageTab, 'docs'>): PageNavItem {
@@ -162,8 +157,8 @@ export const SettingsPage = observer(function SettingsPage({
             header={
               <SearchInput
                 ref={searchInputRef}
-                placeholder="Search settings"
-                aria-label="Search settings"
+                placeholder="搜索设置"
+                aria-label="搜索设置"
                 aria-keyshortcuts="Meta+F Control+F /"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
@@ -171,7 +166,7 @@ export const SettingsPage = observer(function SettingsPage({
                 shortcut={<SettingsSearchShortcut />}
               />
             }
-            emptyMessage={isSearching ? 'No settings found' : undefined}
+            emptyMessage={isSearching ? '未找到匹配的设置' : undefined}
             footer={
               <button
                 type="button"
@@ -179,7 +174,7 @@ export const SettingsPage = observer(function SettingsPage({
                 onClick={() => void openExternal('https://docs.emdash.sh')}
               >
                 <Icon name="external-link" size="sm" />
-                <span>View Docs</span>
+                <span>查看文档</span>
               </button>
             }
             onSelect={(item) => {

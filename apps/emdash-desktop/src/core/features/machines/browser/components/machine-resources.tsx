@@ -4,29 +4,29 @@ import { Box, Field } from '@emdash/ui/react/primitives';
 export function ResourceUtilizationRow({ metrics }: { metrics: ResourceUsageSample | null }) {
   return (
     <Field.Root className="flex flex-col gap-3">
-      <Field.Label>Resource Utilization</Field.Label>
+      <Field.Label>资源占用</Field.Label>
       <div className="mt-1 grid grid-cols-3 gap-2">
         <ResourceCard
           label="CPU"
           value={metrics ? formatPercent(metrics.cpu.usedPercent) : '—'}
-          description="Utilization"
+          description="使用率"
         />
         <ResourceCard
-          label="Memory"
+          label="内存"
           value={metrics ? formatPercent(metrics.memory.usedPercent) : '—'}
           description={
             metrics
               ? `${formatBytes(metrics.memory.usedBytes)} / ${formatBytes(metrics.memory.totalBytes)}`
-              : 'Unavailable'
+              : '暂无数据'
           }
         />
         <ResourceCard
-          label="Disk"
+          label="磁盘"
           value={metrics ? formatPercent(metrics.disk.usedPercent) : '—'}
           description={
             metrics
               ? `${formatBytes(metrics.disk.usedBytes)} / ${formatBytes(metrics.disk.totalBytes)}`
-              : 'Unavailable'
+              : '暂无数据'
           }
         />
       </div>

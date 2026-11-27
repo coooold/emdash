@@ -33,7 +33,7 @@ export const RenameProjectModal = observer(function RenameProjectModal({
       await getProjectManagerStore().renameProject(projectId, trimmedName);
       complete();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to rename project');
+      setError(e instanceof Error ? e.message : '无法重命名项目');
       setIsSubmitting(false);
     }
   }, [isValid, isSubmitting, projectId, trimmedName, complete]);
@@ -41,12 +41,12 @@ export const RenameProjectModal = observer(function RenameProjectModal({
   return (
     <>
       <Dialog.Header showCloseButton={false}>
-        <Dialog.Title>Rename project</Dialog.Title>
+        <Dialog.Title>重命名项目</Dialog.Title>
       </Dialog.Header>
       <Dialog.Body className="pt-0">
         <Field.Group>
           <Field.Root>
-            <Field.Label>Project name</Field.Label>
+            <Field.Label>项目名称</Field.Label>
             <Input
               value={name}
               onChange={(e) => {
@@ -58,23 +58,21 @@ export const RenameProjectModal = observer(function RenameProjectModal({
               }}
               autoFocus
             />
-            {isEmpty && (
-              <p className="text-destructive mt-1 text-xs">Project name cannot be empty.</p>
-            )}
+            {isEmpty && <p className="text-destructive mt-1 text-xs">项目名称不能为空。</p>}
             {error && <p className="text-destructive mt-1 text-xs">{error}</p>}
           </Field.Root>
         </Field.Group>
       </Dialog.Body>
       <Dialog.Footer>
         <Button variant="secondary" onClick={dismiss}>
-          Cancel
+          取消
         </Button>
         <ConfirmButton
           variant="primary"
           onClick={() => void handleSubmit()}
           disabled={!isValid || isSubmitting}
         >
-          {isSubmitting ? 'Renaming...' : 'Rename'}
+          {isSubmitting ? '正在重命名…' : '重命名'}
         </ConfirmButton>
       </Dialog.Footer>
     </>

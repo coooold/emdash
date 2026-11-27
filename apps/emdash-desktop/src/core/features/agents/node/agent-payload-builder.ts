@@ -1,5 +1,4 @@
 import type {
-  AgentAuthDescriptor,
   CLIAgentPluginProvider,
 } from '@emdash/core/services/agent-plugins/api/plugins';
 import type {
@@ -27,7 +26,7 @@ function buildMetadata(provider: CLIAgentPluginProvider): AgentMetadata {
     icon: assets.icon,
     capabilities: {
       acp: capabilities.acp,
-      auth: buildAuthDescriptor(provider),
+      auth: { kind: 'none' },
       hostDependency: {
         updates: capabilities.hostDependency.updateCommand
           ? {
@@ -51,25 +50,6 @@ function buildMetadata(provider: CLIAgentPluginProvider): AgentMetadata {
       trust: capabilities.trust,
     },
     installDocs: capabilities.hostDependency.installDocs ?? null,
-  };
-}
-
-function buildAuthDescriptor(provider: CLIAgentPluginProvider): AgentAuthDescriptor {
-  const auth = provider.capabilities.auth as AgentAuthDescriptor | undefined;
-  if (auth?.kind === 'supported') return auth;
-
-  const binaryName = provider.capabilities.hostDependency.binaryNames[0] ?? provider.metadata.id;
-  return {
-    kind: 'supported',
-    methods: [
-      {
-        kind: 'cli-login',
-        id: 'cli-login',
-        name: `Sign in with ${provider.metadata.name}`,
-        args: [],
-        description: `Open ${binaryName} in a terminal and complete the provider sign-in flow.`,
-      },
-    ],
   };
 }
 

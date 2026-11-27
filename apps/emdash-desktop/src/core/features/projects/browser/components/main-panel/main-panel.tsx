@@ -35,11 +35,19 @@ const ProjectMainPanelContent = observer(function ProjectMainPanelContent() {
   } = useCurrentViewParams(projectViewDef);
   const store = getProjectStore(projectId);
   const kind = projectViewKind(store);
-  const displayName = projectDisplayName(store) ?? 'this project';
+  const displayName = projectDisplayName(store) ?? '此项目';
   const confirmDeleteProject = useConfirmDeleteProject();
 
   if (kind === 'creating' && store && isUnregisteredProject(store)) {
     return <PendingProjectStatus project={store} />;
+  }
+
+  if (kind === 'legacy-ssh') {
+    return (
+      <ProjectPageShell projectId={projectId}>
+        <ProjectAvailabilityBoundary projectId={projectId} layout="inline" />
+      </ProjectPageShell>
+    );
   }
 
   if (kind === 'hydrating') {
@@ -108,7 +116,7 @@ function ProjectContextHydratingPanel() {
   return (
     <div className="flex min-h-64 w-full flex-1 flex-col items-center justify-center gap-3">
       <Loader2 className="h-5 w-5 animate-spin text-foreground-passive" />
-      <p className="font-sans text-xs text-foreground-passive">Loading project…</p>
+      <p className="font-sans text-xs text-foreground-passive">正在加载项目…</p>
     </div>
   );
 }
@@ -124,24 +132,22 @@ export function ProjectContextErrorPanel({
 }) {
   const detail =
     error.type === 'invalid-project-record'
-      ? 'The saved Project record is invalid.'
+      ? '保存的项目记录无效。'
       : error.stage === 'memento'
-        ? 'Saved Project view state could not be loaded.'
-        : 'Project stores could not be initialized.';
+        ? '无法加载已保存的项目视图状态。'
+        : '无法初始化项目状态。';
   return (
     <div className="flex min-h-64 w-full flex-1 flex-col items-center justify-center p-8">
       <div className="flex max-w-sm flex-col items-center gap-3 text-center">
         <TriangleAlert className="size-6 text-foreground-destructive" aria-hidden="true" />
-        <p className="font-sans text-sm font-medium text-foreground-destructive">
-          Could not load Project
-        </p>
+        <p className="font-sans text-sm font-medium text-foreground-destructive">无法加载项目</p>
         <p className="font-sans text-xs text-foreground-muted">{detail}</p>
         <div className="mt-2 flex items-center gap-2">
           <Button type="button" size="sm" variant="secondary" onClick={onRetry}>
-            Retry
+            重试
           </Button>
           <Button type="button" size="sm" variant="ghost" onClick={onRemove}>
-            Remove Project
+            移除项目
           </Button>
         </div>
         <ProjectErrorDetails message={error.message} />

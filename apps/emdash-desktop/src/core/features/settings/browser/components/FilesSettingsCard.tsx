@@ -44,8 +44,8 @@ const FilesSettingsCard: React.FC = () => {
     <SettingsCard>
       <SeparatedList gap="1rem" direction="column">
         <ExclusionListEditor
-          title="File tree exclusions"
-          description="Hide matching files or folders from the editor file tree."
+          title="文件树排除规则"
+          description="在编辑器的文件树中隐藏匹配的文件或文件夹。"
           field="treeExclude"
           value={current.treeExclude}
           loading={loading}
@@ -55,8 +55,8 @@ const FilesSettingsCard: React.FC = () => {
           onReset={resetField}
         />
         <ExclusionListEditor
-          title="Search exclusions"
-          description="Exclude matching files or folders from file and content search."
+          title="搜索排除规则"
+          description="在文件和内容搜索中排除匹配的文件或文件夹。"
           field="searchExclude"
           value={current.searchExclude}
           loading={loading}
@@ -66,8 +66,8 @@ const FilesSettingsCard: React.FC = () => {
           onReset={resetField}
         />
         <ExclusionListEditor
-          title="Watcher exclusions"
-          description="Folders the file watcher skips for the editor, Git status, and workspace tracking. Watching dependency or build folders can use tens of thousands of native watches. Changes apply after restart."
+          title="文件监视排除规则"
+          description="在编辑器、Git 状态和工作区跟踪中忽略匹配的文件夹。监视依赖或构建目录可能占用大量系统监视资源。重启后生效。"
           field="watcherExclude"
           value={current.watcherExclude}
           loading={loading}
@@ -122,7 +122,7 @@ function ExclusionListEditor({
       </div>
       <Textarea
         value={draft}
-        placeholder="One pattern per line"
+        placeholder="每行填写一条匹配规则"
         rows={4}
         disabled={loading || saving}
         spellCheck={false}

@@ -1,3 +1,4 @@
+import { toast } from '@emdash/ui/react/primitives';
 import { getAutomationsClient } from '@core/features/automations/api/browser/client';
 import { getProjectManagerStore } from '@core/features/projects/api/browser/stores/project-selectors';
 import { useOpenModal } from '@core/manifests/browser/modal-api';
@@ -9,20 +10,24 @@ async function listProjectAutomations(projectId: string): Promise<Automation[]> 
     .catch(() => []);
 }
 
-function deleteProjectDescription(projectLabel: string, automations: Automation[]) {
-  if (automations.length === 0) {
-    return `"${projectLabel}" will be deleted. The project folder and worktrees will stay on the filesystem.`;
-  }
+function deleteProjectDescription(
+  projectLabel: string,
+  automations: Automation[],
+  legacySsh: boolean
+) {
+  const description = legacySsh
+    ? `「${projectLabel}」及其任务记录将从本机应用中移除。远程仓库和工作树会保留。`
+    : `「${projectLabel}」将从应用中移除。项目目录和工作树会保留。`;
+  if (automations.length === 0) return description;
 
   return (
     <div className="space-y-3">
-      <p>
-        {`"${projectLabel}" will be deleted. The project folder and worktrees will stay on the filesystem.`}
-      </p>
+      <p>{description}</p>
       <div className="space-y-2">
         <p className="text-foreground-muted">
-          {automations.length === 1 ? 'This automation' : 'These automations'} will be detached from
-          the project and will not run until attached to another project:
+          {legacySsh
+            ? '以下自动化记录将一并移除。'
+            : '以下自动化将与此项目解除关联，重新关联到其他项目前不会运行。'}
         </p>
         <ul className="max-h-32 space-y-1 overflow-auto rounded-md border border-border bg-background-secondary p-2 text-sm">
           {automations.map((automation) => (
@@ -48,15 +53,23 @@ export function useConfirmDeleteProject() {
     projectLabel: string;
     onDeleted?: () => void;
   }) => {
+    const manager = getProjectManagerStore();
+    const legacySsh = manager.projects.get(projectId)?.data?.type === 'ssh';
     const automations = await listProjectAutomations(projectId);
 
     const outcome = await openConfirmDeleteProject({
-      title: 'Delete project',
-      description: deleteProjectDescription(projectLabel, automations),
-      confirmLabel: 'Delete',
+      title: legacySsh ? '移除项目记录' : '移除项目',
+      description: deleteProjectDescription(projectLabel, automations, legacySsh),
+      confirmLabel: '移除',
     });
     if (!outcome.success) return;
-    void getProjectManagerStore().deleteProject(projectId);
-    onDeleted?.();
+    try {
+      await manager.deleteProject(projectId);
+      onDeleted?.();
+    } catch (error) {
+      toast.error('无法移除项目', {
+        description: error instanceof Error ? error.message : String(error),
+      });
+    }
   };
 }

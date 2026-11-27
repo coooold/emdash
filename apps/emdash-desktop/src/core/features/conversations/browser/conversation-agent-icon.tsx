@@ -23,7 +23,7 @@ export function ConversationAgentIcon({
       <AgentIcon id={providerId} size={size} className={className} />
       {isAcp && (
         <span
-          title="ACP chat"
+          title="ACP 聊天"
           className="absolute -right-1 -bottom-1 flex items-center justify-center rounded-full bg-background ring-1 ring-background"
         >
           <MessageSquare className="size-2.5 text-foreground-muted" />

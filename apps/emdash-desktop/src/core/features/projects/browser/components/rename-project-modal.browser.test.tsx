@@ -112,7 +112,7 @@ describe('RenameProjectModal', () => {
     await act(async () => pressEnter(input));
 
     expect(mocks.renameProject).not.toHaveBeenCalled();
-    expect(host.textContent).toContain('Project name cannot be empty.');
+    expect(host.textContent).toContain('项目名称不能为空。');
   });
 
   it('shows the failure and re-enables submission', async () => {

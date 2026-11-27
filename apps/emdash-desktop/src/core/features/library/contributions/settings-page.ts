@@ -7,7 +7,7 @@ import { PromptLibraryView } from '../browser/prompts/prompt-library-view';
 
 export const promptsSettingsPage = defineSettingsPageContribution({
   id: 'prompts',
-  label: 'Prompts',
+  label: '提示词',
   icon: 'message-square-text',
   component: PromptLibraryView,
 } satisfies SettingsPageContribution<SettingsPageTab>);

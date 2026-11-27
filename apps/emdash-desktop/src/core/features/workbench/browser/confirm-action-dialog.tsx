@@ -18,7 +18,7 @@ export type ConfirmActionDialogResult = { checked: boolean } | undefined;
 export function ConfirmActionDialog({
   title,
   description,
-  confirmLabel = 'Confirm',
+  confirmLabel = '确认',
   variant = 'destructive',
   checkbox,
 }: ConfirmActionDialogArgs) {
@@ -41,7 +41,7 @@ export function ConfirmActionDialog({
       </Dialog.Body>
       <Dialog.Footer>
         <Button variant="secondary" onClick={controller.dismiss}>
-          Cancel
+          取消
         </Button>
         <ConfirmButton
           variant={variant === 'default' ? 'primary' : variant}

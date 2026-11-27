@@ -61,9 +61,11 @@ function ContextDonut({ fraction }: { fraction: number }) {
 export function ContextUsageIndicator({
   usage,
   disabled,
+  chinese = false,
 }: {
   usage: ContextUsage;
   disabled?: boolean;
+  chinese?: boolean;
 }) {
   const fraction = Math.min(1, Math.max(0, usage.used / usage.size));
   const pct = Math.round(fraction * 100);
@@ -77,7 +79,7 @@ export function ContextUsageIndicator({
             size="xs"
             icon
             disabled={disabled}
-            aria-label={`Context window: ${pct}% used`}
+            aria-label={chinese ? `上下文窗口已使用 ${pct}%` : `Context window: ${pct}% used`}
           >
             <ContextDonut fraction={fraction} />
           </Button>
@@ -86,13 +88,13 @@ export function ContextUsageIndicator({
       {/* Portaled out of the composer root — must carry the theme-bridge scope. */}
       <Popover.Content className={composerThemeScope} align="end" side="top">
         <Popover.Header>
-          <Popover.Title>Context usage</Popover.Title>
+          <Popover.Title>{chinese ? '上下文用量' : 'Context usage'}</Popover.Title>
         </Popover.Header>
         <div className={styles.usagePopoverBody}>
           <div className={styles.usageStatsRow}>
             <span className={styles.usagePercent}>{pct}%</span>
             <span className={styles.usageTokenCount}>
-              {formatTokens(usage.used)} / {formatTokens(usage.size)} Tokens
+              {formatTokens(usage.used)} / {formatTokens(usage.size)} {chinese ? '词元' : 'Tokens'}
             </span>
           </div>
           <div className={styles.usageBarTrack} aria-hidden="true">
@@ -102,7 +104,7 @@ export function ContextUsageIndicator({
             />
           </div>
           {usage.cost ? (
-            <div className={styles.usageCostRow}>Cost: {formatCost(usage.cost)}</div>
+            <div className={styles.usageCostRow}>{chinese ? '费用：' : 'Cost: '}{formatCost(usage.cost)}</div>
           ) : null}
         </div>
       </Popover.Content>

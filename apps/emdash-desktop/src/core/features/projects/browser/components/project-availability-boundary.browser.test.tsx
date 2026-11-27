@@ -8,26 +8,17 @@ import { ProjectAvailabilityBoundary } from '@core/features/projects/contributio
 const mocks = vi.hoisted(() => ({
   confirmDeleteProject: vi.fn(),
   navigate: vi.fn(),
-  openRelinkProject: vi.fn(),
   recover: vi.fn(),
 }));
 const context = vi.hoisted(() => ({ current: undefined as unknown }));
 
-vi.mock('@core/features/machines/contributions/app-stores', () => ({
-  getMachinesStore: () => ({ connections: [] }),
-}));
-
 vi.mock('@core/features/projects/api/browser/stores/project-selectors', () => ({
-  asAvailableProject: (value: unknown) => value,
-  getProjectStore: () => context.current,
+  asAvailableProject: () => context.current,
+  getProjectStore: () => ({ data: (context.current as { project: unknown }).project }),
 }));
 
 vi.mock('@core/features/projects/contributions/browser/use-confirm-delete-project', () => ({
   useConfirmDeleteProject: () => mocks.confirmDeleteProject,
-}));
-
-vi.mock('@core/manifests/browser/modal-api', () => ({
-  useOpenModal: () => mocks.openRelinkProject,
 }));
 
 vi.mock('@core/features/updates/contributions/app-stores', () => ({
@@ -55,16 +46,14 @@ describe('ProjectAvailabilityBoundary', () => {
   beforeEach(() => {
     mocks.confirmDeleteProject.mockReset();
     mocks.navigate.mockReset();
-    mocks.openRelinkProject.mockReset();
     mocks.recover.mockReset();
     context.current = {
       project: {
-        type: 'ssh',
+        type: 'local',
         id: 'project-1',
         name: 'Review Project',
         path: '/project',
         baseRef: 'main',
-        connectionId: 'deleted-connection-id',
         repositoryWorkspaceId: null,
         createdAt: '2026-08-13T00:00:00.000Z',
         updatedAt: '2026-08-13T00:00:00.000Z',
@@ -74,11 +63,11 @@ describe('ProjectAvailabilityBoundary', () => {
           kind: 'degraded',
           situation: 'attention',
           recovery: 'blocked',
-          issue: {
-            type: 'host-identity-lost',
-            host: { type: 'remote', id: 'deleted-connection-id' },
-            message: 'raw identity failure',
-          },
+          issue: runtimeHostUnavailable(
+            hostRef('local', 'local'),
+            'unsupported-platform',
+            'raw local runtime message'
+          ),
         },
         recover: mocks.recover,
       },
@@ -93,7 +82,10 @@ describe('ProjectAvailabilityBoundary', () => {
     host.remove();
   });
 
-  it('wires both Host identity recovery actions without leaving the Project shell', async () => {
+  it('offers record removal without mounting development content for a legacy SSH project', async () => {
+    const current = context.current as { project: { type: string } };
+    current.project.type = 'ssh';
+
     await act(async () => {
       root.render(
         <ProjectAvailabilityBoundary projectId="project-1">
@@ -103,22 +95,18 @@ describe('ProjectAvailabilityBoundary', () => {
     });
 
     const buttons = [...host.querySelectorAll('button')];
-    const relink = buttons.find((button) => button.textContent === 'Relink Project');
-    const remove = buttons.find((button) => button.textContent === 'Remove Project');
+    expect(buttons.map((button) => button.textContent)).toEqual(['移除项目记录']);
+    expect(host.textContent).toContain('此版本已移除 SSH 开发');
+    expect(host.textContent).toContain('/project');
+    expect(host.textContent).not.toContain('Project shell');
 
-    expect(relink?.getAttribute('aria-disabled')).toBe('false');
-    expect(remove?.getAttribute('aria-disabled')).toBe('false');
-    expect(host.textContent).toContain('Project shell');
-
-    await act(async () => relink?.click());
-    expect(mocks.openRelinkProject).toHaveBeenCalledWith({ projectId: 'project-1' });
-    expect(mocks.navigate).not.toHaveBeenCalled();
-
-    await act(async () => remove?.click());
+    await act(async () => buttons[0]?.click());
     expect(mocks.confirmDeleteProject).toHaveBeenCalledWith({
       projectId: 'project-1',
       projectLabel: 'Review Project',
     });
+    expect(mocks.recover).not.toHaveBeenCalled();
+    expect(mocks.navigate).not.toHaveBeenCalled();
   });
 
   it('places an inline availability banner directly before Project page content', async () => {

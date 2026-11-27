@@ -53,7 +53,7 @@ export const LeftSidebar: React.FC = observer(function LeftSidebar() {
       {isDragOver && (
         <div className="pointer-events-none absolute inset-0 z-50 flex flex-col items-center justify-center gap-2 bg-background-tertiary/80 backdrop-blur-sm">
           <FolderInput className="size-8 text-foreground" />
-          <span className="text-xs font-medium text-foreground">Drop to add project</span>
+          <span className="text-xs font-medium text-foreground">拖放目录以添加项目</span>
         </div>
       )}
       <SidebarSpace />
@@ -76,23 +76,23 @@ export const LeftSidebar: React.FC = observer(function LeftSidebar() {
             <SidebarMenuButton
               isActive={isCurrentView(currentView, 'automations')}
               onClick={() => navigate(automationsViewDef())}
-              aria-label="Automations"
+              aria-label="自动化"
               className="w-full justify-between"
             >
               <span className="flex min-w-0 items-center gap-2">
                 <Clock className="h-5 w-5 shrink-0 sm:h-4 sm:w-4" />
-                <span className="truncate">Automations</span>
+                <span className="truncate">自动化</span>
               </span>
             </SidebarMenuButton>
             <SidebarMenuButton
               isActive={isCurrentView(currentView, 'settings')}
               onClick={() => navigate(settingsViewDef())}
-              aria-label="Settings"
+              aria-label="设置"
               className="w-full justify-between"
             >
               <span className="flex items-center gap-2">
                 <Settings className="h-5 w-5 sm:h-4 sm:w-4" />
-                Settings
+                设置
               </span>
               <BoundShortcut command="app.settings" variant="keycaps" />
             </SidebarMenuButton>
@@ -108,7 +108,7 @@ export const LeftSidebar: React.FC = observer(function LeftSidebar() {
             onClick={() => void openFeedbackModal({})}
           >
             <MessageSquareShare className="size-4 shrink-0" />
-            <span className="truncate">Give feedback</span>
+            <span className="truncate">提供反馈</span>
           </button>
           <UpdateSection />
         </div>

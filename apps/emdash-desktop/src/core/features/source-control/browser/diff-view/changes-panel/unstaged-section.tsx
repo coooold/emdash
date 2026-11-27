@@ -33,13 +33,13 @@ export const UnstagedSectionHeader = observer(function UnstagedSectionHeader() {
 
   return (
     <SectionHeader
-      label="Changed"
+      label="未暂存"
       collapsed={!changesView.expandedSections.unstaged}
       onToggleCollapsed={() => changesView.toggleExpanded('unstaged')}
       count={git.unstagedFileChanges.length}
       selectionState={changesView.unstagedSelectionState}
       onToggleAll={() => changesView.toggleAllUnstaged()}
-      actions={<ChangesViewModeToggle value={viewMode} onChange={setViewMode} label="Changed" />}
+      actions={<ChangesViewModeToggle value={viewMode} onChange={setViewMode} label="未暂存" />}
     />
   );
 });
@@ -103,16 +103,16 @@ export const UnstagedSectionBody = observer(function UnstagedSectionBody() {
     const paths = [...changesView.unstagedSelection];
     void (async () => {
       const outcome = await openConfirmActionModal({
-        title: 'Discard Files Changes',
+        title: '丢弃文件变更',
         variant: 'destructive',
         description:
-          'Are you sure you want to discard the changes to the selected files? This can not be undone.',
+          '确定丢弃选中文件的变更吗？此操作无法撤销。',
       });
       if (!outcome.success) return;
 
       const result = await git.discardFiles(paths);
       if (!result.success) {
-        toast.error(`Failed to discard changes: ${formatErrorType(result.error)} `);
+        toast.error(`丢弃变更失败：${formatErrorType(result.error)} `);
         return;
       }
       changesView.removeUnstagedSelection(paths);
@@ -122,15 +122,15 @@ export const UnstagedSectionBody = observer(function UnstagedSectionBody() {
   const handleDiscardAll = () => {
     void (async () => {
       const outcome = await openConfirmActionModal({
-        title: 'Discard All Changes',
+        title: '丢弃所有变更',
         variant: 'destructive',
-        description: 'Are you sure you want to discard all changes? This can not be undone.',
+        description: '确定丢弃所有变更吗？此操作无法撤销。',
       });
       if (!outcome.success) return;
 
       const result = await git.discardAllFiles();
       if (!result.success) {
-        toast.error(`Failed to discard changes: ${formatErrorType(result.error)} `);
+        toast.error(`丢弃变更失败：${formatErrorType(result.error)} `);
       }
     })();
   };
@@ -139,7 +139,7 @@ export const UnstagedSectionBody = observer(function UnstagedSectionBody() {
     const paths = [...changesView.unstagedSelection];
     void git.stageFiles(paths).then((result) => {
       if (!result.success) {
-        toast.error(`Failed to stage changes: ${formatErrorType(result.error)} `);
+        toast.error(`暂存变更失败：${formatErrorType(result.error)} `);
         return;
       }
       changesView.removeUnstagedSelection(paths);
@@ -149,7 +149,7 @@ export const UnstagedSectionBody = observer(function UnstagedSectionBody() {
   const handleStageAll = () => {
     void git.stageAllFiles().then((result) => {
       if (!result.success) {
-        toast.error(`Failed to stage changes: ${formatErrorType(result.error)} `);
+        toast.error(`暂存变更失败：${formatErrorType(result.error)} `);
       }
     });
   };
@@ -157,7 +157,7 @@ export const UnstagedSectionBody = observer(function UnstagedSectionBody() {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       {!hasChanges && (
-        <EmptyState label="Working tree clean" description="No uncommitted file changes." />
+        <EmptyState label="工作树干净" description="没有未提交的文件变更。" />
       )}
       {hasChanges && (
         <ActionCard
@@ -168,20 +168,20 @@ export const UnstagedSectionBody = observer(function UnstagedSectionBody() {
                 variant="link"
                 size="xs"
                 onClick={handleDiscardSelection}
-                title="Discard selected files"
+                title="丢弃选中文件的变更"
                 className="text-foreground-destructive"
               >
                 <Undo2 className="size-3" />
-                Discard
+                丢弃
               </Button>
               <Button
                 variant="secondary"
                 size="xs"
                 onClick={handleStageSelection}
-                title="Stage selected files"
+                title="暂存选中的文件"
               >
                 <Plus className="size-3" />
-                Stage
+                暂存
               </Button>
             </>
           }
@@ -192,21 +192,21 @@ export const UnstagedSectionBody = observer(function UnstagedSectionBody() {
                 size="xs"
                 disabled={!hasChanges}
                 onClick={handleDiscardAll}
-                title="Discard all changes"
+                title="丢弃所有变更"
                 className="text-foreground-destructive"
               >
                 <Undo2 className="size-3" />
-                Discard all
+                全部丢弃
               </Button>
               <Button
                 variant="secondary"
                 size="xs"
                 disabled={!hasChanges}
                 onClick={handleStageAll}
-                title="Stage all changes"
+                title="暂存所有变更"
               >
                 <Plus className="size-3" />
-                Stage all
+                全部暂存
               </Button>
             </>
           }

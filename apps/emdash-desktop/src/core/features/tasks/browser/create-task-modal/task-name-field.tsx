@@ -11,17 +11,17 @@ export function TaskNameField({ state }: TaskNameFieldProps) {
   return (
     <Field.Root className="flex flex-col gap-1">
       <Input
-        aria-label="Task name"
+        aria-label="任务名称"
         bare
         autoFocus
         value={taskName}
-        placeholder={placeholder || 'Task name...'}
+        placeholder={placeholder || '任务名称…'}
         className="px-0 text-lg!"
         onChange={(e) => handleTaskNameChange(e.target.value)}
       />
       {showSlugHint && (
         <p className="text-muted-foreground mt-1 text-xs">
-          Task names only allow letters, numbers, and hyphens.
+          任务名称只能包含英文字母、数字和连字符。
         </p>
       )}
     </Field.Root>

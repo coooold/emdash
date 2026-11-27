@@ -1,3 +1,4 @@
+import { hostRefEquals, LOCAL_HOST_REF } from '@emdash/core/primitives/host/api';
 import type { RuntimeBroker } from '@emdash/core/services/runtime-broker/api';
 import type { Scope } from '@emdash/shared/concurrency';
 import type { Logger } from '@emdash/shared/logger';
@@ -9,8 +10,6 @@ import {
   type ContractImpl,
   type Controller,
 } from '@emdash/wire/rpc';
-import type { EmdashAccountService } from '@core/features/account/node/services/emdash-account-service';
-import { createAccountWireController } from '@core/features/account/node/wire-controller';
 import { createAgentOperations } from '@core/features/agents/node/controller';
 import { createAgentsWireController } from '@core/features/agents/node/wire-controller';
 import type { AutomationsService } from '@core/features/automations/api/node/automations-service';
@@ -30,10 +29,7 @@ import type { EditorBufferService } from '@core/features/editor/node/editor-buff
 import { createEditorWireController } from '@core/features/editor/node/wire-controller';
 import { createFilesWireController } from '@core/features/files/node/wire-controller';
 import type { GitCredentialsService } from '@core/features/github/api/node/services/git-credentials-service';
-import { createGithubWireController } from '@core/features/github/node/wire-controller';
 import { createIntegrationsWireController } from '@core/features/integrations/node/wire-controller';
-import type { IssueProviderRegistry } from '@core/features/issues/node/registry';
-import { createIssuesWireController } from '@core/features/issues/node/wire-controller';
 import {
   createLegacyPortWireController,
   type LegacyPortControllerOperations,
@@ -49,7 +45,6 @@ import type { ProjectSettingsService } from '@core/features/projects/api/node/se
 import type { ProjectDeletionDependencies } from '@core/features/projects/node/operations/deleteProject';
 import { getProjectById } from '@core/features/projects/node/operations/getProjects';
 import { createProjectsWireController } from '@core/features/projects/node/wire-controller';
-import type { GitLabRepositoryService } from '@core/features/repository/node/gitlab-repository-service';
 import { createRepositoryWireController } from '@core/features/repository/node/wire-controller';
 import type { SearchService } from '@core/features/search/node/search-service';
 import { createSearchWireController } from '@core/features/search/node/wire-controller';
@@ -69,8 +64,6 @@ import {
   createUpdatesWireController,
   type UpdateOperations,
 } from '@core/features/updates/node/wire-controller';
-import type { UsageOverviewSource } from '@core/features/usage/node/usage-overview';
-import { createUsageWireController } from '@core/features/usage/node/wire-controller';
 import {
   createWaitlistWireController,
   type WaitlistOperations,
@@ -93,15 +86,12 @@ import {
   type CreateWorkspacesWireControllerOptions,
 } from '@core/features/workspaces/node/wire-controller';
 import { WorkspaceMutationService } from '@core/features/workspaces/node/workspace-mutation-service';
-import type { SshServiceHandle } from '@core/manifests/node/ssh-service-handle';
 import { desktopDomainContracts } from '@core/manifests/shared/domain-contracts';
 import type { HostReachabilityProbe } from '@core/primitives/ssh/api';
 import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type { AppDb } from '@core/services/app-db/node/db';
 import type { TerminalFileSources } from '@core/services/attachments/node/prepare-terminal-files';
 import type { HostAvailabilityService } from '@core/services/hosts/node/availability';
-import type { Hosts } from '@core/services/hosts/node/hosts';
-import { hostSupportsLsp } from '@core/services/hosts/node/lsp-capability';
 import { createHostsWireController } from '@core/services/hosts/node/wire-controller';
 import {
   createLoggingWireController,
@@ -109,7 +99,6 @@ import {
 } from '@core/services/logging/node/wire-controller';
 import type { NotificationService } from '@core/services/notifications/node';
 import { createNotificationsWireController } from '@core/services/notifications/node/wire-controller';
-import type { PullRequestsRuntimeClient } from '@core/services/pull-requests/api';
 import type { ReconcileSweepHandle } from '@core/services/reconcile-sweep/node/reconcile-sweep-service';
 import type { MementosRuntimeClient } from '@core/services/runtime-broker/api/clients';
 import type { AppSettingsService } from '@core/services/settings/node';
@@ -118,10 +107,8 @@ import {
   createAppSettingsWireController,
   type SettingsRuntimePort,
 } from '@core/services/settings/node/wire-controller';
-import { createSshWireController } from '@core/services/ssh/node/controller';
 
 export type DesktopControllerContext = {
-  readonly accountService: EmdashAccountService;
   readonly agentDependencies: Omit<
     Parameters<typeof createAgentOperations>[0],
     'providerOverrideSettings'
@@ -133,13 +120,10 @@ export type DesktopControllerContext = {
   readonly db: AppDb;
   readonly devPerfOperations: DevPerfOperations;
   readonly editorBuffer: EditorBufferService;
-  readonly github: Omit<Parameters<typeof createGithubWireController>[0], 'logger'>;
-  readonly gitlabRepositories: GitLabRepositoryService;
   readonly gitCredentials: GitCredentialsService;
   readonly hostAvailability: HostAvailabilityService;
   readonly hostIsReachable: HostReachabilityProbe;
   readonly hostOperations: DesktopHostControllerOperations;
-  readonly issueProviders: IssueProviderRegistry;
   readonly legacyPortOperations: LegacyPortControllerOperations;
   readonly logger: Logger;
   readonly loggingOperations: LoggingControllerOperations;
@@ -151,16 +135,13 @@ export type DesktopControllerContext = {
   readonly projectSettings: ProjectSettingsService;
   readonly providerSettings: ProviderOverrideSettings;
   readonly reconcileSweep: ReconcileSweepHandle;
-  readonly hosts: Hosts;
   readonly runtimeClients: {
     getMementosRuntimeClient(): Promise<MementosRuntimeClient>;
-    getPullRequestsRuntimeClient(): Promise<PullRequestsRuntimeClient>;
   };
   readonly scope: Scope;
   readonly search: SearchService;
   readonly sessionLaunchContexts: TaskSessionLaunchContextResolver;
   readonly runtimes: RuntimeBroker;
-  readonly ssh: SshServiceHandle;
   readonly settingsRuntime: SettingsRuntimePort;
   readonly telemetry: TelemetryService;
   readonly taskService: TaskService;
@@ -168,7 +149,6 @@ export type DesktopControllerContext = {
   readonly terminalFileSources: TerminalFileSources;
   readonly terminalShell: CreateTerminalsWireControllerOptions['terminalShell'];
   readonly updateOperations: UpdateOperations;
-  readonly usage: UsageOverviewSource;
   readonly waitlistOperations: WaitlistOperations;
   readonly workspaceIdentity: WorkspaceIdentityService;
   readonly workspacePlacement: WorkspacePlacementResolver;
@@ -191,10 +171,6 @@ function controllerFromImpl<Defs extends ContractDefinitions>(
 }
 
 export const desktopNodeControllers = {
-  account: {
-    create: ({ accountService, logger, telemetry }) =>
-      createAccountWireController(accountService, { logger, telemetry }),
-  },
   agents: {
     create: ({ agentDependencies, providerSettings, runtimes }) =>
       createAgentsWireController({
@@ -214,11 +190,11 @@ export const desktopNodeControllers = {
       createDevPerfWireController(devPerfOperations, logger),
   },
   editor: {
-    create: ({ editorBuffer, runtimes, hosts }) =>
+    create: ({ editorBuffer, runtimes }) =>
       createEditorWireController({
         editorBuffer,
         runtimes,
-        isSupported: (host) => hostSupportsLsp(host, hosts),
+        isSupported: async (host) => hostRefEquals(host, LOCAL_HOST_REF),
       }),
   },
   files: {
@@ -231,7 +207,7 @@ export const desktopNodeControllers = {
     create: ({ loggingOperations }) => createLoggingWireController(loggingOperations),
   },
   machines: {
-    create: ({ runtimes, ssh }) => createMachinesWireController(ssh.machines, runtimes),
+    create: ({ runtimes }) => createMachinesWireController(runtimes),
   },
   projectSettings: {
     create: ({ runtimes, workspaceIdentity }) =>
@@ -254,11 +230,10 @@ export const desktopNodeControllers = {
     create: ({ promptLibrary }) => createPromptLibraryWireController(promptLibrary),
   },
   repository: {
-    create: ({ db, projects, gitlabRepositories }) =>
+    create: ({ db, projects }) =>
       createRepositoryWireController({
         projects,
         loadProject: (projectId) => getProjectById(db, projectId),
-        gitlab: gitlabRepositories,
       }),
   },
   search: {
@@ -319,13 +294,6 @@ export const desktopNodeControllers = {
   },
   notifications: {
     create: ({ notifications }) => createNotificationsWireController(notifications),
-  },
-  pullRequests: {
-    create: async ({ runtimeClients }) =>
-      forwardController(
-        desktopDomainContracts.pullRequests,
-        await runtimeClients.getPullRequestsRuntimeClient()
-      ),
   },
   catalog: {
     create: ({ scope }) =>
@@ -428,25 +396,11 @@ export const desktopNodeControllers = {
   previewServers: {
     create: ({ previewServerAccess }) => createPreviewServersWireController(previewServerAccess),
   },
-  github: {
-    create: ({ github, logger }) => createGithubWireController({ ...github, logger }),
-  },
   integrations: {
     create: () => createIntegrationsWireController(),
   },
-  issues: {
-    create: ({ issueProviders, projects }) =>
-      createIssuesWireController({ projects, providers: issueProviders }),
-  },
-  ssh: {
-    create: ({ ssh }) => createSshWireController(ssh.ssh, ssh.connections),
-  },
-  usage: {
-    create: ({ scope, usage }) => createUsageWireController({ scope, usage }),
-  },
   hosts: {
-    create: ({ hostAvailability, hosts, ssh }) =>
-      createHostsWireController(hosts, hostAvailability, ssh.ssh),
+    create: ({ hostAvailability, scope }) => createHostsWireController(hostAvailability, scope),
   },
   tasks: {
     create: ({ db, scope, taskService, taskSessions, telemetry }) => {

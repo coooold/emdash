@@ -22,7 +22,7 @@ export function SetupStepPreview({ steps }: SetupStepPreviewProps) {
       >
         <span className="flex items-center gap-1.5">
           <Terminal className="size-3 shrink-0" />
-          Setup steps ({steps.length})
+          设置步骤（{steps.length}）
         </span>
         <ChevronDown className="size-3.5 shrink-0 transition-transform duration-150 data-[state=open]:rotate-180" />
       </Collapsible.Trigger>

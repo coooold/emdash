@@ -37,13 +37,13 @@ function PreviewSoundButton({
               className="text-muted-foreground hover:text-foreground"
               disabled={disabled}
               onClick={() => soundPlayer.preview(path)}
-              aria-label="Preview sound"
+              aria-label="试听提示音"
             >
               <Play className="size-3.5" />
             </Button>
           }
         />
-        <Tooltip.Content side="top">Preview</Tooltip.Content>
+        <Tooltip.Content side="top">试听</Tooltip.Content>
       </Tooltip.Root>
     </Tooltip.Provider>
   );
@@ -84,8 +84,8 @@ const NotificationSettingsCard: React.FC = () => {
     const result = await (
       await getHostClient()
     ).openSelectAudioFileDialog({
-      title: 'Choose custom sound',
-      message: 'Select an audio file to play for agent events',
+      title: '选择自定义提示音',
+      message: '选择用于智能体事件的音频文件',
     });
     if (result) updateNotifications({ customSoundPath: result });
   };
@@ -94,13 +94,13 @@ const NotificationSettingsCard: React.FC = () => {
     <SettingsCard>
       <SeparatedList gap="0.75rem" direction="column">
         <SettingRow
-          title="Notifications"
-          description="Get notified when agents need your attention."
+          title="通知"
+          description="智能体需要你的注意时发送通知。"
           control={
             <>
               <ResetToDefaultButton
                 visible={isFieldOverridden('enabled')}
-                defaultLabel="on"
+                defaultLabel="开启"
                 onReset={() => resetField('enabled')}
                 disabled={loading}
               />
@@ -120,13 +120,13 @@ const NotificationSettingsCard: React.FC = () => {
         >
           <SeparatedList gap="0.75rem" direction="column">
             <SettingRow
-              title="Sound"
-              description="Play audio cues for agent events."
+              title="提示音"
+              description="智能体有新事件时播放提示音。"
               control={
                 <>
                   <ResetToDefaultButton
                     visible={isFieldOverridden('sound')}
-                    defaultLabel="on"
+                    defaultLabel="开启"
                     onReset={() => resetNotificationField('sound', true)}
                     disabled={loading}
                   />
@@ -141,13 +141,13 @@ const NotificationSettingsCard: React.FC = () => {
             />
 
             <SettingRow
-              title="Custom sound"
-              description="Use an audio file instead of the built-in cue."
+              title="自定义提示音"
+              description="使用音频文件作为提示音。"
               control={
                 <>
                   <ResetToDefaultButton
                     visible={isFieldOverridden('customSoundPath')}
-                    defaultLabel="built-in"
+                    defaultLabel="内置"
                     onReset={() => resetNotificationField('customSoundPath', '')}
                     disabled={loading}
                   />
@@ -165,12 +165,12 @@ const NotificationSettingsCard: React.FC = () => {
                             disabled={loading}
                             onClick={chooseCustomSound}
                             aria-label={
-                              customSoundPath ? 'Change custom sound' : 'Choose custom sound'
+                              customSoundPath ? '更换自定义提示音' : '选择自定义提示音'
                             }
                           >
                             <FolderOpen className="size-3.5 shrink-0" />
                             <span className="truncate">
-                              {customSoundPath ? getFileName(customSoundPath) : 'Choose file…'}
+                              {customSoundPath ? getFileName(customSoundPath) : '选择文件…'}
                             </span>
                           </Button>
                         }
@@ -187,13 +187,13 @@ const NotificationSettingsCard: React.FC = () => {
             />
 
             <SettingRow
-              title="Sound timing"
-              description="When to play sounds."
+              title="提示音播放时机"
+              description="设置播放提示音的时机。"
               control={
                 <>
                   <ResetToDefaultButton
                     visible={isFieldOverridden('soundFocusMode')}
-                    defaultLabel="always"
+                    defaultLabel="始终播放"
                     onReset={() => resetNotificationField('soundFocusMode', 'always')}
                     disabled={loading}
                   />
@@ -207,8 +207,8 @@ const NotificationSettingsCard: React.FC = () => {
                       <Select.Value />
                     </Select.Trigger>
                     <Select.Content className="min-w-max">
-                      <Select.Item value="always">Always</Select.Item>
-                      <Select.Item value="unfocused">Only when unfocused</Select.Item>
+                      <Select.Item value="always">始终播放</Select.Item>
+                      <Select.Item value="unfocused">仅在窗口失焦时播放</Select.Item>
                     </Select.Content>
                   </Select.Root>
                 </>
@@ -216,13 +216,13 @@ const NotificationSettingsCard: React.FC = () => {
             />
 
             <SettingRow
-              title="OS notifications"
-              description="Show system banners when agents need attention or finish (while Emdash is unfocused)."
+              title="系统通知"
+              description="Emdash 失去焦点时，如果智能体需要你的注意或完成任务，则显示系统通知横幅。"
               control={
                 <>
                   <ResetToDefaultButton
                     visible={isFieldOverridden('osNotifications')}
-                    defaultLabel="on"
+                    defaultLabel="开启"
                     onReset={() => resetNotificationField('osNotifications', true)}
                     disabled={loading}
                   />

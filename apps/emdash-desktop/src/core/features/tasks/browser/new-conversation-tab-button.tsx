@@ -37,13 +37,13 @@ export const NewConversationTabButton = observer(function NewConversationTabButt
           icon
           variant="ghost"
           onClick={handleCreateConversation}
-          aria-label="New conversation"
+          aria-label="新建对话"
         >
           <Plus className="size-3.5" />
         </Button>
       </Tooltip.Trigger>
       <Tooltip.Content>
-        New Conversation <BoundShortcut command="task.newConversation" variant="keycaps" />
+        新建对话 <BoundShortcut command="task.newConversation" variant="keycaps" />
       </Tooltip.Content>
     </Tooltip.Root>
   );

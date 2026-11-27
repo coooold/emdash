@@ -24,7 +24,7 @@ export const FileStatusPlaceholder = observer(function FileStatusPlaceholder({
     return (
       <Shell>
         <Spinner size="sm" />
-        <span className="text-xs text-foreground-passive">Loading file...</span>
+        <span className="text-xs text-foreground-passive">正在加载文件…</span>
       </Shell>
     );
   }
@@ -35,8 +35,8 @@ export const FileStatusPlaceholder = observer(function FileStatusPlaceholder({
         <Notice
           icon={FileX2}
           fileName={fileName}
-          message="File was deleted on disk"
-          detail="The content comes back automatically if the file is restored."
+          message="文件已从磁盘删除"
+          detail="文件恢复后将自动显示内容。"
         />
       </Shell>
     );
@@ -51,14 +51,14 @@ export const FileStatusPlaceholder = observer(function FileStatusPlaceholder({
     case 'not-found':
       return (
         <Shell>
-          <Notice icon={FileX2} fileName={fileName} message="File not found" />
+          <Notice icon={FileX2} fileName={fileName} message="找不到文件" />
           <RetryButton onRetry={retry} />
         </Shell>
       );
     case 'no-permissions':
       return (
         <Shell>
-          <Notice icon={ShieldAlert} fileName={fileName} message="Permission denied" />
+          <Notice icon={ShieldAlert} fileName={fileName} message="权限不足" />
           <RetryButton onRetry={retry} />
         </Shell>
       );
@@ -68,11 +68,11 @@ export const FileStatusPlaceholder = observer(function FileStatusPlaceholder({
           <Notice
             icon={FileX}
             fileName={fileName}
-            message="File too large to display in the editor"
+            message="文件过大，无法在编辑器中显示"
           />
           {resource.ref?.host.type === 'local' && (
             <Button variant="secondary" size="sm" onClick={openInDefaultApp}>
-              Open in default app
+              用默认应用打开
             </Button>
           )}
         </Shell>
@@ -80,10 +80,10 @@ export const FileStatusPlaceholder = observer(function FileStatusPlaceholder({
     case 'binary':
       return (
         <Shell>
-          <Notice icon={FileQuestion} fileName={fileName} message="Binary file — no preview" />
+          <Notice icon={FileQuestion} fileName={fileName} message="二进制文件无法预览" />
           {resource.ref?.host.type === 'local' && (
             <Button variant="secondary" size="sm" onClick={openInDefaultApp}>
-              Open in default app
+              用默认应用打开
             </Button>
           )}
         </Shell>
@@ -91,7 +91,7 @@ export const FileStatusPlaceholder = observer(function FileStatusPlaceholder({
     case 'unavailable':
       return (
         <Shell>
-          <Notice icon={FileX2} fileName={fileName} message="Could not load file" />
+          <Notice icon={FileX2} fileName={fileName} message="无法加载文件" />
           <RetryButton onRetry={retry} />
         </Shell>
       );
@@ -132,7 +132,7 @@ function Notice({
 function RetryButton({ onRetry }: { onRetry: () => void }) {
   return (
     <Button variant="secondary" size="sm" onClick={onRetry}>
-      Retry
+      重试
     </Button>
   );
 }

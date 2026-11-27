@@ -9,7 +9,6 @@ import type { DesktopRuntimes } from '@main/gateway/desktop-runtimes';
 import { appScope } from '../../core/app-scope';
 import { createDesktopWireOptions } from '../wiring';
 import type { DatabaseBundle } from './database';
-import type { InfrastructureBundle } from './infrastructure';
 import type { ServicesBundle } from './services';
 
 export type ControllersBundle = {
@@ -19,7 +18,6 @@ export type ControllersBundle = {
 
 export async function bootControllers(
   database: DatabaseBundle,
-  infrastructure: InfrastructureBundle,
   runtimes: DesktopRuntimes,
   services: ServicesBundle
 ): Promise<ControllersBundle> {
@@ -32,10 +30,8 @@ export async function bootControllers(
         const controllerScope = scope.child(`controller:${domain}`);
         const context: DesktopControllerContext = {
           ...options,
-          hosts: infrastructure.hosts,
           runtimes: runtimes.broker,
           scope: controllerScope,
-          ssh: infrastructure.ssh,
         };
         const controller = await contribution.create(context);
         if (controller.dispose) controllerScope.add(() => controller.dispose?.());

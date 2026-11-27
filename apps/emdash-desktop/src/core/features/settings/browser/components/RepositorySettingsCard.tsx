@@ -35,8 +35,8 @@ const RepositorySettingsCard: React.FC = () => {
                   updateProject({ branchPrefix: next });
                 }
               }}
-              placeholder="Branch prefix"
-              aria-label="Branch prefix"
+              placeholder="分支前缀"
+              aria-label="分支前缀"
               disabled={projectBusy}
               className="flex-1"
             />
@@ -48,17 +48,17 @@ const RepositorySettingsCard: React.FC = () => {
             />
           </div>
           <div className="text-xs text-foreground-passive">
-            Leave empty to create branches without a prefix.
+            留空即可创建无前缀的分支。
           </div>
         </div>
         <SettingRow
-          title="Random branch suffix"
-          description="Add a random suffix to branch names."
+          title="随机分支后缀"
+          description="给分支名称添加随机后缀。"
           control={
             <>
               <ResetToDefaultButton
                 visible={isProjectFieldOverridden('appendRandomBranchSuffix')}
-                defaultLabel="on"
+                defaultLabel="开启"
                 onReset={() => resetProjectField('appendRandomBranchSuffix')}
                 disabled={projectBusy}
               />
@@ -66,19 +66,19 @@ const RepositorySettingsCard: React.FC = () => {
                 checked={appendRandomBranchSuffix}
                 onCheckedChange={(checked) => updateProject({ appendRandomBranchSuffix: checked })}
                 disabled={projectBusy}
-                aria-label="Append random branch suffix"
+                aria-label="添加随机分支后缀"
               />
             </>
           }
         />
         <SettingRow
-          title="Auto-push on create"
-          description="Push the new branch to the selected project remote and set upstream after creation."
+          title="创建时自动推送"
+          description="创建分支后推送到选定的 Git 远端并设置上游。"
           control={
             <>
               <ResetToDefaultButton
                 visible={isProjectFieldOverridden('pushOnCreate')}
-                defaultLabel="on"
+                defaultLabel="开启"
                 onReset={() => resetProjectField('pushOnCreate')}
                 disabled={projectBusy}
               />
@@ -86,7 +86,7 @@ const RepositorySettingsCard: React.FC = () => {
                 checked={pushOnCreate}
                 onCheckedChange={(checked) => updateProject({ pushOnCreate: checked })}
                 disabled={projectBusy}
-                aria-label="Enable automatic push on create"
+                aria-label="启用创建时自动推送"
               />
             </>
           }

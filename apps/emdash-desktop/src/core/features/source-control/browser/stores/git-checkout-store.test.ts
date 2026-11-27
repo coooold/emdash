@@ -214,85 +214,25 @@ describe('GitCheckoutStore', () => {
   });
 
   it.each(['push', 'publishCurrentBranch'] as const)(
-    '%s refreshes only known open PRs for the exact pushed fork and branch',
+    '%s uses native Git without refreshing provider requests',
     async (operation) => {
       mocks.getGitRepositoryStore.mockReturnValue({
         pushRemote: { name: 'fork', url: `${forkUrl}.git` },
         pullRequestRepositoryUrl: repositoryUrl,
         canonicalPushRepositoryUrl: forkUrl,
       });
-      mocks.getPullRequestsForHead.mockResolvedValue(
-        ok({
-          prs: [
-            { identifier: '#12', status: 'open' },
-            { identifier: '#13', status: 'open' },
-            { identifier: '#11', status: 'closed' },
-          ],
-        })
-      );
-      headState.set(head('feature'));
       const store = new GitCheckoutStore('project-1', 'workspace-1', '/repo');
       store.start();
-      await waitFor(() => store.branchName === 'feature');
+      await waitFor(() => store.branchName === 'main');
 
       await expect(store[operation]()).resolves.toMatchObject({ success: true });
-      await vi.waitFor(() => expect(mocks.refreshPullRequest).toHaveBeenCalledTimes(2));
-
-      expect(mocks.getPullRequestsForHead).toHaveBeenCalledWith({
-        repositoryUrl,
-        headRepositoryUrl: forkUrl,
-        headRefName: 'feature',
-      });
-      expect(mocks.refreshPullRequest.mock.calls).toEqual([
-        [{ repositoryUrl, number: 12, policy: 'force' }],
-        [{ repositoryUrl, number: 13, policy: 'force' }],
-      ]);
+      expect(mocks.pushRun).toHaveBeenCalledOnce();
+      expect(mocks.getPullRequestsForHead).not.toHaveBeenCalled();
+      expect(mocks.refreshPullRequest).not.toHaveBeenCalled();
       expect(mocks.refreshRepository).not.toHaveBeenCalled();
       store.dispose();
     }
   );
-
-  it.each([
-    ['unknown PR', ok({ prs: [] })],
-    ['closed-only PR', ok({ prs: [{ identifier: '#12', status: 'closed' }] })],
-    ['invalid identifier', ok({ prs: [{ identifier: null, status: 'open' }] })],
-    ['failed cache lookup', err({ type: 'unknown_error' })],
-  ])('discovers open PRs after push with %s', async (_description, lookupResult) => {
-    mocks.getGitRepositoryStore.mockReturnValue({
-      pushRemote: { name: 'fork', url: `${forkUrl}.git` },
-      pullRequestRepositoryUrl: repositoryUrl,
-      canonicalPushRepositoryUrl: forkUrl,
-    });
-    mocks.getPullRequestsForHead.mockResolvedValue(lookupResult);
-    const store = new GitCheckoutStore('project-1', 'workspace-1', '/repo');
-    store.start();
-    await waitFor(() => store.branchName === 'main');
-
-    await expect(store.push()).resolves.toMatchObject({ success: true });
-    await vi.waitFor(() => expect(mocks.refreshRepository).toHaveBeenCalledTimes(1));
-
-    expect(mocks.refreshRepository).toHaveBeenCalledWith({ repositoryUrl, policy: 'force' });
-    expect(mocks.refreshPullRequest).not.toHaveBeenCalled();
-    store.dispose();
-  });
-
-  it('discovers PRs without guessing the head repository when push identity is missing', async () => {
-    mocks.getGitRepositoryStore.mockReturnValue({
-      pushRemote: { name: 'origin', url: 'unrecognized-url' },
-      pullRequestRepositoryUrl: repositoryUrl,
-      canonicalPushRepositoryUrl: null,
-    });
-    const store = new GitCheckoutStore('project-1', 'workspace-1', '/repo');
-    store.start();
-    await waitFor(() => store.branchName === 'main');
-
-    await expect(store.push()).resolves.toMatchObject({ success: true });
-    await vi.waitFor(() => expect(mocks.refreshRepository).toHaveBeenCalledTimes(1));
-
-    expect(mocks.getPullRequestsForHead).not.toHaveBeenCalled();
-    expect(mocks.refreshRepository).toHaveBeenCalledWith({ repositoryUrl, policy: 'force' });
-    store.dispose();
-  });
 
   it('does not refresh PRs after an unsuccessful push', async () => {
     mocks.getGitRepositoryStore.mockReturnValue({

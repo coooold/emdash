@@ -21,8 +21,8 @@ const InterfaceSettingsCard: React.FC = () => {
     <SettingsCard>
       <SeparatedList gap="1rem" direction="column">
         <SettingRow
-          title="Context bar"
-          description="Hide the on-screen context trigger. The keyboard shortcut still works."
+          title="上下文栏"
+          description="隐藏界面中的上下文按钮。仍可通过快捷键打开。"
           control={
             <>
               <ResetToDefaultButton

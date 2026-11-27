@@ -47,7 +47,7 @@ export function PaneEmptyState() {
           onMouseEnter={() => setSelectedIndex(0)}
           onClick={actions[0]}
           icon={<MessageSquare className="size-3.5" />}
-          label="New conversation"
+          label="新建对话"
           commandId="task.newConversation"
         />
         <PaneEmptyStateAction
@@ -55,7 +55,7 @@ export function PaneEmptyState() {
           onMouseEnter={() => setSelectedIndex(1)}
           onClick={actions[1]}
           icon={<FileSearch className="size-3.5" />}
-          label="Open file"
+          label="打开文件"
           commandId="app.commandPalette"
         />
       </div>

@@ -38,6 +38,7 @@ describe('buildAgentMetadataList', () => {
   it('copies provider trust capabilities into renderer metadata', () => {
     const claude = buildAgentMetadataList().find((agent) => agent.id === 'claude');
 
+    expect(claude?.capabilities.auth).toEqual({ kind: 'none' });
     expect(claude?.capabilities.trust).toEqual({ kind: 'supported' });
   });
 });

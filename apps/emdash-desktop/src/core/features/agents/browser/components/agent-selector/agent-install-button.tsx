@@ -41,6 +41,7 @@ export function AgentInstallButton({
   }
 
   const InstallIcon = state.installing ? Loader2 : Download;
+  const label = state.installing ? `正在安装 ${agentName}…` : `安装 ${agentName}`;
 
   return (
     <Tooltip.Provider delay={150}>
@@ -52,7 +53,7 @@ export function AgentInstallButton({
             size="xs"
             icon
             disabled={disabled || state.disabled}
-            aria-label={state.label}
+            aria-label={label}
             onClick={onInstall}
             className={cn('ml-auto cursor-pointer', className)}
           >
@@ -63,7 +64,7 @@ export function AgentInstallButton({
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side={tooltipSide} className="text-xs">
-          {state.label}
+          {label}
         </Tooltip.Content>
       </Tooltip.Root>
     </Tooltip.Provider>

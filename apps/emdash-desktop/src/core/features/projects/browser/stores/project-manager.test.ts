@@ -61,7 +61,6 @@ const mocks = vi.hoisted(() => ({
   taskListLoad: vi.fn(),
   taskProvision: vi.fn(),
   renameProject: vi.fn(),
-  updateProjectConnection: vi.fn(),
   updateProjectSettings: vi.fn(),
 }));
 
@@ -245,7 +244,6 @@ function createProjectWire() {
       }),
     },
     renameProject: (input: unknown) => mocks.renameProject(input),
-    updateProjectConnection: (input: unknown) => mocks.updateProjectConnection(input),
     updateProjectSettings: (input: unknown) => mocks.updateProjectSettings(input),
     delete: (input: unknown) => mocks.projectWireDelete(input),
   } as never);
@@ -313,7 +311,6 @@ describe('ProjectManagerStore project creation', () => {
     mocks.taskListLoad.mockResolvedValue(undefined);
     mocks.taskProvision.mockResolvedValue(undefined);
     mocks.renameProject.mockResolvedValue(undefined);
-    mocks.updateProjectConnection.mockResolvedValue(undefined);
     mocks.projectWireProgressCallbacks.length = 0;
     mocks.projectWireCancel.mockResolvedValue(undefined);
     mocks.projectWireDelete.mockResolvedValue({ success: true, data: {} });
@@ -646,7 +643,7 @@ describe('ProjectManagerStore project creation', () => {
   });
 
   it('recovers one Project context through Host readiness and attachment in place', async () => {
-    const project = sshProject();
+    const project = localProject();
     projectListState.set({ projects: [project] });
     const store = new ProjectManagerStore();
     await store.load();
@@ -822,37 +819,24 @@ describe('ProjectManagerStore project creation', () => {
     });
   });
 
-  it('preserves desktop context and record identity when relinking a project', async () => {
+  it('retains legacy SSH project records without hydrating or contacting their hosts', async () => {
     const project = sshProject();
     projectListState.set({ projects: [project] });
     const store = new ProjectManagerStore();
+
     await store.load();
-    await vi.waitFor(() => expect(store.projects.get(project.id)?.context?.kind).toBe('available'));
-    const projectStore = store.projects.get(project.id)!;
-    const lifecycle = projectStore.context;
-    if (lifecycle?.kind !== 'available') throw new Error('Expected available context');
-    const context = lifecycle.context;
-    const record = context.project;
+    await store.hydrateProjectContext(project.id);
 
-    await store.updateProjectConnection(project.id, 'ssh-2');
-    await vi.waitFor(() => {
-      const current = store.projects.get(project.id);
-      expect(current?.data?.type === 'ssh' ? current.data.connectionId : null).toBe('ssh-2');
-    });
-    await vi.waitFor(() =>
-      expect(mocks.hostAvailabilityTrack).toHaveBeenCalledWith({
-        host: { type: 'remote', id: 'ssh-2' },
-      })
-    );
-
-    expect(store.projects.get(project.id)).toBe(projectStore);
-    expect(projectStore.context).toEqual({ kind: 'available', context });
-    expect(context.project).toBe(record);
-    expect(record.type === 'ssh' ? record.connectionId : null).toBe('ssh-2');
+    expect(store.projects.get(project.id)?.data).toEqual(project);
+    expect(store.projects.get(project.id)?.context).toBeNull();
+    expect(mocks.hostAvailabilityTrack).not.toHaveBeenCalled();
+    expect(mocks.attachmentTrack).not.toHaveBeenCalled();
+    expect(mocks.taskListLoad).not.toHaveBeenCalled();
+    expect(mocks.recoverAttachment).not.toHaveBeenCalled();
   });
 
   it('renames a project in place without replacing its store or context', async () => {
-    const project = sshProject();
+    const project = localProject();
     projectListState.set({ projects: [project] });
     const store = new ProjectManagerStore();
     await store.load();
@@ -873,7 +857,7 @@ describe('ProjectManagerStore project creation', () => {
   });
 
   it('leaves the store untouched when the rename request fails', async () => {
-    const project = sshProject();
+    const project = localProject();
     projectListState.set({ projects: [project] });
     const store = new ProjectManagerStore();
     await store.load();
@@ -932,38 +916,26 @@ describe('ProjectManagerStore project creation', () => {
     );
   });
 
-  it('starts the clone job with an SSH host for remote clones', async () => {
+  it('rejects creating SSH projects before reading or writing project files', async () => {
     const store = new ProjectManagerStore();
 
-    const result = await store.startProjectCreation(
-      { type: 'ssh', connectionId: 'ssh-1' },
-      {
-        mode: 'clone',
-        name: 'child-project',
-        path: '/parent',
-        repositoryUrl: 'https://github.com/acme/child-project.git',
-      },
-      { id: 'optimistic-project' }
-    );
+    await expect(
+      store.startProjectCreation(
+        { type: 'ssh', connectionId: 'ssh-1' },
+        {
+          mode: 'clone',
+          name: 'child-project',
+          path: '/parent',
+          repositoryUrl: 'https://github.com/acme/child-project.git',
+        },
+        { id: 'optimistic-project' }
+      )
+    ).rejects.toThrow('SSH');
 
-    expect(result.kind).toBe('creating');
-    if (result.kind === 'creating') {
-      await expect(result.completion).resolves.toEqual({ success: true });
-    }
-    expect(mocks.inspectProjectPath).toHaveBeenCalledWith({
-      type: 'ssh',
-      connectionId: 'ssh-1',
-      path: '/parent/child-project',
-    });
-    expect(mocks.projectWireCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        host: { type: 'ssh', connectionId: 'ssh-1' },
-        targetPath: '/parent/child-project',
-      })
-    );
-    await vi.waitFor(() =>
-      expect(store.projects.get('optimistic-project')?.context?.kind).toBe('available')
-    );
+    expect(mocks.resolveRepositoryDestination).not.toHaveBeenCalled();
+    expect(mocks.inspectProjectPath).not.toHaveBeenCalled();
+    expect(mocks.projectWireCreate).not.toHaveBeenCalled();
+    expect(store.projects.has('optimistic-project')).toBe(false);
   });
 
   it('stores remote creation progress on the pending project', async () => {
@@ -1477,54 +1449,6 @@ describe('ProjectManagerStore project creation', () => {
       accountId: 'github.com:42',
     });
     expect(mocks.createProject).not.toHaveBeenCalled();
-  });
-
-  it('starts repository-creation cloning on the SSH host and rolls back GitHub if it fails', async () => {
-    mocks.projectWireResult = Promise.reject(
-      new LiveJobFailedError({ type: 'clone-failed', message: 'Remote clone failed' })
-    );
-    const store = new ProjectManagerStore();
-
-    const result = await store.startProjectCreation(
-      { type: 'ssh', connectionId: 'ssh-1' },
-      {
-        mode: 'create',
-        name: 'Project',
-        path: '/remote/parent',
-        repositoryName: 'project',
-        repositoryOwner: 'acme',
-        repositoryVisibility: 'private',
-        githubAccountId: 'github.com:42',
-      },
-      { id: 'optimistic-project' }
-    );
-
-    expect(result.kind).toBe('creating');
-    if (result.kind === 'creating') {
-      await expect(result.completion).resolves.toEqual({
-        success: false,
-        error: { type: 'clone-failed', message: 'Remote clone failed' },
-      });
-    }
-
-    expect(mocks.inspectProjectPath).toHaveBeenCalledWith({
-      type: 'ssh',
-      connectionId: 'ssh-1',
-      path: '/remote/parent/Project',
-    });
-    expect(mocks.projectWireCreate).toHaveBeenCalledWith(
-      expect.objectContaining({
-        host: { type: 'ssh', connectionId: 'ssh-1' },
-        mode: 'create',
-        repositoryUrl: 'https://github.com/acme/project.git',
-        targetPath: '/remote/parent/Project',
-      })
-    );
-    expect(mocks.deleteGithubRepository).toHaveBeenCalledWith({
-      owner: 'acme',
-      name: 'project',
-      accountId: 'github.com:42',
-    });
   });
 
   it('does not attempt GitHub repository rollback when repository creation fails', async () => {

@@ -55,39 +55,35 @@ function stepDescription(step: WorkspaceLifecycleStepInfo): string {
   const params = step.params;
   switch (step.id) {
     case 'adopt-worktree':
-      return `Worktree with ${params.branch} already exists at ${params.path}`;
+      return `分支 ${params.branch} 的工作树已存在于 ${params.path}`;
     case 'fetch-branch':
-      return `Fetching ${params.source} into ${params.branch}`;
+      return `正在将 ${params.source} 获取到 ${params.branch}`;
     case 'fetch-remote-base':
-      return `Fetch remote base ${params.base}`;
+      return `获取远端基准分支 ${params.base}`;
     case 'configure-branch':
-      return `Configuring upstream tracking for ${params.branch}`;
+      return `正在为 ${params.branch} 配置上游跟踪`;
     case 'create-worktree': {
       // While the step is still running, whether the branch is new is unknown.
       const branchKind =
-        params.branchCreated === undefined
-          ? ''
-          : params.branchCreated
-            ? 'newly created '
-            : 'existing ';
-      return `Adding worktree at ${params.path} using ${branchKind}branch ${params.branch}`;
+        params.branchCreated === undefined ? '' : params.branchCreated ? '新建' : '现有';
+      return `正在使用${branchKind}分支 ${params.branch} 在 ${params.path} 创建工作树`;
     }
     case 'copy-artifacts':
       return typeof params.fileCount === 'number'
-        ? `Copying ${params.fileCount} artifacts defined in preservePatterns`
-        : 'Copying artifacts defined in preservePatterns';
+        ? `正在复制 preservePatterns 指定的 ${params.fileCount} 个文件或目录`
+        : '正在复制 preservePatterns 指定的文件或目录';
     case 'push-branch':
       return typeof params.remote === 'string'
-        ? `Pushing ${params.branch} to ${params.remote}`
-        : `Pushing ${params.branch} to remote`;
+        ? `正在将 ${params.branch} 推送到 ${params.remote}`
+        : `正在将 ${params.branch} 推送到远端`;
     case 'prepare':
-      return 'Running prepare scripts';
+      return '正在运行准备脚本';
     case 'setup':
-      return 'Running setup scripts';
+      return '正在运行设置脚本';
     case 'run':
-      return 'Starting run scripts';
+      return '正在启动运行脚本';
     case 'teardown':
-      return 'Running teardown scripts';
+      return '正在运行清理脚本';
     case 'fetch-refs':
       return '';
   }
@@ -100,11 +96,11 @@ function stepTimestamp(step: WorkspaceLifecycleStepInfo): number | null {
 
 function relativeLabel(timestamp: number, now: number): string {
   const minutes = Math.floor(Math.max(0, now - timestamp) / 60_000);
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes}m ago`;
+  if (minutes < 1) return '刚刚';
+  if (minutes < 60) return `${minutes} 分钟前`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  return `${Math.floor(hours / 24)}d ago`;
+  if (hours < 24) return `${hours} 小时前`;
+  return `${Math.floor(hours / 24)} 天前`;
 }
 
 export type ActivityBadgeViewProps = {
@@ -145,7 +141,7 @@ export function ActivityBadgeView({
   return (
     <Popover.Root>
       <Popover.Trigger
-        aria-label="Workspace activity"
+        aria-label="工作区活动"
         data-activity-state={state}
         className={cn(
           'flex h-7 items-center gap-1.5 rounded-lg px-2 text-xs transition-colors',
@@ -155,7 +151,7 @@ export function ActivityBadgeView({
         )}
       >
         {running ? <Spinner size="sm" /> : <Activity className="size-3 shrink-0" />}
-        <span>Activity</span>
+        <span>活动</span>
       </Popover.Trigger>
       <Popover.Content align="end" className="flex w-80 flex-col gap-0.5 p-2">
         {visible.map((step) => {
@@ -202,7 +198,7 @@ export function ActivityBadgeView({
               >
                 <button
                   type="button"
-                  title="Open script output"
+                  title="打开脚本输出"
                   onClick={() => onOpenScript(script)}
                   className="flex min-w-0 flex-1 items-start gap-2 text-left"
                 >
@@ -216,7 +212,7 @@ export function ActivityBadgeView({
                     className="flex shrink-0 items-center gap-1 rounded-md border border-border px-1.5 py-0.5 text-[11px] text-foreground-muted transition-colors hover:text-foreground disabled:opacity-60"
                   >
                     {isRetryingScript ? <Spinner size="sm" /> : <RotateCcw className="size-2.5" />}
-                    Retry
+                    重试
                   </button>
                 ) : null}
               </div>
@@ -233,7 +229,7 @@ export function ActivityBadgeView({
                   className="flex shrink-0 items-center gap-1 rounded-md border border-border px-1.5 py-0.5 text-[11px] text-foreground-muted transition-colors hover:text-foreground disabled:opacity-60"
                 >
                   {isRetryingPush ? <Spinner size="sm" /> : <RotateCcw className="size-2.5" />}
-                  Retry
+                  重试
                 </button>
               ) : null}
             </div>

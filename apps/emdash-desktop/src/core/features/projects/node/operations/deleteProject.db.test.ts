@@ -6,7 +6,7 @@ import {
   createWorkspaceRegistry,
   workspaceRegistryTable as workspaces,
 } from '@core/features/workspaces/api/node/registry';
-import { projects, tasks } from '@core/services/app-db/node/schema';
+import { automations, projects, sshConnections, tasks } from '@core/services/app-db/node/schema';
 import { reconcileSweepTriggers } from '@core/services/reconcile-sweep/node/reconcile-sweep-triggers';
 import type { MementosRuntimeClient } from '@core/services/runtime-broker/api/clients';
 import { deleteProject, type ProjectDeletionDependencies } from './deleteProject';
@@ -137,7 +137,6 @@ describe('deleteProject', () => {
     };
     const automations = { removeProjectDeployments: vi.fn(async () => {}) };
     const projectsManager = { invalidate: vi.fn(async () => {}) };
-    const pullRequests = { deleteProjectData: vi.fn(async () => {}) };
     const telemetry = { capture: vi.fn() };
     const dependencies: ProjectDeletionDependencies = {
       db: fixture.db,
@@ -146,7 +145,6 @@ describe('deleteProject', () => {
       getMementosRuntimeClient: async () => mementos as unknown as MementosRuntimeClient,
       logger: { warn: vi.fn(), info: vi.fn(), error: vi.fn(), debug: vi.fn() } as unknown as Logger,
       projects: projectsManager as unknown as ProjectDeletionDependencies['projects'],
-      pullRequests,
       sessionCleanup,
       telemetry,
     };
@@ -155,7 +153,6 @@ describe('deleteProject', () => {
       automations,
       mementos,
       projectsManager,
-      pullRequests,
       sessionCleanup,
       telemetry,
     };
@@ -164,8 +161,7 @@ describe('deleteProject', () => {
   it('purges the project cascade and removes provenance worktrees through the verb when reachable', async () => {
     await seedProject();
     const { registry, runtimes } = makeRuntimes();
-    const { dependencies, automations, projectsManager, pullRequests, telemetry } =
-      makeDependencies(runtimes);
+    const { dependencies, automations, projectsManager, telemetry } = makeDependencies(runtimes);
     projectsManager.invalidate.mockImplementationOnce(async () => {
       const [tombstoned] = await fixture.db
         .select()
@@ -194,7 +190,6 @@ describe('deleteProject', () => {
     expect(workspaceRegistry.getLive('workspace-1')).toBeUndefined();
     expect(workspaceRegistry.getLive('workspace-2')).toBeUndefined();
     expect(workspaceRegistry.getLive('repo-root')).toBeUndefined();
-    expect(pullRequests.deleteProjectData).toHaveBeenCalledWith('project-1');
     expect(projectsManager.invalidate).toHaveBeenCalledWith('project-1', 'deletion');
     expect(projectsManager.invalidate.mock.invocationCallOrder[0]!).toBeLessThan(
       registry.deleteWorktree.mock.invocationCallOrder[0]!
@@ -208,6 +203,47 @@ describe('deleteProject', () => {
       task_id: 'task-1',
     });
   });
+
+  it.each(['saved-ssh-host', null])(
+    'removes a saved SSH project record with connection %s without invoking host operations',
+    async (sshConnectionId) => {
+      await seedProject();
+      await fixture.db.insert(sshConnections).values({
+        id: 'saved-ssh-host',
+        name: 'Saved SSH host',
+        host: 'host.example.invalid',
+        username: 'test',
+      });
+      await fixture.db
+        .update(workspaces)
+        .set({ type: 'project-ssh', location: 'remote', sshConnectionId });
+      await fixture.db.insert(automations).values({
+        id: 'remote-automation',
+        name: 'Saved remote automation',
+        projectId: 'project-1',
+        createdAt: 1,
+        updatedAt: 1,
+      });
+      const { runtimes } = makeRuntimes();
+      const { dependencies, automations: deployments, sessionCleanup } = makeDependencies(runtimes);
+
+      await expect(deleteProject(dependencies, 'project-1')).resolves.toMatchObject({
+        success: true,
+      });
+
+      expect(runtimes.client).not.toHaveBeenCalled();
+      expect(sessionCleanup.resolve).not.toHaveBeenCalled();
+      expect(deployments.removeProjectDeployments).not.toHaveBeenCalled();
+      expect(await fixture.db.select().from(projects)).toEqual([]);
+      expect(await fixture.db.select().from(tasks)).toEqual([]);
+      expect(await fixture.db.select().from(automations)).toEqual([]);
+      expect(await fixture.db.select().from(sshConnections)).toHaveLength(1);
+      for (const row of await fixture.db.select().from(workspaces)) {
+        expect(row.untrackedAt).not.toBeNull();
+        expect(row.deletionTombstone).toBeNull();
+      }
+    }
+  );
 
   it('cascades workspace deletion tombstones against an unreachable host and pokes the sweep', async () => {
     await seedProject();

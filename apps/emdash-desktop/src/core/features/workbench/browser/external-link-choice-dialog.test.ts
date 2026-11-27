@@ -28,6 +28,6 @@ describe('ExternalLinkChoiceDialog', () => {
     );
 
     expect(html).toContain('https://example.com/docs');
-    expect(html).toContain('aria-label="Copy link"');
+    expect(html).toContain('aria-label="复制链接"');
   });
 });

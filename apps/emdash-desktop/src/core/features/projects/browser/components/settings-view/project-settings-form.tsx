@@ -8,7 +8,6 @@ import type {
   ProjectConfigMigration,
   WriteProjectConfigRequest,
 } from '@core/primitives/project-settings/api';
-import type { Project } from '@core/primitives/projects/api';
 import type { ProjectHostObservation } from '../../../api/host-observation';
 import type {
   MigrateProjectConfigResult,
@@ -24,7 +23,6 @@ import { useProjectSettingsForm } from './use-project-settings-form';
 
 export interface ProjectSettingsFormProps {
   projectId: string;
-  projectType: Project['type'];
   domains: ProjectSettingsDomains;
   configMigrations: ProjectConfigMigration[];
   hostActionReason: string | null;
@@ -45,7 +43,6 @@ const EMPTY_REMOTES: GitRemote[] = [];
 
 export const ProjectSettingsForm = observer(function ProjectSettingsForm({
   projectId,
-  projectType,
   domains,
   configMigrations,
   hostActionReason,
@@ -72,23 +69,18 @@ export const ProjectSettingsForm = observer(function ProjectSettingsForm({
       <div className="px-0.5 py-2">
         {hostObservationKind === 'stale' ? (
           <p role="status" className="pb-2 text-xs text-foreground-muted">
-            {projectType === 'local'
-              ? 'Repository-backed settings may be out of date while the local runtime is unavailable.'
-              : 'Repository-backed settings may be out of date while this Project’s Machine is unavailable.'}
+            本地运行环境暂不可用，仓库设置可能不是最新的。
           </p>
         ) : null}
         <Field.Group>
           <BaseProjectSettingsSection
             projectId={projectId}
             gitIdentityForm={formModel.form.gitIdentity}
-            integrationAccountsForm={formModel.form.integrationAccounts}
             placementForm={formModel.form.placement}
             placement={domains.placement}
-            projectType={projectType}
             remotes={remotes}
             worktreeDirectoryError={formModel.worktreeDirectoryError}
             updateGitIdentity={formModel.updateGitIdentity}
-            updateIntegrationAccounts={formModel.updateIntegrationAccounts}
             updatePlacement={formModel.updatePlacement}
             hostActionReason={hostActionReason}
             hostObservationKind={hostObservationKind}
@@ -98,9 +90,7 @@ export const ProjectSettingsForm = observer(function ProjectSettingsForm({
               role="status"
               className="border-t border-border py-6 text-sm text-foreground-muted"
             >
-              {projectType === 'local'
-                ? 'Repository-backed settings are unavailable until the local runtime is ready.'
-                : 'Repository-backed settings are unavailable until this Project’s Machine is ready.'}
+              本地运行环境就绪后，才能访问仓库设置。
             </div>
           ) : (
             <ShareableSettingsSection

@@ -1,4 +1,4 @@
-import { formatHostRef } from '@emdash/core/primitives/host/api';
+import { formatHostRef, LOCAL_HOST_REF } from '@emdash/core/primitives/host/api';
 import type { AttachmentRef } from '@emdash/core/services/attachments/api';
 import { ChatComposer, ImageViewerDialog, MermaidViewerDialog } from '@emdash/ui/react/components';
 import type {
@@ -15,9 +15,7 @@ import { ArrowDown, MessageSquare } from 'lucide-react';
 import { observer, useObserver } from 'mobx-react-lite';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { hostRefFromConnectionId } from '@core/features/agents/api/browser/client';
 import { useAgentMetadata } from '@core/features/agents/api/browser/use-agent-metadata';
-import { useAgents } from '@core/features/agents/api/browser/use-agents';
 import { AgentIcon } from '@core/features/agents/contributions/browser/agent-icon';
 import { ChatTranscript } from '@core/features/conversations/api/browser/chat/chat-transcript';
 import type {
@@ -34,18 +32,9 @@ import {
   providerComposerOptions,
   selectCachedProviderOptions,
 } from '@core/features/conversations/contributions/browser/provider-composer-options';
-import { useConnectedIssueProviders } from '@core/features/integrations/api/browser/use-connected-issue-providers';
 import { IntegrationIcon } from '@core/features/integrations/contributions/browser/integration-icon';
-import { getIssuesClient } from '@core/features/issues/api/browser/client';
 import { usePromptLibrary } from '@core/features/library/api/browser/prompts/use-prompt-library';
-import {
-  getProjectSshConnectionId,
-  getProjectStore,
-  getProjectViewStore,
-  projectData,
-} from '@core/features/projects/api/browser/stores/project-selectors';
 import { getSearchClient } from '@core/features/search/api/client';
-import { getGitRepositoryStore } from '@core/features/source-control/api/browser/stores/source-control-selectors';
 import { draftCommentsStoreToken } from '@core/features/source-control/contributions/browser/task-stores';
 // TODO(conversations-extraction): Pass task state into ACP chat instead of importing task stores.
 import {
@@ -76,10 +65,8 @@ import { createTranscriptFileCommands } from './transcript-file-commands';
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const attachmentDataUrlCache = new Map<string, string>();
-const ISSUE_SEARCH_MIN_LENGTH = 2;
-const ISSUE_SEARCH_LIMIT = 20;
-const SLASH_COMMANDS_SECTION = 'Commands';
-const SLASH_PROMPTS_SECTION = 'Prompts';
+const SLASH_COMMANDS_SECTION = '命令';
+const SLASH_PROMPTS_SECTION = '提示词';
 
 function promptPreview(text: string): string {
   return text.split(/\r?\n/, 1)[0] ?? '';
@@ -231,30 +218,13 @@ const ComposerForStore = observer(function ComposerForStore({
   const buildHiddenIssueContext = useCallback(
     (value: string) =>
       buildIssueMentionHiddenContext(value, async (target) => {
-        const source = resolveIssueMentionSource(
-          target,
-          getRegisteredTaskData(store.projectId, store.taskId)?.linkedIssue
-        );
-        if (!source) return null;
-        const result = await (
-          await getIssuesClient()
-        ).getIssueContext({
-          provider: target.provider,
-          options: {
-            identifier: source.identifier,
-            accountId: source.accountId,
-            issueUrl: source.issueUrl,
-            projectId: store.projectId,
-          },
-        });
-        if (!result.success) {
-          log.warn('Failed to resolve issue mention context', {
-            token: target.token,
-            error: result.error,
-          });
+        const issue = getRegisteredTaskData(store.projectId, store.taskId)?.linkedIssue;
+        if (issue?.provider !== target.provider || issue.identifier !== target.identifier) {
           return null;
         }
-        return result.data;
+        if (target.accountId && target.accountId !== issue.accountId) return null;
+        if (target.issueUrl && target.issueUrl !== issue.url) return null;
+        return issue;
       }),
     [store.projectId, store.taskId]
   );
@@ -292,9 +262,9 @@ const ComposerForStore = observer(function ComposerForStore({
         return;
       }
       void openModal('confirmActionModal', {
-        title: 'Turn in progress',
-        description: 'Send this queued prompt now and cancel the active turn?',
-        confirmLabel: 'Cancel & Send',
+        title: '当前回复正在生成',
+        description: '要停止当前回复并立即发送这条排队消息吗？',
+        confirmLabel: '停止并发送',
         variant: 'destructive',
       }).then((outcome) => {
         if (outcome.success) {
@@ -327,8 +297,8 @@ const ComposerForStore = observer(function ComposerForStore({
         if (!ref) continue;
         if (!ref.targetPath) {
           void store.deleteAttachment(ref.id);
-          toast.error('Failed to attach file', {
-            description: `${regularFiles[index]?.name ?? ref.name} has no target Host path.`,
+          toast.error('无法添加附件', {
+            description: `${regularFiles[index]?.name ?? ref.name}没有可用的目标路径。`,
           });
           continue;
         }
@@ -350,10 +320,10 @@ const ComposerForStore = observer(function ComposerForStore({
       if (supportedFiles.length < files.length) {
         const unsupportedNames = files
           .filter((file) => toAcpImageAttachmentMimeType(file) === null)
-          .map((file) => file.name || 'unnamed image')
+          .map((file) => file.name || '未命名图片')
           .join(', ');
-        toast.error('Unsupported image format', {
-          description: `${unsupportedNames} could not be attached. Use PNG, JPEG, GIF, or WebP.`,
+        toast.error('不支持的图片格式', {
+          description: `${unsupportedNames}无法添加为附件。请使用 PNG、JPEG、GIF 或 WebP 格式。`,
         });
       }
 
@@ -406,28 +376,8 @@ const ComposerForStore = observer(function ComposerForStore({
   const linkedIssue = useObserver(
     () => getRegisteredTaskData(store.projectId, store.taskId)?.linkedIssue
   );
-  const issueProviderContext = useObserver(() => {
-    const project = projectData(getProjectStore(store.projectId));
-    return {
-      projectId: store.projectId,
-      projectPath: project?.path,
-      repositoryUrl:
-        getGitRepositoryStore(store.projectId)?.issueRepositoryUrl ??
-        getGitRepositoryStore(store.projectId)?.canonicalRepositoryUrl ??
-        undefined,
-      repositoryProvider: getGitRepositoryStore(store.projectId)?.providerRepository?.provider,
-      selectedIssueProvider: getProjectViewStore(store.projectId)?.selectedIssueProvider ?? null,
-    };
-  });
-  const { connectedProviders, isProviderUsable } = useConnectedIssueProviders(issueProviderContext);
-  const issueProvider = useMemo(() => {
-    const selected = issueProviderContext.selectedIssueProvider;
-    if (selected && isProviderUsable(selected)) return selected;
-    return connectedProviders[0] ?? null;
-  }, [connectedProviders, isProviderUsable, issueProviderContext.selectedIssueProvider]);
-
   const mentionProvider = useMemo<ContextMentionProvider | undefined>(() => {
-    if (!workspaceId && !linkedIssue && !issueProvider && !draftComments) return undefined;
+    if (!workspaceId && !linkedIssue && !draftComments) return undefined;
     const wsId = workspaceId;
     return {
       async search(query: string): Promise<MentionItem[]> {
@@ -435,57 +385,9 @@ const ComposerForStore = observer(function ComposerForStore({
           linkedIssue && issueMatchesQuery(linkedIssue, query)
             ? toIssueMentionItem(linkedIssue)
             : null;
-        const issueSearch =
-          issueProvider && query.trim().length >= ISSUE_SEARCH_MIN_LENGTH
-            ? getIssuesClient()
-                .then((client) =>
-                  client.searchIssues({
-                    provider: issueProvider,
-                    options: {
-                      limit: ISSUE_SEARCH_LIMIT,
-                      searchTerm: query.trim(),
-                      projectId: store.projectId,
-                      projectPath: issueProviderContext.projectPath,
-                      repositoryUrl: issueProviderContext.repositoryUrl ?? undefined,
-                    },
-                  })
-                )
-                .catch((error: unknown) => {
-                  log.warn('Failed to search issue mentions', { provider: issueProvider, error });
-                  return null;
-                })
-            : Promise.resolve(null);
-
-        const [files, issueResult] = await Promise.all([
-          wsId
-            ? getSearchClient().then((client) =>
-                client.searchWorkspaceFiles({ workspaceId: wsId, query })
-              )
-            : Promise.resolve([]),
-          issueSearch,
-        ]);
-
-        const pinnedIssueItems: MentionItem[] = [];
-        const searchedIssueItems: MentionItem[] = [];
-        const seenIssueIds = new Set<string>();
-        if (pinnedIssue) {
-          pinnedIssueItems.push(pinnedIssue);
-          seenIssueIds.add(pinnedIssue.id);
-        }
-        if (issueResult?.success) {
-          for (const issue of issueResult.data) {
-            const item = toIssueMentionItem(issue);
-            if (seenIssueIds.has(item.id)) continue;
-            seenIssueIds.add(item.id);
-            searchedIssueItems.push(item);
-          }
-        } else if (issueResult && !issueResult.success) {
-          log.warn('Failed to search issue mentions', {
-            provider: issueProvider,
-            error: issueResult.error,
-          });
-        }
-
+        const files = wsId
+          ? await (await getSearchClient()).searchWorkspaceFiles({ workspaceId: wsId, query })
+          : [];
         const fileItems: MentionItem[] = files.map((file) => ({
           id: file.relativePath,
           label: file.relativePath,
@@ -502,25 +404,19 @@ const ComposerForStore = observer(function ComposerForStore({
                 {
                   ...diffCommentsMention,
                   description:
-                    draftCommentCount === 1
-                      ? '1 pending comment'
-                      : `${draftCommentCount} pending comments`,
+                    `${draftCommentCount} 条待发送评论`,
                   icon: <MessageSquare size={13} />,
                 },
               ]
             : [];
 
-        return [...commentItems, ...pinnedIssueItems, ...fileItems, ...searchedIssueItems];
+        return [...commentItems, ...(pinnedIssue ? [pinnedIssue] : []), ...fileItems];
       },
     };
   }, [
     workspaceId,
     linkedIssue,
-    issueProvider,
     draftComments,
-    store.projectId,
-    issueProviderContext.projectPath,
-    issueProviderContext.repositoryUrl,
   ]);
 
   // Display-only (the selector is locked): static registry metadata, no host needed.
@@ -542,7 +438,7 @@ const ComposerForStore = observer(function ComposerForStore({
   const { settings } = useProviderSettings(
     providerOptions === undefined && providerId
       ? {
-          host: formatHostRef(hostRefFromConnectionId(getProjectSshConnectionId(store.projectId))),
+          host: formatHostRef(LOCAL_HOST_REF),
           providerId,
         }
       : null
@@ -602,7 +498,7 @@ const ComposerForStore = observer(function ComposerForStore({
             disabled={store.historyLoading}
             onClick={() => store.retry()}
           >
-            Retry
+            重试
           </Button>
           {store.loadError.kind === 'session_not_found' && (
             <Button
@@ -611,13 +507,14 @@ const ComposerForStore = observer(function ComposerForStore({
               disabled={store.historyLoading}
               onClick={() => store.retry({ mode: 'fresh' })}
             >
-              Start fresh session
+              开启新会话
             </Button>
           )}
         </div>
       )}
       <div>
         <ChatComposer
+          locale="zh-CN"
           model={store.composerModel}
           isWorking={a.isWorking}
           canSubmit={a.canSubmit}
@@ -744,32 +641,6 @@ export const AcpChatPanel = observer(function AcpChatPanel() {
       : undefined
   );
   const conversationSeen = conversationStore?.seen;
-  const connectionId = useObserver(() =>
-    store ? getProjectSshConnectionId(store.projectId) : undefined
-  );
-  const host = useMemo(() => hostRefFromConnectionId(connectionId), [connectionId]);
-  const { data: agents } = useAgents(host);
-  const providerId = conversationStore?.data.providerId ?? null;
-  const agent = agents?.find((candidate) => candidate.id === providerId) ?? null;
-  const cliAuthMethod =
-    agent?.capabilities.auth.kind === 'supported'
-      ? agent.capabilities.auth.methods.find((method) => method.kind === 'cli-login')
-      : undefined;
-
-  const openSignInModal = useCallback(() => {
-    if (!providerId || !cliAuthMethod || !store) return;
-    void openModal('agentSignInModal', {
-      providerId,
-      methodId: cliAuthMethod.id,
-      providerName: agent?.name ?? providerId,
-      host,
-    }).then((outcome) => {
-      if (outcome.success) {
-        if (store.loadError?.kind === 'auth_required') store.retry();
-      }
-    });
-  }, [agent?.name, cliAuthMethod, host, providerId, store]);
-
   useEffect(() => {
     if (conversationStore && !conversationStore.seen) {
       conversationStore.markSeen();
@@ -836,24 +707,8 @@ export const AcpChatPanel = observer(function AcpChatPanel() {
             target,
             getRegisteredTaskData(store.projectId, store.taskId)?.linkedIssue
           );
-          if (!source) return;
-          void getIssuesClient()
-            .then((client) =>
-              client.getIssueContext({
-                provider: target.provider,
-                options: {
-                  identifier: source.identifier,
-                  accountId: source.accountId,
-                  issueUrl: source.issueUrl,
-                  projectId: store.projectId,
-                },
-              })
-            )
-            .then((result) => {
-              if (result.success && result.data.url) {
-                void openExternal(result.data.url);
-              }
-            });
+
+          if (source?.issueUrl) void openExternal(source.issueUrl);
         }
       },
     };
@@ -888,14 +743,14 @@ export const AcpChatPanel = observer(function AcpChatPanel() {
         style={{ position: 'absolute', inset: 0 }}
       />
 
-      {/* Authentication errors own the content area so sign-in remains accessible even after
+      {/* Authentication errors own the content area even after
           attachment. Otherwise, show the composer as soon as history is known. */}
       {overlaySlot &&
         showBlockingOverlay &&
         createPortal(
           <div
             // The library-owned overlay slot is pointer-events: none by design;
-            // opt back in so the Sign in / Retry buttons are clickable.
+            // opt back in so the Retry button is clickable.
             className={`pointer-events-auto absolute inset-0 flex items-center justify-center text-sm text-foreground-muted ${
               showBlockingOverlay ? 'bg-(--em-surface)' : ''
             }`}
@@ -903,32 +758,13 @@ export const AcpChatPanel = observer(function AcpChatPanel() {
           >
             {store.loadError?.kind === 'unavailable' ? (
               <div className="flex max-w-md flex-col items-center gap-2 px-6 text-center">
-                <span className="text-foreground">Chat unavailable</span>
+                <span className="text-foreground">聊天不可用</span>
                 <span className="text-xs text-foreground-muted">{store.loadError.message}</span>
               </div>
             ) : store.loadError !== null ? (
-              store.loadError.kind === 'auth_required' ? (
+              (
                 <div className="flex max-w-md flex-col items-center gap-2 px-6 text-center">
-                  <span className="text-foreground">
-                    {agent?.name ?? 'This agent'} needs you to sign in.
-                  </span>
-                  <span className="text-xs text-foreground-muted">
-                    {cliAuthMethod?.description ?? store.loadError.message}
-                  </span>
-                  <div className="mt-1 flex gap-2">
-                    {cliAuthMethod && (
-                      <Button variant="primary" size="sm" onClick={openSignInModal}>
-                        Sign in
-                      </Button>
-                    )}
-                    <Button variant="secondary" size="sm" onClick={() => store.retry()}>
-                      Retry
-                    </Button>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex max-w-md flex-col items-center gap-2 px-6 text-center">
-                  <span className="text-foreground">Failed to load chat.</span>
+                  <span className="text-foreground">无法加载聊天</span>
                   <span className="text-xs text-foreground-muted">{store.loadError.message}</span>
                   <Button
                     variant="secondary"
@@ -936,7 +772,7 @@ export const AcpChatPanel = observer(function AcpChatPanel() {
                     className="mt-1"
                     onClick={() => store.retry()}
                   >
-                    Retry
+                    重试
                   </Button>
                   {store.loadError.kind === 'session_not_found' && (
                     <Button
@@ -944,13 +780,13 @@ export const AcpChatPanel = observer(function AcpChatPanel() {
                       size="sm"
                       onClick={() => store.retry({ mode: 'fresh' })}
                     >
-                      Start fresh session
+                      开启新会话
                     </Button>
                   )}
                 </div>
               )
             ) : (
-              'Loading chat...'
+              '正在加载聊天…'
             )}
           </div>,
           overlaySlot
@@ -960,7 +796,7 @@ export const AcpChatPanel = observer(function AcpChatPanel() {
         heroSlot &&
         createPortal(
           <div className="px-4 text-center">
-            <h1 className="text-2xl tracking-tight text-foreground">What are we building today?</h1>
+            <h1 className="text-2xl tracking-tight text-foreground">今天想做什么？</h1>
           </div>,
           heroSlot
         )}
@@ -982,7 +818,7 @@ export const AcpChatPanel = observer(function AcpChatPanel() {
             <Button
               variant="secondary"
               icon
-              aria-label="Scroll to bottom"
+              aria-label="滚动到底部"
               onClick={() => viewRef.current?.scrollToBottom({ behavior: 'smooth' })}
               className="pointer-events-auto rounded-full shadow-md"
             >

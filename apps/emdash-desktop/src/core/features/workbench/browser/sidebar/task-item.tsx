@@ -117,7 +117,7 @@ export const SidebarTaskItem = observer(function SidebarTaskItem({
         onClick={openTask}
       >
         <SidebarMenuAction
-          aria-label={`Open task ${taskName || 'task'}`}
+          aria-label={`打开任务 ${taskName || '未命名任务'}`}
           className="gap-1 overflow-hidden"
         >
           <span

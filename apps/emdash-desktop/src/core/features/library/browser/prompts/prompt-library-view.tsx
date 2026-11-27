@@ -53,7 +53,7 @@ function PromptRow({
           icon
           onClick={onEdit}
           disabled={disabled}
-          aria-label={`Edit ${item.title}`}
+          aria-label={`编辑「${item.title}」`}
         >
           <Pencil />
         </Button>
@@ -66,7 +66,7 @@ function PromptRow({
                 size="xs"
                 icon
                 disabled={disabled}
-                aria-label={`Actions for ${item.title}`}
+                aria-label={`「${item.title}」的操作`}
               />
             }
           >
@@ -75,12 +75,12 @@ function PromptRow({
           <DropdownMenu.Content align="end">
             <DropdownMenu.Item onClick={onEdit}>
               <Pencil />
-              Edit…
+              编辑…
             </DropdownMenu.Item>
             <DropdownMenu.Separator />
             <DropdownMenu.Item variant="destructive" onClick={onDelete}>
               <Trash2 />
-              Delete…
+              删除…
             </DropdownMenu.Item>
           </DropdownMenu.Content>
         </DropdownMenu.Root>
@@ -129,7 +129,7 @@ export function PromptLibraryView() {
   const createPrompt = () => {
     void openPromptModal().then((outcome) => {
       if (!outcome.success) return;
-      upsertPrompt({ id: createPromptId(), ...outcome.data }, 'Prompt added');
+      upsertPrompt({ id: createPromptId(), ...outcome.data }, '已添加提示词');
     });
   };
 
@@ -138,21 +138,21 @@ export function PromptLibraryView() {
       initialPrompt: prompt,
     }).then((outcome) => {
       if (!outcome.success) return;
-      upsertPrompt({ ...prompt, ...outcome.data }, 'Prompt updated');
+      upsertPrompt({ ...prompt, ...outcome.data }, '已更新提示词');
     });
   };
 
   const deletePrompt = (prompt: PromptLibraryPrompt) => {
     void openConfirm({
-      title: 'Delete prompt?',
-      description: `"${prompt.title}" will be removed from the prompt library.`,
-      confirmLabel: 'Delete',
+      title: '删除提示词？',
+      description: `将从提示词库移除「${prompt.title}」。`,
+      confirmLabel: '删除',
     }).then((outcome) => {
       if (!outcome.success) return;
       updatePromptLibrary(
         promptLibrary.filter((item) => item.id !== prompt.id),
         {
-          onSuccess: () => toast('Prompt deleted'),
+          onSuccess: () => toast('已删除提示词'),
         }
       );
     });
@@ -162,8 +162,8 @@ export function PromptLibraryView() {
     <div className="flex min-h-0 flex-col gap-8 text-foreground">
       <PageLayout.Header
         sticky
-        title="Prompts"
-        description="Manage reusable prompts that can be sent from task prompt menus."
+        title="提示词"
+        description="管理可从任务菜单中发送的常用提示词。"
       />
       <view.Root>
         <CollectionView
@@ -204,13 +204,13 @@ const PromptsToolbar = observer(function PromptsToolbar({
         ref={searchRef}
         value={search.query}
         onValueChange={search.setQuery}
-        placeholder="Search prompts…"
+        placeholder="搜索提示词…"
       />
       <CollectionToolbar.Spacer />
       <CollectionToolbar.Group>
-        <Button variant="primary" onClick={onNewPrompt} disabled={disabled} aria-label="New Prompt">
+        <Button variant="primary" onClick={onNewPrompt} disabled={disabled} aria-label="新建提示词">
           <Plus className="size-4" />
-          <span className="[@container(max-width:520px)]:hidden">New Prompt</span>
+          <span className="[@container(max-width:520px)]:hidden">新建提示词</span>
         </Button>
       </CollectionToolbar.Group>
     </CollectionToolbar.Root>
@@ -224,12 +224,12 @@ function PromptsEmptyState({ hasPrompts }: { hasPrompts: boolean }) {
     <div className="flex min-h-48 flex-col items-center justify-center p-8 text-center">
       <LibraryIcon className="mb-3 size-8 text-foreground-passive" />
       <div className="text-sm text-foreground">
-        {hasPrompts ? 'No prompts match your search' : 'No prompts'}
+        {hasPrompts ? '没有匹配的提示词' : '暂无提示词'}
       </div>
       <p className="mt-1 max-w-sm text-xs text-foreground-passive">
         {hasPrompts
-          ? 'Try a different title or prompt text.'
-          : 'Add a prompt to reuse it from task prompt menus.'}
+          ? '请尝试其他标题或提示词内容。'
+          : '添加常用提示词后，可从任务菜单中重复使用。'}
       </p>
     </div>
   );

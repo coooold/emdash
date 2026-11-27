@@ -10,9 +10,7 @@ import { Button, RelativeTime } from '@emdash/ui/react/primitives';
 import { PlusIcon } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
-import type { WorkspacesScope } from '@core/features/workspaces/api/browser/use-workspace-groups';
 import { useWorkspaceRows } from '@core/features/workspaces/api/browser/use-workspace-rows';
-import { WorkspacesOfflineState } from '@core/features/workspaces/contributions/browser/workspace-states';
 import { useOpenModal } from '@core/manifests/browser/modal-api';
 import {
   buildWorkspaceItems,
@@ -37,8 +35,8 @@ const WORKSPACE_COLUMNS: CollectionViewColumn<WorkspacesListItem>[] = [
     width: '10rem',
     cell: (item) => (
       <CollectionViewCell
-        primary={formatCount(item.worktreeCount, 'Worktree')}
-        secondary={formatCount(item.linkedTaskCount, 'linked task')}
+        primary={`${item.worktreeCount} 个工作树`}
+        secondary={`${item.linkedTaskCount} 个关联任务`}
       />
     ),
   },
@@ -47,8 +45,8 @@ const WORKSPACE_COLUMNS: CollectionViewColumn<WorkspacesListItem>[] = [
     width: '10rem',
     cell: (item) => (
       <CollectionViewCell
-        primary={item.lastActivityAt ? <RelativeTime value={item.lastActivityAt} /> : 'Never'}
-        secondary={formatCount(item.activeTaskCount, 'Task active', 'Tasks active')}
+        primary={item.lastActivityAt ? <RelativeTime value={item.lastActivityAt} /> : '无活动记录'}
+        secondary={`${item.activeTaskCount} 个活跃任务`}
       />
     ),
   },
@@ -56,21 +54,15 @@ const WORKSPACE_COLUMNS: CollectionViewColumn<WorkspacesListItem>[] = [
 
 /**
  * One row per project, rendered through CollectionView in state mode; clicking
- * a row opens the project's workspace detail. Serves both the Local Workspaces
- * tab and the machine details Workspaces section.
+ * a row opens the local project's workspace detail.
  */
 export const WorkspacesListView = observer(function WorkspacesListView({
-  scope,
   openDetail,
-  enabled = true,
 }: {
-  scope: WorkspacesScope;
   openDetail: (projectId: string) => void;
-  /** Gates the workspace query, e.g. on remote server usability. */
-  enabled?: boolean;
 }) {
   const openAddProject = useOpenModal('addProjectModal');
-  const workspaceRows = useWorkspaceRows({ scope, enabled });
+  const workspaceRows = useWorkspaceRows({ scope: { kind: 'local' }, enabled: true });
   const { workspaceQuery, groups } = workspaceRows;
 
   // `groups` is derived from the query plus usage joins, so it stands in for
@@ -86,12 +78,6 @@ export const WorkspacesListView = observer(function WorkspacesListView({
   );
   const [view] = useState(() => createWorkspacesListView(source));
 
-  if (scope.kind === 'machine' && !enabled) {
-    return (
-      <WorkspacesOfflineState description="Workspaces load when the machine reconnects and its workspace server is healthy." />
-    );
-  }
-
   return (
     <view.Root>
       <CollectionView
@@ -100,20 +86,14 @@ export const WorkspacesListView = observer(function WorkspacesListView({
         toolbar={
           <WorkspacesToolbar
             view={view}
-            onAddProject={() =>
-              void openAddProject(
-                scope.kind === 'machine'
-                  ? { strategy: 'ssh', mode: 'clone', connectionId: scope.machineId }
-                  : { strategy: 'local', mode: 'pick' }
-              )
-            }
+            onAddProject={() => void openAddProject({ mode: 'pick' })}
           />
         }
         onItemClick={(item) => openDetail(item.id)}
         errorSlot={
           <EmptyState
             bare
-            label="Could not load workspaces."
+            label="无法加载工作区"
             description={errorMessage(workspaceQuery.error)}
           />
         }
@@ -136,13 +116,13 @@ const WorkspacesToolbar = observer(function WorkspacesToolbar({
       <CollectionToolbar.Search
         value={search.query}
         onValueChange={search.setQuery}
-        placeholder="Search workspaces…"
+        placeholder="搜索工作区…"
       />
       <CollectionToolbar.Spacer />
       <CollectionToolbar.Group>
         <Button type="button" variant="primary" onClick={onAddProject}>
           <PlusIcon />
-          Add Project
+          添加项目
         </Button>
       </CollectionToolbar.Group>
     </CollectionToolbar.Root>
@@ -159,15 +139,11 @@ const WorkspacesEmpty = observer(function WorkspacesEmpty({
     <EmptyState
       bare
       label={
-        search.query.trim().length > 0 ? 'No workspaces match your search.' : 'No workspaces found.'
+        search.query.trim().length > 0 ? '没有匹配的工作区' : '暂无工作区'
       }
     />
   );
 });
-
-function formatCount(count: number, singular: string, plural = `${singular}s`) {
-  return `${count} ${count === 1 ? singular : plural}`;
-}
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);

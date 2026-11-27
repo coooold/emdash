@@ -149,7 +149,7 @@ export const ConversationsPanel = observer(function ConversationsPanel() {
           <PaneSizingContextProvider sessionIds={allSessionIds} bottomPadding={contextBarHeight}>
             <div className="flex min-h-0 flex-1 flex-col">
               {disabledReason && activeSession?.status !== 'ready' ? (
-                <EmptyState label="Conversation unavailable" description={disabledReason} />
+                <EmptyState label="对话不可用" description={disabledReason} />
               ) : activeSessionId &&
                 attachments &&
                 activeSession?.status === 'ready' &&

@@ -19,18 +19,17 @@ export function ConflictDialog({ filePath }: ConflictDialogArgs) {
   return (
     <>
       <Dialog.Header showCloseButton={false}>
-        <Dialog.Title>File Modified Externally</Dialog.Title>
+        <Dialog.Title>文件已被外部修改</Dialog.Title>
         <Dialog.Description>
-          <code className="bg-muted rounded px-1 py-0.5 text-xs">{shortPath}</code> was changed
-          outside the editor while you have unsaved edits. What would you like to do?
+          <code className="bg-muted rounded px-1 py-0.5 text-xs">{shortPath}</code>{' '}已在编辑器外修改。你还有未保存的更改，请选择要保留的版本。
         </Dialog.Description>
       </Dialog.Header>
       <Dialog.Footer className="gap-2">
         <Button variant="secondary" onClick={() => complete(false)}>
-          Keep Mine
+          保留我的修改
         </Button>
         <Button variant="primary" onClick={() => complete(true)}>
-          Accept Incoming
+          采用外部修改
         </Button>
       </Dialog.Footer>
     </>

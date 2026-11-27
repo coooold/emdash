@@ -20,7 +20,7 @@ export const UpdateSection = observer(function UpdateSection() {
           }
         }}
       >
-        Update
+        更新
       </Button>
     );
   }

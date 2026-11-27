@@ -22,7 +22,7 @@ export const WaitlistCard = observer(function WaitlistCard() {
     <div className="relative mx-3 mb-3 shrink-0 rounded-xl border border-border p-3">
       <button
         type="button"
-        aria-label="Dismiss"
+        aria-label="关闭提示"
         onClick={() => store.dismiss(update.currentVersion)}
         className="absolute top-2 right-2 flex size-6 items-center justify-center rounded-md text-foreground-passive hover:bg-background-tertiary-2 hover:text-foreground-muted emlight:text-foreground-muted emlight:hover:text-foreground"
       >
@@ -33,10 +33,10 @@ export const WaitlistCard = observer(function WaitlistCard() {
         <div role="status" className="mt-2 pr-1.5">
           <div className="flex items-center gap-1.5 text-[13px] leading-[18px] font-medium text-foreground">
             <Check className="size-3.5 text-foreground-success" strokeWidth={2.5} />
-            You&rsquo;re on the waitlist
+            你已加入候补名单
           </div>
           <p className="mt-0.5 text-xs leading-[17px] text-foreground-passive emlight:text-foreground-muted">
-            We&rsquo;ll reach out at{' '}
+            我们会通过以下邮箱与你联系：
             <span className="text-foreground-muted emlight:text-foreground">
               {store.persisted.joinedEmail}
             </span>
@@ -46,14 +46,14 @@ export const WaitlistCard = observer(function WaitlistCard() {
       ) : (
         <>
           <p className="mt-2 pr-1.5 text-xs leading-[17px] text-foreground-passive emlight:text-foreground-muted">
-            Any model. Any harness. Any infrastructure. Now in early access.
+            Emdash 2.0 已开放抢先体验。
           </p>
           <button
             type="button"
             onClick={() => void openWaitlistModal()}
             className="focus-visible:ring-ring mt-2.5 flex h-[30px] w-full items-center justify-center gap-1.5 rounded-lg bg-foreground text-xs font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
           >
-            Join the waitlist
+            加入候补名单
             <ArrowRight className="size-3.5" />
           </button>
         </>

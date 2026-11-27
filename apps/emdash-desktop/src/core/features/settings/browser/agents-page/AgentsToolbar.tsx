@@ -21,7 +21,7 @@ export function AgentsToolbar({
       <CollectionToolbar.Search
         value={searchQuery}
         onValueChange={onSearchQueryChange}
-        placeholder="Search agents…"
+        placeholder="搜索智能体…"
       />
       <CollectionToolbar.Spacer />
       <CollectionToolbar.Group>
@@ -30,7 +30,7 @@ export function AgentsToolbar({
           icon
           onClick={onRefresh}
           disabled={isRefreshing}
-          aria-label="Refresh agent detection"
+          aria-label="重新检测智能体"
         >
           <RefreshCw className={isRefreshing ? 'animate-spin' : ''} />
         </Button>

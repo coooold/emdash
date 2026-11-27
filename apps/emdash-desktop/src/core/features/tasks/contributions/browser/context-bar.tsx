@@ -95,7 +95,7 @@ export const ContextBar = observer(function ContextBar({
     <AddContextPopover
       actions={hideTrigger ? popoverActions : actions}
       disabled={!canApplyContext || isSavingPromptLibrary}
-      emptyMessage={canApplyContext ? undefined : 'No active sessions'}
+      emptyMessage={canApplyContext ? undefined : '没有活跃会话'}
       hideTrigger={hideTrigger}
       hotkeyEnabled={hideTrigger ? true : undefined}
       isActivePane={isActivePane}
@@ -117,7 +117,7 @@ export const ContextBar = observer(function ContextBar({
       </ContextMenu.Trigger>
       <ContextMenu.Content finalFocus={false}>
         <ContextMenu.Item disabled={isSavingInterfaceSettings} onClick={hideContextBar}>
-          Hide context bar
+          隐藏上下文栏
         </ContextMenu.Item>
       </ContextMenu.Content>
     </ContextMenu.Root>

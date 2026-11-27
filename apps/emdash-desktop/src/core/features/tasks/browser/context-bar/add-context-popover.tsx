@@ -44,7 +44,7 @@ export function ActionItemRow({ action }: { action: ContextAction }) {
       return (
         <ActionItemBaseRow
           icon={<MessageSquare className="size-3.5 shrink-0 text-foreground-muted" />}
-          label="Line comments"
+          label="行评论"
           text={`${action.commentCount} comment${action.commentCount !== 1 ? 's' : ''} in ${action.fileCount} file${action.fileCount !== 1 ? 's' : ''}`}
         />
       );
@@ -196,7 +196,7 @@ export function AddContextPopover({
               ) : (
                 <ChevronDown className="size-3 shrink-0" />
               )}
-              <span>Add context</span>
+              <span>添加上下文</span>
             </span>
             <Shortcut hotkey={ADD_CONTEXT_HOTKEY} variant="keycaps" />
           </>
@@ -215,7 +215,7 @@ export function AddContextPopover({
           }
         }}
       >
-        <Combobox.Input showTrigger={false} placeholder="Search..." />
+        <Combobox.Input showTrigger={false} placeholder="搜索…" />
         <Combobox.List className="flex-1">
           {(group: { value: string; items: ContextAction[] }) => (
             <Combobox.Group items={group.items}>
@@ -238,7 +238,7 @@ export function AddContextPopover({
         </Combobox.Empty>
         <div className="flex items-center justify-end border-t px-2 py-1.5">
           <span className="flex items-center gap-1">
-            <p className="text-xs text-foreground-passive">Add to input</p>
+            <p className="text-xs text-foreground-passive">添加到输入框</p>
             <Shortcut hotkey="Enter" variant="keycaps" />
           </span>
         </div>

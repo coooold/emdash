@@ -1,29 +1,24 @@
+import { LOCAL_HOST_REF } from '@emdash/core/primitives/host/api';
 import { PageLayout } from '@emdash/ui/react/patterns';
-import React, { useCallback, useMemo, useState } from 'react';
-import { hostRefFromConnectionId } from '@core/features/agents/api/browser/client';
+import React, { useCallback, useState } from 'react';
 import { useAgentInstallationStatuses } from '@core/features/agents/api/browser/use-agent-installation-statuses';
 import { AgentsToolbar } from '@core/features/settings/browser/agents-page/AgentsToolbar';
 import { CliAgentsList } from '@core/features/settings/browser/agents-page/CliAgentsList';
 
 type AgentsPanelProps = {
-  connectionId?: string;
   header?: { title: string; description: string };
   searchQuery?: string;
   onSearchQueryChange?: (query: string) => void;
-  onManageMcp?: () => void;
 };
 
 export function AgentsPanel({
-  connectionId,
   header,
   searchQuery: controlledSearchQuery,
   onSearchQueryChange,
-  onManageMcp,
 }: AgentsPanelProps) {
-  const host = useMemo(() => hostRefFromConnectionId(connectionId), [connectionId]);
   const [localSearchQuery, setLocalSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
-  const { probeAll } = useAgentInstallationStatuses(host);
+  const { probeAll } = useAgentInstallationStatuses(LOCAL_HOST_REF);
   const searchQuery = controlledSearchQuery ?? localSearchQuery;
   const setSearchQuery = onSearchQueryChange ?? setLocalSearchQuery;
 
@@ -37,8 +32,6 @@ export function AgentsPanel({
   const list = (
     <CliAgentsList
       searchQuery={searchQuery}
-      connectionId={connectionId}
-      onManageMcp={onManageMcp}
       toolbar={
         <AgentsToolbar
           searchQuery={searchQuery}

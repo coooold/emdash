@@ -26,7 +26,7 @@ export function McpToolbar({
         ref={searchRef}
         value={search}
         onValueChange={onSearchChange}
-        placeholder="Search servers…"
+        placeholder="搜索服务器…"
       />
       <CollectionToolbar.Spacer />
       <CollectionToolbar.Group>
@@ -35,7 +35,7 @@ export function McpToolbar({
           icon
           onClick={onRefresh}
           disabled={isRefreshing}
-          aria-label="Refresh providers"
+          aria-label="刷新服务器列表"
         >
           <RefreshCw
             className={`text-muted-foreground h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
@@ -43,7 +43,7 @@ export function McpToolbar({
         </Button>
         <Button variant="primary" onClick={onAddCustom}>
           <Plus className="size-4" />
-          Custom MCP
+          添加 MCP 服务器
         </Button>
       </CollectionToolbar.Group>
     </CollectionToolbar.Root>

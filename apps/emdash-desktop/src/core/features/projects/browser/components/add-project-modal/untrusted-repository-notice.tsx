@@ -17,14 +17,11 @@ export type TrustRepositoryConfirmation = {
  */
 export function UntrustedRepositoryNotice({
   dubiousOwnership,
-  hostLabel,
   confirm,
   trust,
   onTrusted,
 }: {
   dubiousOwnership: GitDubiousOwnership;
-  /** Where Git runs: "this computer" or the machine's name. */
-  hostLabel: string;
   confirm(confirmation: TrustRepositoryConfirmation): Promise<boolean>;
   trust(): Promise<Result<unknown, { message: string }>>;
   onTrusted(): Promise<unknown> | void;
@@ -36,19 +33,18 @@ export function UntrustedRepositoryNotice({
 
   const handleTrust = async () => {
     const confirmed = await confirm({
-      title: 'Trust this repository?',
+      title: '信任此仓库？',
       description: (
         <div className="flex flex-col gap-3">
-          <p>Emdash will run this command on {hostLabel}:</p>
+          <p>Emdash 将在本机上运行以下命令：</p>
           <CommandBlock command={command} />
           <p className="text-foreground-muted">
-            This changes your global Git config, so Git, agents, and your terminal will open this
-            repository from now on. A repository's Git config can run programs, so only trust
-            repositories you know.
+            这会修改全局 Git 配置，之后 Git、代理和终端都可以打开此仓库。仓库的 Git
+            配置可以运行程序，请只信任了解的仓库。
           </p>
         </div>
       ),
-      confirmLabel: 'Trust repository',
+      confirmLabel: '信任仓库',
       variant: 'default',
     });
     if (!confirmed) return;
@@ -69,14 +65,12 @@ export function UntrustedRepositoryNotice({
 
   return (
     <Alert.Root status="warning">
-      <Alert.Title>Git doesn&apos;t trust this repository</Alert.Title>
+      <Alert.Title>Git 不信任此仓库</Alert.Title>
       <div className="flex flex-col gap-2 text-xs">
         <Alert.Description>
-          Git won&apos;t open{' '}
-          <span className="wrap-anywhere">{dubiousOwnership.repositoryPath}</span> because it
-          can&apos;t confirm the folder belongs to the user running Git on {hostLabel}. This often
-          happens with folders in WSL, on network shares, or on external drives. To trust it, run
-          {requiresPowerShell ? ' this in PowerShell' : ''}:
+          Git 无法确认目录 <span className="wrap-anywhere">{dubiousOwnership.repositoryPath}</span>{' '}
+          属于本机上运行 Git 的用户。这在 WSL、网络共享或外接存储中的目录里比较常见。
+          {requiresPowerShell ? '如要信任，请在 PowerShell 中运行：' : '如要信任，请运行：'}
         </Alert.Description>
         <CommandBlock command={command} />
         {state.kind === 'failed' && <p className="text-destructive">{state.message}</p>}
@@ -87,7 +81,7 @@ export function UntrustedRepositoryNotice({
             disabled={state.kind === 'trusting'}
             onClick={() => void handleTrust()}
           >
-            {state.kind === 'trusting' ? 'Trusting...' : 'Trust repository...'}
+            {state.kind === 'trusting' ? '正在信任…' : '信任仓库…'}
           </Button>
         </div>
       </div>

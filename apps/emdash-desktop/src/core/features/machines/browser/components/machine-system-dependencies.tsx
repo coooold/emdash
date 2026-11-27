@@ -59,9 +59,9 @@ export function MachineSystemDependenciesCard({
     <SettingsCard>
       <div className="flex items-center gap-2">
         <Field.Root>
-          <Field.Label>System dependencies</Field.Label>
+          <Field.Label>系统依赖</Field.Label>
           <Field.Description>
-            Host tools used by Emdash and coding-agent workflows.
+            Emdash 和智能体工作流使用的本机工具。
           </Field.Description>
         </Field.Root>
         <Button
@@ -71,20 +71,20 @@ export function MachineSystemDependenciesCard({
           disabled={!canInstallAll}
           onClick={() => void installAll(installableMissingDependencies)}
         >
-          {isInstalling ? <Loader2 className="size-3.5 animate-spin" /> : 'Install all'}
+          {isInstalling ? <Loader2 className="size-3.5 animate-spin" /> : '全部安装'}
         </Button>
       </div>
       <div className="mt-4">
         {isLoading ? (
-          <div className="p-4 text-sm text-foreground-muted">Checking system dependencies...</div>
+          <div className="p-4 text-sm text-foreground-muted">正在检查系统依赖…</div>
         ) : error ? (
           <div className="text-destructive p-4 text-sm">
-            Failed to load system dependencies: {error.message}
+            无法加载系统依赖： {error.message}
           </div>
         ) : (
           <div className="flex flex-col gap-4">
             <DependencySection
-              title="Required"
+              title="必需"
               dependencies={requiredDependencies}
               installingIds={installingIds}
               installFailures={installFailures}
@@ -92,7 +92,7 @@ export function MachineSystemDependenciesCard({
               onDismissFailure={dismissInstallFailure}
             />
             <DependencySection
-              title="Recommended"
+              title="推荐"
               dependencies={recommendedDependencies}
               installingIds={installingIds}
               installFailures={installFailures}
@@ -128,7 +128,7 @@ function DependencySection({
       </Heading>
       {dependencies.length === 0 ? (
         <div className="p-4 text-sm text-foreground-muted">
-          No {title.toLowerCase()} dependencies.
+          暂无{title}依赖。
         </div>
       ) : (
         <Box surface="sunken" borderRadius="md" padding="3">
@@ -190,10 +190,10 @@ function SystemDependencyRow({
             disabled={installing}
             onClick={onInstall}
           >
-            {installing ? <Loader2 className="size-3.5 animate-spin" /> : 'Install'}
+            {installing ? <Loader2 className="size-3.5 animate-spin" /> : '安装'}
           </Button>
         ) : (
-          <span className="shrink-0 text-xs text-foreground-muted">Not found</span>
+          <span className="shrink-0 text-xs text-foreground-muted">未找到</span>
         )}
       </div>
       {failure ? (

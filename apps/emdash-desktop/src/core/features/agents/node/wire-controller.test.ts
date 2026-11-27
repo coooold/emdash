@@ -2,7 +2,6 @@ import { hostRef, LOCAL_HOST_REF } from '@emdash/core/primitives/host/api';
 import { err, ok } from '@emdash/shared';
 import { deferred } from '@emdash/shared/testing';
 import { createLiveJobReplicaCache, LiveJobCancelledError } from '@emdash/wire/live';
-import { encodeTopic, type LiveSource } from '@emdash/wire/rpc';
 import { createTestWire } from '@emdash/wire/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { agentsContract } from '../api';
@@ -86,10 +85,9 @@ describe('createAgentsWireController', () => {
     expect(client).not.toHaveBeenCalled();
   });
 
-  it('routes login procedures by HostRef', async () => {
+  it('routes the auth status refresh by HostRef', async () => {
     const refreshAuthStatus = vi.fn(async () => ok({ kind: 'unknown' as const }));
-    const startLogin = vi.fn(async () => ok(undefined));
-    const client = vi.fn(async () => ok({ agentConfig: { refreshAuthStatus, startLogin } }));
+    const client = vi.fn(async () => ok({ agentConfig: { refreshAuthStatus } }));
     const controller = createAgentsWireController({
       operations: legacyOperations as never,
       runtimes: { client } as never,
@@ -98,26 +96,12 @@ describe('createAgentsWireController', () => {
     await expect(
       controller.call('refreshAuthStatus', { host: remoteHost, providerId: 'claude' })
     ).resolves.toEqual(ok({ kind: 'unknown' }));
-    await expect(
-      controller.call('startLogin', {
-        host: remoteHost,
-        providerId: 'claude',
-        methodId: 'browser',
-        cols: 137,
-        rows: 41,
-      })
-    ).resolves.toEqual(ok(undefined));
-
     expect(client).toHaveBeenNthCalledWith(1, remoteHost);
-    expect(client).toHaveBeenNthCalledWith(2, remoteHost);
     expect(refreshAuthStatus).toHaveBeenCalledWith({ providerId: 'claude' }, {});
-    expect(startLogin).toHaveBeenCalledWith(
-      { providerId: 'claude', methodId: 'browser', cols: 137, rows: 41 },
-      {}
-    );
+
   });
 
-  it('returns RuntimeResolveError from fallible login procedures', async () => {
+  it('returns RuntimeResolveError from the auth status refresh', async () => {
     const resolveError = {
       type: 'host-unavailable' as const,
       host: remoteHost,
@@ -132,11 +116,7 @@ describe('createAgentsWireController', () => {
     });
 
     await expect(
-      controller.call('startLogin', {
-        host: remoteHost,
-        providerId: 'claude',
-        methodId: 'browser',
-      })
+      controller.call('refreshAuthStatus', { host: remoteHost, providerId: 'claude' })
     ).resolves.toEqual(err(resolveError));
   });
 
@@ -264,49 +244,5 @@ describe('createAgentsWireController', () => {
     await wire.dispose();
   });
 
-  it('forwards login output without copying', async () => {
-    const update = {
-      generation: 1,
-      sequence: 1,
-      timestamp: 1,
-      data: { baseOffset: 0, append: 'login output' },
-    };
-    const source = loginSource(update);
-    const asLiveSource = vi.fn(() => source);
-    const handle = vi.fn(() => ({ asLiveSource }));
-    const client = vi.fn(async () => ok({ agentConfig: { loginOutput: { handle } } }));
-    const controller = createAgentsWireController({
-      operations: legacyOperations as never,
-      runtimes: { client } as never,
-    });
-    const key = { host: remoteHost, providerId: 'claude' };
-    const lease = controller.acquireLive(encodeTopic(agentsContract.loginOutput.id, key));
 
-    const output = await lease?.ready();
-    const received: unknown[] = [];
-    const unsubscribe = await output?.subscribe((next) => received.push(next));
-
-    expect(client).toHaveBeenCalledWith(remoteHost);
-    expect(handle).toHaveBeenCalledWith({ providerId: 'claude' });
-    expect(asLiveSource).toHaveBeenCalledOnce();
-    expect(received[0]).toBe(update);
-
-    unsubscribe?.();
-    await lease?.release();
-  });
 });
-
-function loginSource(update: unknown): LiveSource {
-  return {
-    snapshot: async () => ({
-      generation: 1,
-      sequence: 0,
-      timestamp: 0,
-      data: { baseOffset: 0, text: '', truncated: false },
-    }),
-    subscribe: (callback) => {
-      callback(update as never);
-      return () => {};
-    },
-  };
-}

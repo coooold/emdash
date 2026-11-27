@@ -54,16 +54,14 @@ const TaskMainPanelContent = observer(function TaskMainPanelContent() {
     taskStore && 'workspaceId' in taskStore.data ? taskStore.data.workspaceId : undefined;
 
   if (kind === 'creating') {
-    return <TaskViewLoadingState label="Creating task" />;
+    return <TaskViewLoadingState label="正在创建任务…" />;
   }
 
   if (kind === 'create-error') {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center p-8">
         <div className="flex max-w-xs flex-col items-center gap-2 text-center">
-          <p className="font-sans text-sm font-medium text-foreground-destructive">
-            Error creating task
-          </p>
+          <p className="font-sans text-sm font-medium text-foreground-destructive">创建任务失败</p>
           <p className="font-sans text-xs text-foreground-passive">{taskErrorMessage(taskStore)}</p>
         </div>
       </div>
@@ -71,7 +69,7 @@ const TaskMainPanelContent = observer(function TaskMainPanelContent() {
   }
 
   if (kind === 'project-hydrating') {
-    return <TaskViewLoadingState label="Loading project…" />;
+    return <TaskViewLoadingState label="正在加载项目…" />;
   }
 
   if (kind === 'provisioning' && taskStore) {
@@ -99,7 +97,7 @@ const TaskMainPanelContent = observer(function TaskMainPanelContent() {
       <div className="flex h-full w-full flex-col items-center justify-center p-8">
         <div className="flex max-w-xs flex-col items-center gap-2 text-center">
           <p className="font-sans text-sm font-medium text-foreground-destructive">
-            Failed to set up workspace
+            设置工作区失败
           </p>
           <p className="font-sans text-xs text-foreground-muted">{taskErrorMessage(taskStore)}</p>
         </div>
@@ -110,8 +108,8 @@ const TaskMainPanelContent = observer(function TaskMainPanelContent() {
   if (kind === 'idle' && hostActionDisabledReason) {
     return (
       <MissingWorkspaceState
-        title="Workspace is unavailable"
-        description="The Task is still available, but its workspace needs live Project access."
+        title="工作区不可用"
+        description="仍可查看任务记录。访问工作区需要项目恢复可用。"
         actionDisabledReason={hostActionDisabledReason}
         reprovision={async () => {
           await getTaskManagerStore(projectId)?.provisionTask(taskId);
@@ -121,7 +119,7 @@ const TaskMainPanelContent = observer(function TaskMainPanelContent() {
   }
 
   if (kind === 'idle' || kind === 'teardown') {
-    return <TaskViewLoadingState label="Setting up workspace…" />;
+    return <TaskViewLoadingState label="正在设置工作区…" />;
   }
 
   if (kind === 'teardown-error') {
@@ -129,7 +127,7 @@ const TaskMainPanelContent = observer(function TaskMainPanelContent() {
       <div className="flex h-full w-full flex-col items-center justify-center p-8">
         <div className="flex max-w-xs flex-col items-center gap-2 text-center">
           <p className="font-sans text-sm font-medium text-foreground-destructive">
-            Failed to tear down workspace
+            清理工作区失败
           </p>
           <p className="font-sans text-xs text-foreground-muted">{taskErrorMessage(taskStore)}</p>
         </div>
@@ -145,8 +143,8 @@ const TaskMainPanelContent = observer(function TaskMainPanelContent() {
 });
 
 function MissingWorkspaceState({
-  title = 'Workspace is missing',
-  description = 'Emdash could not activate this workspace. Re-provision it or remove the task.',
+  title = '工作区缺失',
+  description = 'Emdash 无法激活此工作区。请重新配置工作区或删除任务。',
   actionDisabledReason,
   reprovision,
   removeAndReprovision,
@@ -168,12 +166,10 @@ function MissingWorkspaceState({
             variant="secondary"
             disabled={!!actionDisabledReason}
             title={actionDisabledReason}
-            aria-label={
-              actionDisabledReason ? `Re-provision. ${actionDisabledReason}` : 'Re-provision'
-            }
+            aria-label={actionDisabledReason ? `重新配置。${actionDisabledReason}` : '重新配置'}
             onClick={() => void reprovision()}
           >
-            Re-provision
+            重新配置
           </Button>
           {removeAndReprovision && (
             <Button
@@ -182,13 +178,11 @@ function MissingWorkspaceState({
               disabled={!!actionDisabledReason}
               title={actionDisabledReason}
               aria-label={
-                actionDisabledReason
-                  ? `Remove and re-provision. ${actionDisabledReason}`
-                  : 'Remove and re-provision'
+                actionDisabledReason ? `删除并重新配置。${actionDisabledReason}` : '删除并重新配置'
               }
               onClick={() => void removeAndReprovision()}
             >
-              Remove and re-provision
+              删除并重新配置
             </Button>
           )}
         </div>
@@ -205,10 +199,7 @@ async function reprovisionWorkspace(
 ): Promise<void> {
   if (
     removeFirst &&
-    !window.confirm(
-      'Remove this workspace and permanently discard any uncommitted files or changes, then ' +
-        're-provision it? This cannot be undone.'
-    )
+    !window.confirm('删除并重新配置此工作区？所有未提交的文件和更改都将永久丢失。此操作无法撤销。')
   ) {
     return;
   }
@@ -220,7 +211,7 @@ async function reprovisionWorkspace(
     if (!result.success) throw new Error(result.error.message);
     await getTaskManagerStore(projectId)?.provisionTask(taskId);
   } catch (error) {
-    toast.error('Could not re-provision workspace', {
+    toast.error('无法重新配置工作区', {
       description: error instanceof Error ? error.message : String(error),
     });
   }
@@ -230,13 +221,13 @@ const PROVISION_LOADER_DELAY_MS = 300;
 
 /** Human labels for the host createWorktree stages streamed via the records overlay. */
 const CREATION_STAGE_LABELS: Record<string, string> = {
-  inspect: 'Inspecting the repository',
-  'fetch-branch': 'Fetching the branch',
-  'resolve-base': 'Resolving the base branch',
-  'fetch-base': 'Fetching the base branch',
-  'add-worktree': 'Creating the worktree',
-  'configure-branch': 'Configuring the branch',
-  verify: 'Verifying the worktree',
+  inspect: '正在检查仓库',
+  'fetch-branch': '正在获取分支',
+  'resolve-base': '正在解析基准分支',
+  'fetch-base': '正在获取基准分支',
+  'add-worktree': '正在创建工作树',
+  'configure-branch': '正在配置分支',
+  verify: '正在验证工作树',
 };
 
 const TaskProvisionLoader = observer(function TaskProvisionLoader({
@@ -276,11 +267,11 @@ const TaskProvisionLoader = observer(function TaskProvisionLoader({
       <p className="text-sm font-medium text-foreground">
         {error
           ? failedCreation
-            ? 'Workspace creation failed'
-            : 'Workspace activation failed'
+            ? '创建工作区失败'
+            : '激活工作区失败'
           : creation
-            ? 'Creating workspace…'
-            : 'Activating workspace…'}
+            ? '正在创建工作区…'
+            : '正在激活工作区…'}
       </p>
       {!error && creation && (
         <p className="text-center font-sans text-xs text-foreground-muted">
@@ -291,11 +282,13 @@ const TaskProvisionLoader = observer(function TaskProvisionLoader({
         <p className="text-center font-sans text-xs text-foreground-muted">
           {failedCreation
             ? [
-                failedCreation.stage ? `Failed at ${failedCreation.stage}` : null,
+                failedCreation.stage
+                  ? `执行步骤「${CREATION_STAGE_LABELS[failedCreation.stage] ?? failedCreation.stage}」失败`
+                  : null,
                 failedCreation.message ?? null,
               ]
                 .filter(Boolean)
-                .join(': ')
+                .join('：')
             : errorMessage}
         </p>
       )}
@@ -305,10 +298,10 @@ const TaskProvisionLoader = observer(function TaskProvisionLoader({
           variant="ghost"
           disabled={!!retryDisabledReason}
           title={retryDisabledReason}
-          aria-label={retryDisabledReason ? `Retry. ${retryDisabledReason}` : 'Retry'}
+          aria-label={retryDisabledReason ? `重试。${retryDisabledReason}` : '重试'}
           onClick={retry}
         >
-          Retry
+          重试
         </Button>
       )}
     </div>

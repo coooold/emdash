@@ -35,6 +35,7 @@ export type ComposerPermissionRequest = {
 };
 
 export interface PermissionBandProps {
+  chinese?: boolean;
   request: ComposerPermissionRequest;
   /** Total pending count including this one. Used to render "1 of N". */
   queueCount?: number;
@@ -62,6 +63,7 @@ function defaultSelectedId(options: ComposerPermissionOption[]): string | undefi
 // ── PermissionBand ────────────────────────────────────────────────────────────
 
 export function PermissionBand({
+  chinese = false,
   request,
   queueCount = 1,
   onResolve,
@@ -91,10 +93,10 @@ export function PermissionBand({
 
       {/* Context label */}
       <span className={styles.bandLabel}>
-        <span className={styles.bandLabelStrong}>Allow</span> <span>{request.title}</span>
+        <span className={styles.bandLabelStrong}>{chinese ? '允许' : 'Allow'}</span> <span>{request.title}</span>
         {queueCount > 1 && (
           <span className={styles.bandCounter}>
-            ({1} of {queueCount})
+            {chinese ? `（1/${queueCount}）` : `(1 of ${queueCount})`}
           </span>
         )}
       </span>

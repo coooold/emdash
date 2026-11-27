@@ -7,7 +7,7 @@ import {
 
 export const skillsSettingsPage = defineSettingsPageContribution({
   id: 'skills',
-  label: 'Skills',
+  label: '技能',
   icon: 'brain',
   component: SkillsView,
 } satisfies SettingsPageContribution<SettingsPageTab>);

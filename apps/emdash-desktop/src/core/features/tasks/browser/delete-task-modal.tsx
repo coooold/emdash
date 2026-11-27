@@ -78,19 +78,19 @@ export const DeleteTaskModal = observer(function DeleteTaskModal({
     if (!checked) setDeleteBranchOverride(undefined);
   };
 
-  const title = isBulk ? `Delete ${count} tasks` : 'Delete task';
+  const title = isBulk ? `删除 ${count} 项任务` : '删除任务';
 
   const description = isBulk
-    ? `${count} tasks will be permanently deleted. This action cannot be undone.`
-    : `"${tasks[0]!.taskName}" will be permanently deleted. This action cannot be undone.`;
+    ? `将永久删除 ${count} 项任务。此操作无法撤销。`
+    : `将永久删除「${tasks[0]!.taskName}」。此操作无法撤销。`;
 
   const worktreeLabel = isBulk
-    ? `Delete worktrees (${worktreeTasks.length} of ${count} tasks)`
-    : 'Delete worktree';
+    ? `删除工作树（涉及 ${worktreeTasks.length}/${count} 项任务）`
+    : '删除工作树';
 
   const branchLabel = isBulk
-    ? `Delete branches (${branchTasks.length} of ${count} tasks)`
-    : `Delete branch`;
+    ? `删除分支（涉及 ${branchTasks.length}/${count} 项任务）`
+    : '删除分支';
 
   const dirtyWarning = (() => {
     if (dirtyTasks.length === 0) return null;
@@ -100,12 +100,12 @@ export const DeleteTaskModal = observer(function DeleteTaskModal({
         stats && (stats.added > 0 || stats.deleted > 0)
           ? ` (+${stats.added} −${stats.deleted})`
           : '';
-      return `"${tasks[0]!.taskName}" has uncommitted changes${lines} that will be lost.`;
+      return `「${tasks[0]!.taskName}」中未提交的更改${lines}将丢失。`;
     }
     const names = dirtyTasks
-      .map((t) => `"${tasks.find((task) => task.taskId === t.taskId)?.taskName ?? t.taskId}"`)
-      .join(', ');
-    return `${dirtyTasks.length} ${dirtyTasks.length === 1 ? 'task has' : 'tasks have'} uncommitted changes that will be lost: ${names}`;
+      .map((t) => `「${tasks.find((task) => task.taskId === t.taskId)?.taskName ?? t.taskId}」`)
+      .join('、');
+    return `${dirtyTasks.length} 项任务中未提交的更改将丢失：${names}`;
   })();
 
   const unpushedWarning = (() => {
@@ -113,9 +113,9 @@ export const DeleteTaskModal = observer(function DeleteTaskModal({
     if (unpushed.length === 0) return null;
     if (!isBulk) {
       const count = unpushed[0]!.unpushedCommits!;
-      return `"${tasks[0]!.taskName}" has ${count} unpushed ${count === 1 ? 'commit' : 'commits'}.`;
+      return `「${tasks[0]!.taskName}」有 ${count} 条提交尚未推送。`;
     }
-    return `${unpushed.length} ${unpushed.length === 1 ? 'task has' : 'tasks have'} unpushed commits.`;
+    return `${unpushed.length} 项任务有尚未推送的提交。`;
   })();
 
   return (
@@ -145,9 +145,8 @@ export const DeleteTaskModal = observer(function DeleteTaskModal({
                   <div className="flex items-start gap-1.5 rounded-md bg-background-warning px-3 py-2 text-xs text-foreground-warning">
                     <TriangleAlert className="mt-px size-3.5 shrink-0" />
                     <span>
-                      {hostActionDisabledReason ?? 'Live Project access is unavailable.'} The
-                      worktree cannot be deleted right now. The task record will be removed; delete
-                      the worktree later from the workspaces view.
+                      {hostActionDisabledReason ?? '当前无法访问项目。'}
+                      任务记录将被删除。恢复项目访问后，可在工作区页面删除工作树。
                     </span>
                   </div>
                 )}
@@ -188,10 +187,7 @@ export const DeleteTaskModal = observer(function DeleteTaskModal({
             className="flex items-start gap-1.5 rounded-md bg-background-warning px-3 py-2 text-xs text-foreground-warning"
           >
             <TriangleAlert className="mt-px size-3.5 shrink-0" />
-            <span>
-              {hostActionDisabledReason} The Task record can still be deleted without removing
-              workspace artifacts.
-            </span>
+            <span>{hostActionDisabledReason}仍可删除任务记录并保留工作区文件。</span>
           </div>
         )}
 
@@ -204,17 +200,15 @@ export const DeleteTaskModal = observer(function DeleteTaskModal({
             onCheckedChange={(checked) => setDeleteConversations(Boolean(checked))}
             disabled={!!hostActionDisabledReason}
             aria-label={
-              hostActionDisabledReason
-                ? `Delete conversations. ${hostActionDisabledReason}`
-                : 'Delete conversations'
+              hostActionDisabledReason ? `删除对话。${hostActionDisabledReason}` : '删除对话'
             }
           />
-          Delete conversations
+          删除对话
         </label>
       </Dialog.Body>
       <Dialog.Footer>
         <Button variant="secondary" onClick={dismiss}>
-          Cancel
+          取消
         </Button>
         <ConfirmButton
           variant="destructive"
@@ -227,7 +221,7 @@ export const DeleteTaskModal = observer(function DeleteTaskModal({
             })
           }
         >
-          {isLoading ? 'Loading...' : isBulk ? `Delete ${count} tasks` : 'Delete'}
+          {isLoading ? '正在加载…' : isBulk ? `删除 ${count} 项任务` : '删除'}
         </ConfirmButton>
       </Dialog.Footer>
     </>

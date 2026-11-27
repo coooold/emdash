@@ -1,5 +1,3 @@
-import { issuesPluginRegistry } from '@emdash/plugins/issues';
-import { pullRequestsPluginRegistry } from '@emdash/plugins/pull-requests';
 import { err, Result } from '@emdash/shared';
 import type { ProjectAttachmentManager } from '@core/features/projects/api/node/project-attachment-manager';
 import type { ProviderRepositoryResult } from '../api';
@@ -33,8 +31,8 @@ export class ProviderRepositoryService {
         repositoryUrl: repository.repositoryUrl,
         nameWithOwner: repository.nameWithOwner,
         capabilities: {
-          pullRequests: pullRequestsPluginRegistry.get(integrationId) !== undefined,
-          issues: issuesPluginRegistry.get(integrationId) !== undefined,
+          pullRequests: false,
+          issues: false,
         },
       })
     );

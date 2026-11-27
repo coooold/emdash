@@ -91,7 +91,7 @@ const FileContent = observer(function FileContent({ host, ctx }: TabContentProps
         </div>
         {activeFile && blocked && liveActionDisabledReason ? (
           <div className="absolute inset-0">
-            <EmptyState label="File unavailable" description={liveActionDisabledReason} />
+            <EmptyState label="文件不可用" description={liveActionDisabledReason} />
           </div>
         ) : activeFile && blocked ? (
           <div className="absolute inset-0">
@@ -175,7 +175,7 @@ export const fileTabProvider: TabProvider<'file', FilePayload, FileTabResource, 
         (ctx as TaskTabContext).projectId
       );
       if (liveActionDisabledReason) {
-        toast.error('Unsaved file kept open', { description: liveActionDisabledReason });
+        toast.error('文件尚未保存，已保持打开', { description: liveActionDisabledReason });
         return false;
       }
 

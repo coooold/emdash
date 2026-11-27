@@ -31,7 +31,7 @@ import { useProjectWorkspaceOptions } from './use-project-workspace-options';
  * set. The default branch normally fills the picker in; when it can't be
  * resolved the picker sits behind the Workspace Settings tab, so point there.
  */
-export const MISSING_BRANCH_REASON = 'Select a branch in Workspace Settings.';
+export const MISSING_BRANCH_REASON = '请在工作区设置中选择分支。';
 
 /** Top-level workspace creation mode — drives which detail panel is shown. */
 export type WorkspaceMode = 'new-worktree' | 'existing';

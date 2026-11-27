@@ -28,9 +28,7 @@ export const SettingsPanel = observer(function SettingsPanel() {
   const hostActionReason = context
     ? (getProjectLiveActionDisabledReason(projectId) ??
       (hostDomains?.kind === 'unavailable'
-        ? `Settings from this Project’s ${
-            context.project.type === 'local' ? 'Local runtime' : 'Machine'
-          } are unavailable until they finish loading.`
+        ? '本地运行环境加载完毕后，才能访问这些项目设置。'
         : null))
     : null;
 
@@ -38,7 +36,7 @@ export const SettingsPanel = observer(function SettingsPanel() {
     return (
       <div className="flex flex-col items-center justify-center gap-3 px-6 py-10 text-center">
         <div className="flex flex-col gap-1">
-          <p className="text-sm font-medium">Could not load project settings</p>
+          <p className="text-sm font-medium">无法加载项目设置</p>
           <p className="text-sm text-foreground-muted">{store.pageData.error}</p>
         </div>
         <Button
@@ -47,7 +45,7 @@ export const SettingsPanel = observer(function SettingsPanel() {
           disabled={store.pageData.loading}
           onClick={() => void store.load()}
         >
-          {store.pageData.loading ? 'Retrying…' : 'Retry'}
+          {store.pageData.loading ? '正在重试…' : '重试'}
         </Button>
       </div>
     );
@@ -65,7 +63,6 @@ export const SettingsPanel = observer(function SettingsPanel() {
     <ProjectSettingsForm
       key={projectId}
       projectId={projectId}
-      projectType={context.project.type}
       domains={domains}
       configMigrations={configMigrations}
       hostActionReason={hostActionReason}

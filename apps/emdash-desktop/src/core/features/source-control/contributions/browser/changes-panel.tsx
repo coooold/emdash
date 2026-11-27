@@ -8,7 +8,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { GitBranchPlus, RotateCw } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { Fragment, useMemo, useState } from 'react';
+import { Fragment, useMemo } from 'react';
 import {
   asAvailableProject,
   getProjectStore,
@@ -19,10 +19,6 @@ import {
 } from '@core/features/source-control/api/browser/client';
 import { getGitRepositoryStore } from '@core/features/source-control/api/browser/stores/source-control-selectors';
 import { GitStatusSection } from '@core/features/source-control/browser/diff-view/changes-panel/git-status-section';
-import {
-  PullRequestsSectionBody,
-  PullRequestsSectionHeader,
-} from '@core/features/source-control/browser/diff-view/changes-panel/pr-section';
 import {
   StagedSectionBody,
   StagedSectionHeader,
@@ -42,7 +38,7 @@ import {
 import { createLayoutStorage } from '@core/primitives/mementos/browser';
 import type { InitializeRepositoryError } from '@core/primitives/projects/api';
 
-const SECTION_IDS = ['unstaged', 'staged', 'pullRequests'] as const;
+const SECTION_IDS = ['unstaged', 'staged'] as const;
 type SectionId = (typeof SECTION_IDS)[number];
 
 /** Persistence id for the sections group's per-combination layouts. */
@@ -59,6 +55,7 @@ export const ChangesPanel = observer(function ChangesPanel() {
   const workspace = useWorkspace();
   const gitCheckout = workspace.get(gitCheckoutStoreToken);
   const project = asAvailableProject(getProjectStore(projectId))?.project;
+  const isSshWorkspace = Boolean(workspace.sshConnectionId);
   const diffView = taskView.diffView;
   const changesView = diffView?.changesView;
   const queryClient = useQueryClient();
@@ -72,20 +69,8 @@ export const ChangesPanel = observer(function ChangesPanel() {
   ] as const;
   const repositoryStatusQuery = useQuery({
     queryKey: noRepositoryQueryKey,
-    enabled: !gitCheckout.hasData && !!project,
-    queryFn: async () => {
-      if (!project) throw new Error('Project context is unavailable');
-      return project.type === 'ssh'
-        ? inspectProjectPath({
-            type: 'ssh',
-            connectionId: project.connectionId,
-            path: workspace.path,
-          })
-        : inspectProjectPath({
-            type: 'local',
-            path: workspace.path,
-          });
-    },
+    enabled: !isSshWorkspace && !gitCheckout.hasData && project?.type === 'local',
+    queryFn: () => inspectProjectPath({ type: 'local', path: workspace.path }),
   });
 
   const retryCheckoutMutation = useMutation({
@@ -103,7 +88,7 @@ export const ChangesPanel = observer(function ChangesPanel() {
     },
     onSuccess: async (result) => {
       if (!result.success) {
-        toast.error('Failed to initialize Git repository', {
+        toast.error('初始化 Git 仓库失败', {
           description: initializeRepositoryErrorMessage(result.error),
         });
         return;
@@ -115,14 +100,18 @@ export const ChangesPanel = observer(function ChangesPanel() {
         queryClient.invalidateQueries({ queryKey: ['projectPathStatus'] }),
         queryClient.invalidateQueries({ queryKey: noRepositoryQueryKey }),
       ]);
-      toast('Git repository initialized');
+      toast('已初始化 Git 仓库');
     },
     onError: (error) => {
-      toast.error('Failed to initialize Git repository', {
+      toast.error('初始化 Git 仓库失败', {
         description: error instanceof Error ? error.message : String(error),
       });
     },
   });
+
+  if (isSshWorkspace) {
+    return <EmptyState label="无法获取 Git 状态" description="此 SSH 工作区已停用。" />;
+  }
 
   if (!diffView || !changesView) return null;
   if (!gitCheckout.hasData) {
@@ -130,8 +119,8 @@ export const ChangesPanel = observer(function ChangesPanel() {
     if (status?.isDirectory && !status.error && status.isGitRepo === false) {
       return (
         <EmptyState
-          label="This folder is not a Git repository"
-          description="Initialize Git to enable changes, commits, branches, and worktree-based tasks."
+          label="此文件夹不是 Git 仓库"
+          description="初始化 Git 后即可查看变更、提交代码、管理分支和使用工作树任务。"
           action={
             <Button
               variant="primary"
@@ -142,8 +131,8 @@ export const ChangesPanel = observer(function ChangesPanel() {
             >
               <GitBranchPlus className="size-3.5" />
               {initializeRepositoryMutation.isPending
-                ? 'Initializing…'
-                : 'Initialize Git repository'}
+                ? '正在初始化…'
+                : '初始化 Git 仓库'}
             </Button>
           }
         />
@@ -154,7 +143,7 @@ export const ChangesPanel = observer(function ChangesPanel() {
     if (gitCheckout.error) {
       return (
         <EmptyState
-          label="Git status unavailable"
+          label="无法获取 Git 状态"
           description={gitCheckout.error}
           action={
             <Button
@@ -165,7 +154,7 @@ export const ChangesPanel = observer(function ChangesPanel() {
               disabled={retryCheckoutMutation.isPending}
             >
               <RotateCw className="size-3.5" />
-              {retryCheckoutMutation.isPending ? 'Retrying…' : 'Retry'}
+              {retryCheckoutMutation.isPending ? '正在重试…' : '重试'}
             </Button>
           }
         />
@@ -231,11 +220,6 @@ const ChangesPanelSections = observer(function ChangesPanelSections({
     persist(layout);
   };
 
-  // Ephemeral PR sync error: set by the header's refresh action, shown by the
-  // body's empty state. Lifted here because header and body are separate
-  // children of the group.
-  const [prSyncError, setPrSyncError] = useState<string | null>(null);
-
   const hasLaterExpanded = (id: SectionId) =>
     SECTION_IDS.slice(SECTION_IDS.indexOf(id) + 1).some((later) => expanded[later]);
 
@@ -246,11 +230,6 @@ const ChangesPanelSections = observer(function ChangesPanelSections({
   }> = [
     { id: 'unstaged', header: <UnstagedSectionHeader />, body: <UnstagedSectionBody /> },
     { id: 'staged', header: <StagedSectionHeader />, body: <StagedSectionBody /> },
-    {
-      id: 'pullRequests',
-      header: <PullRequestsSectionHeader onSyncError={setPrSyncError} />,
-      body: <PullRequestsSectionBody syncError={prSyncError} />,
-    },
   ];
 
   return (
@@ -286,7 +265,7 @@ const ChangesPanelSections = observer(function ChangesPanelSections({
 });
 
 function initializeRepositoryErrorMessage(error: InitializeRepositoryError): string {
-  if (error.type === 'not-repository') return `No Git repository found at ${error.path}`;
+  if (error.type === 'not-repository') return `在 ${error.path} 未找到 Git 仓库`;
   if ('message' in error) return error.message;
-  return 'Could not initialize Git repository';
+  return '无法初始化 Git 仓库';
 }

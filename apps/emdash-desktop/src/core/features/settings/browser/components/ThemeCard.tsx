@@ -11,9 +11,9 @@ const themeOptions: Array<{
   ariaLabel: string;
   icon: LucideIcon;
 }> = [
-  { value: null, label: 'System', ariaLabel: 'Set theme to system preference', icon: Monitor },
-  { value: 'emlight', label: 'Emdash Light', ariaLabel: 'Set theme to Emdash Light', icon: Sun },
-  { value: 'emdark', label: 'Emdash Dark', ariaLabel: 'Set theme to Emdash Dark', icon: Moon },
+  { value: null, label: '跟随系统', ariaLabel: '主题跟随系统', icon: Monitor },
+  { value: 'emlight', label: '浅色', ariaLabel: '使用浅色主题', icon: Sun },
+  { value: 'emdark', label: '深色', ariaLabel: '使用深色主题', icon: Moon },
 ];
 
 const ThemeCard: React.FC = () => {

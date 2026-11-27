@@ -1,6 +1,6 @@
 # Emdash Classic
 
-Emdash Classic is the open-source desktop app for running coding agents in parallel. Run Claude Code, Codex, OpenCode, and more in separate Git worktrees, on your machine or over SSH. Review diffs and open PRs without leaving the app. Available for macOS, Windows, and Linux.
+Emdash Classic is the open-source desktop app for running coding agents in parallel. Run Claude Code, Codex, OpenCode, and more in separate Git worktrees, on your machine. Open local projects, clone repositories by URL, and review diffs without an Emdash account. Available for macOS, Windows, and Linux.
 
 <div align="center">
 
@@ -26,10 +26,8 @@ Emdash Classic is the open-source desktop app for running coding agents in paral
 
 - Run multiple coding agents at once without juggling terminals.
 - Keep every agent isolated in its own Git worktree and branch.
-- Send issues and tickets from Linear, GitHub, Jira, GitLab, Asana, Featurebase,
-  Monday.com, Forgejo, Plain, or YouTrack into an agent.
-- Review diffs, create pull requests, inspect CI checks, and merge from one place.
-- Work locally or on your own remote machines over SSH/SFTP.
+- Review and commit changes using Git.
+- Run development tasks and workspaces locally.
 
 ## Installation
 
@@ -45,8 +43,7 @@ all desktop builds.
 
 ## Agents
 
-The app automatically detects installed provider CLIs, including Claude Code, Codex, Cursor,
-OpenCode, Amp, Devin, Qwen Code, Droid, and GitHub Copilot.
+The app detects installed provider CLIs and uses their existing configuration. Set up provider credentials through the provider CLI when required.
 
 For agents that support lifecycle hooks, the app adds marked entries to the agent's user config.
 These hooks track status, enable notifications, and support resuming sessions. They do nothing
@@ -54,14 +51,6 @@ outside sessions started in the app.
 
 See [Providers](https://emdash.com/docs/providers) for the full list, setup commands,
 and provider-specific behavior.
-
-## Remote Projects
-
-Connect to remote machines with SSH/SFTP and run the same parallel workflow on remote
-codebases. You can authenticate with an SSH agent, a key, or a password. OpenSSH certificates held
-by the agent also work. The app stores credentials in your OS keychain.
-
-See [Remote Projects](https://emdash.com/docs/remote-development/remote-projects) for setup details.
 
 ## Privacy
 

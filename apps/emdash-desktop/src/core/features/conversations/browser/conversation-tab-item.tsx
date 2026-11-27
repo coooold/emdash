@@ -37,7 +37,7 @@ export const ConversationTabBarItem = observer(function ConversationTabBarItem({
       kindCommands={[
         {
           id: 'conversation:rename',
-          label: 'Rename',
+          label: '重命名',
           group: 'edit',
           shortcut: { commandId: 'workbench.tabRename' },
           run: () => host.requestRename(tab.tabId),

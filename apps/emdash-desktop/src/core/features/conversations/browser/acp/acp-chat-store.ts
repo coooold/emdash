@@ -610,7 +610,7 @@ export class AcpChatStore {
         this.historyLoading = false;
         this.loadError = {
           kind: 'unavailable',
-          message: 'Live chat is unavailable until Project access returns.',
+          message: '项目恢复可用后即可继续聊天。',
         };
       });
       return;
@@ -643,7 +643,7 @@ export class AcpChatStore {
       if (history.data.kind === 'unavailable' && !this.historyKnown && this.messageCount === 0) {
         this._failBootstrap({
           kind: 'history_unavailable',
-          message: 'Conversation history is unavailable. Retry loading this conversation.',
+          message: '无法获取对话历史，请重试。',
         });
         return;
       }
@@ -688,7 +688,7 @@ export class AcpChatStore {
         this.hostAccess?.liveAction.kind === 'disabled'
           ? {
               kind: 'unavailable',
-              message: 'Live chat is unavailable until Project access returns.',
+              message: '项目恢复可用后即可继续聊天。',
             }
           : error;
     });
@@ -959,7 +959,7 @@ export class AcpChatStore {
               runInAction(() => {
                 this.loadError = {
                   kind: 'history_unavailable',
-                  message: 'Could not load conversation history. Retry loading it.',
+                  message: '无法加载对话历史，请重试。',
                 };
               });
               return;

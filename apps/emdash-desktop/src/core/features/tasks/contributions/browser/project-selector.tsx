@@ -70,12 +70,12 @@ export const ProjectSelector = observer(function ProjectSelector({
       {trigger ?? (
         <Combobox.Trigger className="flex w-full min-w-0 items-center gap-2 rounded-lg border border-border bg-transparent px-2.5 py-2 text-sm outline-none hover:bg-background-2 data-popup-open:bg-background-2">
           {selectedOption && <ProjectIcon isSsh={selectedOption.isSsh} />}
-          <Combobox.Value placeholder="Select a project" />
+          <Combobox.Value placeholder="选择项目" />
           <ChevronDown className="ml-auto size-4 shrink-0 text-foreground-passive" />
         </Combobox.Trigger>
       )}
       <Combobox.Content className="w-auto min-w-(--anchor-width)">
-        <Combobox.Input showTrigger={false} placeholder="Search projects..." />
+        <Combobox.Input showTrigger={false} placeholder="搜索项目…" />
         <Combobox.List className="pb-0">
           {(group: { value: string; items: ProjectOption[] }) => (
             <Combobox.Group key={group.value} items={group.items} className="py-1">

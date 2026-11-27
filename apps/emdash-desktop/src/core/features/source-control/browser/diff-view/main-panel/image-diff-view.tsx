@@ -202,7 +202,7 @@ function ImageSidePanel({ label, state, side }: { label: string; state: SideStat
 function ImageSideContent({ state, side }: { state: SideState; side: Side }) {
   switch (state.status) {
     case 'loading':
-      return <div className="text-xs text-foreground-passive">Loading…</div>;
+      return <div className="text-xs text-foreground-passive">正在加载…</div>;
     case 'missing':
       return (
         <div className="text-xs text-foreground-passive">
@@ -230,7 +230,7 @@ function PreviewImage({
   const [decodeFailed, setDecodeFailed] = useState(false);
 
   if (decodeFailed) {
-    return <div className="text-xs text-foreground-passive">Failed to decode image</div>;
+    return <div className="text-xs text-foreground-passive">无法解码图像</div>;
   }
 
   return (
@@ -287,9 +287,9 @@ export const ImageDiffView = observer(function ImageDiffView({
 
   return (
     <div className="flex h-full min-h-0 w-full">
-      <ImageSidePanel label="Original" state={original} side="original" />
+      <ImageSidePanel label="原图" state={original} side="original" />
       <div className="w-px shrink-0 bg-border" />
-      <ImageSidePanel label="Modified" state={modified} side="modified" />
+      <ImageSidePanel label="修改后" state={modified} side="modified" />
     </div>
   );
 });

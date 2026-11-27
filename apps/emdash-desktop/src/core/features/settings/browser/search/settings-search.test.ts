@@ -4,7 +4,6 @@ import {
   matchedTabsForQuery,
   searchSettings,
   SETTINGS_SEARCH_INDEX,
-  slugifySettingLabel,
   type SettingsSearchEntry,
 } from './settings-search';
 
@@ -19,17 +18,6 @@ const FIXTURE_INDEX: SettingsSearchEntry[] = [
   },
   { id: 'branch-prefix', label: 'Branch prefix', tab: 'repository', keywords: ['git'] },
 ];
-
-describe('slugifySettingLabel', () => {
-  it('kebab-cases labels', () => {
-    expect(slugifySettingLabel('Terminal font size')).toBe('terminal-font-size');
-  });
-
-  it('strips punctuation and collapses separators', () => {
-    expect(slugifySettingLabel('Privacy & Telemetry')).toBe('privacy-telemetry');
-    expect(slugifySettingLabel('  Use Option as Meta key ')).toBe('use-option-as-meta-key');
-  });
-});
 
 describe('searchSettings', () => {
   it('returns nothing for an empty or whitespace query', () => {
@@ -124,31 +112,20 @@ describe('SETTINGS_SEARCH_INDEX integrity', () => {
 
   it('routes well-known queries to the expected tabs', () => {
     expect(matchedTabsForQuery('telemetry')).toEqual(['general']);
-    expect(matchedTabsForQuery('jira')).toEqual(['integrations']);
-    expect(matchedTabsForQuery('youtrack')).toEqual(['integrations']);
-    expect(matchedTabsForQuery('ssh')).toContain('connections');
+    expect(matchedTabsForQuery('jira')).toEqual([]);
+    expect(matchedTabsForQuery('youtrack')).toEqual([]);
+    expect(matchedTabsForQuery('ssh')).toEqual([]);
     expect(matchedTabsForQuery('dark mode')).toEqual(['interface']);
     expect(matchedTabsForQuery('font')).toContain('interface');
     expect(matchedTabsForQuery('worktree storage')).toEqual(['workspaces-local']);
     expect(matchedTabsForQuery('cookies')).toEqual(['browser']);
   });
 
-  it('resolves SettingRow auto-derived ids: slugified labels match entry ids for row-backed settings', () => {
-    // These entries correspond to SettingRow titles rendered as plain strings,
-    // so their id must equal slugifySettingLabel(label) for stable search targets.
-    const rowBackedIds = [
-      'privacy-telemetry',
+  it('finds localized labels while keeping language-independent ids', () => {
+    expect(searchSettings('自动生成任务名称').map((entry) => entry.id)).toEqual([
       'auto-generate-task-names',
-      'enable-tmux',
-      'terminal-font-size',
-      'notifications',
-      'os-notifications',
-      'disable-cors-for-localhost',
-    ];
-    for (const id of rowBackedIds) {
-      const entry = SETTINGS_SEARCH_INDEX.find((candidate) => candidate.id === id);
-      expect(entry, `missing index entry ${id}`).toBeDefined();
-      expect(slugifySettingLabel(entry!.label)).toBe(id);
-    }
+    ]);
+    expect(matchedTabsForQuery('终端字号')).toEqual(['interface']);
+    expect(matchedTabsForQuery('浏览器配置')).toEqual(['browser']);
   });
 });

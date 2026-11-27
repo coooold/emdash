@@ -19,8 +19,8 @@ export const SkillsList: React.FC<SkillsListProps> = ({ skills, onOpenTerminal }
       const displayName =
         skills.catalog?.skills.find((skill) => skill.id === skillId)?.displayName ?? skillId;
       const outcome = await openConfirm({
-        title: 'Uninstall skill?',
-        description: `This will uninstall "${displayName}" from all agents. This action cannot be undone.`,
+        title: '卸载技能？',
+        description: `将从所有智能体中卸载「${displayName}」。此操作无法撤销。`,
         confirmLabel: 'Uninstall',
       });
       if (!outcome.success) return false;
@@ -53,7 +53,7 @@ export const SkillsList: React.FC<SkillsListProps> = ({ skills, onOpenTerminal }
     <div className="flex flex-col text-foreground">
       <div className="flex flex-col gap-8 pt-3 pb-8">
         {skills.installedSkills.length > 0 && (
-          <CardGridSection title="Installed">
+          <CardGridSection title="已安装">
             {skills.installedSkills.map((skill) => (
               <SkillCard
                 key={skill.id}
@@ -67,7 +67,7 @@ export const SkillsList: React.FC<SkillsListProps> = ({ skills, onOpenTerminal }
           </CardGridSection>
         )}
         {skills.recommendedSkills.length > 0 && (
-          <CardGridSection title="Recommended">
+          <CardGridSection title="推荐">
             {skills.recommendedSkills.map((skill) => (
               <SkillCard
                 key={skill.id}
@@ -82,7 +82,7 @@ export const SkillsList: React.FC<SkillsListProps> = ({ skills, onOpenTerminal }
         )}
         {(skills.isSearchingSkillSh || skills.skillShSearchSkills.length > 0) && (
           <CardGridSection
-            title={skills.isSearchingSkillSh ? 'Searching Skills.sh...' : 'Skills.sh'}
+            title={skills.isSearchingSkillSh ? '正在搜索 Skills.sh…' : 'Skills.sh'}
           >
             {skills.skillShSearchSkills.map((skill) => (
               <SkillCard

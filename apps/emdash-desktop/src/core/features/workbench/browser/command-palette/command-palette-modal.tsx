@@ -142,7 +142,7 @@ export function CommandPaletteView({
         {inputChrome.keyword && (
           <button
             type="button"
-            aria-label={`Clear ${inputChrome.keyword} mode`}
+            aria-label={`退出 ${inputChrome.keyword} 模式`}
             className="flex shrink-0 items-center gap-1 rounded bg-foreground/10 px-2 py-1 text-xs text-foreground/70 hover:bg-foreground/15"
             onMouseDown={(event) => event.preventDefault()}
             onClick={clearMode}
@@ -165,7 +165,7 @@ export function CommandPaletteView({
               clearMode();
             }
           }}
-          placeholder="Search tasks, projects, actions…"
+          placeholder="搜索任务、项目和操作…"
           className="min-w-0 flex-1 bg-transparent px-2 py-3 text-sm outline-none placeholder:text-foreground/40"
           autoFocus
         />
@@ -173,7 +173,7 @@ export function CommandPaletteView({
       <Command.List className="h-96 overflow-y-auto p-1">
         {snapshot.query && !snapshot.pending && (
           <Command.Empty className="py-8 text-center text-sm text-foreground/40">
-            No results for &ldquo;{snapshot.query}&rdquo;
+            未找到与“{snapshot.query}”匹配的结果
           </Command.Empty>
         )}
         <PaletteResults results={snapshot.results} onSelect={onClose} />
@@ -183,15 +183,15 @@ export function CommandPaletteView({
         <span className="flex items-center gap-1 text-xs text-foreground/40">
           <Shortcut hotkey="ArrowUp" variant="keycaps" />
           <Shortcut hotkey="ArrowDown" variant="keycaps" />
-          Navigate
+          导航
         </span>
         <span className="flex items-center gap-1 text-xs text-foreground/40">
           <Shortcut hotkey="Enter" variant="keycaps" />
-          Select
+          选择
         </span>
         <span className="flex items-center gap-1 text-xs text-foreground/40">
           <Shortcut hotkey="Escape" variant="keycaps" />
-          Close
+          关闭
         </span>
       </div>
     </Command>

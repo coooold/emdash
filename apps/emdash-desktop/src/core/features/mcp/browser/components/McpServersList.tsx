@@ -27,8 +27,8 @@ export const McpServersList: React.FC<McpServersListProps> = ({
   const handleRemoveRequest = (serverName: string) => {
     onDrawerModeChange(null);
     void openConfirm({
-      title: 'Remove MCP server?',
-      description: `This will remove "${serverName}" from all agents. This action cannot be undone.`,
+      title: '移除 MCP 服务器？',
+      description: `将从所有智能体中移除「${serverName}」。此操作无法撤销。`,
       confirmLabel: 'Remove',
     }).then((outcome) => {
       if (outcome.success) void mcp.removeServer(serverName);
@@ -78,7 +78,7 @@ export const McpServersList: React.FC<McpServersListProps> = ({
       />
       <div className="flex flex-col gap-8 pt-3 pb-8">
         {filteredInstalled.length > 0 && (
-          <CardGridSection title="Added">
+          <CardGridSection title="已添加">
             {filteredInstalled.map((server) => (
               <McpCard
                 key={server.name}
@@ -92,7 +92,7 @@ export const McpServersList: React.FC<McpServersListProps> = ({
         )}
 
         {filteredCatalog.length > 0 && (
-          <CardGridSection title="Recommended">
+          <CardGridSection title="推荐">
             {filteredCatalog.map((entry) => (
               <McpCard
                 key={entry.key}

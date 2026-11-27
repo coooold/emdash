@@ -20,7 +20,7 @@ export const AutomationRunPill = observer(function AutomationRunPill({
 
   const runMeta = registeredTaskData(taskStore)?.automationRunMeta;
   const timestamp = runMeta?.finishedAt ?? runMeta?.startedAt ?? runMeta?.scheduledAt ?? null;
-  const automationName = runMeta?.automationName ?? 'Automation run';
+  const automationName = runMeta?.automationName ?? '自动化运行';
 
   async function handleConvert() {
     setIsConverting(true);
@@ -49,14 +49,14 @@ export const AutomationRunPill = observer(function AutomationRunPill({
       </Popover.Trigger>
       <Popover.Content align="start" className="flex w-72 flex-col gap-3 p-4">
         <div className="flex flex-col gap-1">
-          <MicroLabel className="text-foreground-passive">Automation</MicroLabel>
+          <MicroLabel className="text-foreground-passive">自动化</MicroLabel>
           <span className="text-sm tracking-tight">{automationName}</span>
         </div>
         {timestamp != null && (
           <div className="flex flex-col gap-1">
-            <MicroLabel className="text-foreground-passive">Run date</MicroLabel>
+            <MicroLabel className="text-foreground-passive">运行时间</MicroLabel>
             <span className="text-sm">
-              {new Date(timestamp).toLocaleString(undefined, {
+              {new Date(timestamp).toLocaleString('zh-CN', {
                 dateStyle: 'medium',
                 timeStyle: 'short',
               })}
@@ -67,9 +67,7 @@ export const AutomationRunPill = observer(function AutomationRunPill({
           <>
             <Separator />
             <div className="flex flex-col gap-1">
-              <p className="text-xs text-foreground-muted">
-                Convert to a regular task to manage it independently.
-              </p>
+              <p className="text-xs text-foreground-muted">转为普通任务后，可独立管理该任务。</p>
               <Button
                 variant="secondary"
                 size="sm"
@@ -77,7 +75,7 @@ export const AutomationRunPill = observer(function AutomationRunPill({
                 disabled={isConverting}
                 onClick={() => void handleConvert()}
               >
-                {isConverting ? 'Converting…' : 'Convert to task'}
+                {isConverting ? '正在转换…' : '转为普通任务'}
               </Button>
             </div>
           </>

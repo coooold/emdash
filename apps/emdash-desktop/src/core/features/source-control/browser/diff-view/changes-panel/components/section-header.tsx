@@ -49,7 +49,7 @@ export function SectionHeader({
             checked={selectionState === 'all'}
             indeterminate={selectionState === 'partial'}
             onCheckedChange={onToggleAll}
-            aria-label={`Select all ${label.toLowerCase()}`}
+            aria-label={`全选${label}`}
             className="mr-0.5"
           />
         )}

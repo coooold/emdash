@@ -88,15 +88,15 @@ export function WorktreeDestinationPreviewView({
     <div className="flex flex-col gap-1 text-xs text-foreground-muted">
       <span className="flex min-w-0 items-center gap-1.5">
         <FolderGit2 className="size-3.5 shrink-0" />
-        <span className="shrink-0">Worktree:</span>
+        <span className="shrink-0">工作树：</span>
         <code className="min-w-0 truncate font-mono" title={worktreePath}>
           {worktreePath}
         </code>
       </span>
       {worktreeRoot.provenance.kind === 'broken-setting' ? (
         <span className="text-foreground-warning">
-          The configured worktree root '{worktreeRoot.provenance.staleValue}' is not usable —
-          falling back to <code className="font-mono">{worktreeRoot.value}</code>.
+          工作树根目录「{worktreeRoot.provenance.staleValue}」不可用，将使用{' '}
+          <code className="font-mono">{worktreeRoot.value}</code>。
         </span>
       ) : null}
     </div>

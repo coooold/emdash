@@ -132,12 +132,12 @@ it('shows loading and failed diff sides and recovers without recreating the edit
       />
     )
   );
-  expect(host.textContent).toContain('Loading diff...');
+  expect(host.textContent).toContain('正在加载差异…');
   for (const side of ['original', 'modified'] as const) {
     for (const [code, message] of [
-      ['no-permissions', 'Permission denied'],
-      ['unavailable', 'Could not load file'],
-      ['too-large', 'File too large to display in the editor'],
+      ['no-permissions', '权限不足'],
+      ['unavailable', '无法加载文件'],
+      ['too-large', '文件过大，无法在编辑器中显示'],
     ] as const) {
       await act(async () =>
         runInAction(() => {
@@ -154,7 +154,7 @@ it('shows loading and failed diff sides and recovers without recreating the edit
   }
   const diff = editor as monaco.editor.IStandaloneDiffEditor | null;
   if (!diff) throw new Error('diff editor missing');
-  expect(host.textContent).not.toContain('Loading diff...');
+  expect(host.textContent).not.toContain('正在加载差异…');
   expect(diff.getModel()?.modified.getValue()).toBe('changed');
   for (const side of ['original', 'modified'] as const) {
     await act(async () =>
@@ -163,7 +163,7 @@ it('shows loading and failed diff sides and recovers without recreating the edit
       })
     );
     expect(diff.getModel()?.[side].getValue()).toBe('');
-    expect(host.textContent).not.toContain('Could not load file');
+    expect(host.textContent).not.toContain('无法加载文件');
     await act(async () =>
       runInAction(() => {
         state[side] = { kind: 'ready' };
@@ -239,7 +239,7 @@ it('keeps a loaded diff visible but read-only while a side fails', async () => {
   expect(diff.getModel()?.modified.getValue()).toBe('changed');
   expect(readOnly()).toBe(true);
   expect(host.querySelector('[role="alert"]')?.textContent).toBe(
-    'Could not load file. Showing the last loaded version.'
+    '无法加载文件。正在显示上次加载的版本。'
   );
   await pressSave();
   expect(save).toHaveBeenCalledOnce();
@@ -249,7 +249,7 @@ it('keeps a loaded diff visible but read-only while a side fails', async () => {
   expect(diff.getModel()?.modified.getValue()).toBe('changed');
   expect(readOnly()).toBe(true);
   expect(host.querySelector('[role="alert"]')).toBeNull();
-  expect(host.querySelector('[role="status"]')?.textContent).toBe('Reloading diff...');
+  expect(host.querySelector('[role="status"]')?.textContent).toBe('正在重新加载差异…');
 
   await act(async () => runInAction(() => original.set({ kind: 'ready' })));
   expect(readOnly()).toBe(false);

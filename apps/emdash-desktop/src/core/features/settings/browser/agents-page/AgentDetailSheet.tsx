@@ -1,6 +1,6 @@
+import { LOCAL_HOST_REF } from '@emdash/core/primitives/host/api';
 import { MicroLabel, Sheet } from '@emdash/ui/react/primitives';
 import { observer } from 'mobx-react-lite';
-import { hostRefFromConnectionId } from '@core/features/agents/api/browser/client';
 import { useAgentSettings } from '@core/features/agents/api/browser/use-agent-settings';
 import { useAgents } from '@core/features/agents/api/browser/use-agents';
 import {
@@ -17,24 +17,15 @@ import { InstallSection } from '@core/features/settings/contributions/browser/ag
 
 interface AgentDetailSheetProps {
   agentId: string | null;
-  connectionId?: string;
-  onManageMcp?: () => void;
   onClose: () => void;
 }
 
 const AgentDetailSheetContent = observer(function AgentDetailSheetContent({
   agentId,
-  connectionId,
-  onManageMcp,
-  onClose,
 }: {
   agentId: string;
-  connectionId?: string;
-  onManageMcp?: () => void;
-  onClose: () => void;
 }) {
-  const host = hostRefFromConnectionId(connectionId);
-  const { data: agents } = useAgents(host);
+  const { data: agents } = useAgents(LOCAL_HOST_REF);
   const agentPayload = agents?.find((a) => a.id === agentId);
 
   const {
@@ -43,23 +34,15 @@ const AgentDetailSheetContent = observer(function AgentDetailSheetContent({
     isLoading,
     update,
     reset,
-  } = useAgentSettings(agentId, host);
+  } = useAgentSettings(agentId, LOCAL_HOST_REF);
   const navigateToMcpSettings = useManageMcpSettingsNavigation();
 
   const isInstalled = agentPayload?.status === 'available';
-  const isRemote = !!connectionId;
-  const handleManageMcp = isRemote
-    ? onManageMcp &&
-      (() => {
-        onClose();
-        onManageMcp();
-      })
-    : navigateToMcpSettings;
 
   return (
     <>
       <Sheet.Header>
-        <MicroLabel>{isInstalled ? 'Agent Settings' : 'Install Agent'}</MicroLabel>
+        <MicroLabel>{isInstalled ? '智能体设置' : '安装智能体'}</MicroLabel>
       </Sheet.Header>
       <div className="overflow-y-auto px-4">
         {agentPayload && (
@@ -67,16 +50,15 @@ const AgentDetailSheetContent = observer(function AgentDetailSheetContent({
             <AgentSheetHeaderSection agent={agentPayload} />
             <InstallSection
               agentId={agentId}
-              connectionId={connectionId}
               agentPayload={agentPayload}
               installOptions={agentPayload.installOptions}
               installDocs={agentPayload.installDocs}
-              hideOverrideOptions={!isInstalled || isRemote}
+              hideOverrideOptions={!isInstalled}
             />
-            {isInstalled && <AgentHooksSection agent={agentPayload} host={host} />}
+            {isInstalled && <AgentHooksSection agent={agentPayload} host={LOCAL_HOST_REF} />}
             {isInstalled && <AgentTrustSection agent={agentPayload} />}
             {isInstalled && (
-              <AgentMcpSection agentId={agentId} host={host} onManage={handleManageMcp} />
+              <AgentMcpSection agentId={agentId} host={LOCAL_HOST_REF} onManage={navigateToMcpSettings} />
             )}
           </div>
         )}
@@ -96,8 +78,6 @@ const AgentDetailSheetContent = observer(function AgentDetailSheetContent({
 
 export function AgentDetailSheet({
   agentId,
-  connectionId,
-  onManageMcp,
   onClose,
 }: AgentDetailSheetProps) {
   return (
@@ -106,9 +86,6 @@ export function AgentDetailSheet({
         {agentId && (
           <AgentDetailSheetContent
             agentId={agentId}
-            connectionId={connectionId}
-            onManageMcp={onManageMcp}
-            onClose={onClose}
           />
         )}
       </Sheet.Content>

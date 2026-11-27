@@ -60,8 +60,8 @@ describe('ProjectSettingsFooter', () => {
     });
 
     const buttons = [...host.querySelectorAll('button')];
-    const share = buttons.find((button) => button.textContent?.includes('Share with team'));
-    const save = buttons.find((button) => button.textContent?.includes('Save settings'));
+    const share = buttons.find((button) => button.textContent?.includes('与团队共享'));
+    const save = buttons.find((button) => button.textContent?.includes('保存设置'));
     expect(share?.hidden).toBe(false);
     expect(share?.disabled).toBe(false);
     expect(share?.getAttribute('aria-disabled')).toBe('true');
@@ -81,7 +81,7 @@ describe('ProjectSettingsFooter', () => {
       await renderFooter(root, { canShareConfig });
 
       const footer = host.firstElementChild as HTMLElement;
-      const reset = host.querySelector<HTMLButtonElement>('[aria-label="Reset changes"]');
+      const reset = host.querySelector<HTMLButtonElement>('[aria-label="撤销更改"]');
       const saveActions = reset?.parentElement;
 
       expect(saveActions).not.toBeNull();

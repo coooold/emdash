@@ -34,15 +34,16 @@ export const TerminalsPanel = observer(function TerminalsPanel() {
   const terminalTabView = taskView.terminalTabs;
   const lifecycleScriptsMgr = workspace.get(lifecycleScriptsStoreToken);
   const isActive = useIsActiveTask(taskId);
-  const remoteConnectionId = workspace.sshConnectionId;
-  const liveActionsDisabled = terminalMgr.hostAccess?.liveAction.kind === 'disabled';
+  const isSshWorkspace = Boolean(workspace.sshConnectionId);
+  const liveActionsDisabled =
+    isSshWorkspace || terminalMgr.hostAccess?.liveAction.kind === 'disabled';
   const liveActionDisabledReason = projectAvailabilityUi.getLiveActionDisabledReason(projectId);
   const [shouldLoadShellAvailability, setShouldLoadShellAvailability] = useState(false);
   const [mode, setMode] = useState<TerminalDrawerMode>(() =>
     taskView.terminalDrawerActiveItem?.kind === 'script' ? 'scripts' : 'terminals'
   );
   const previousActiveItemRef = useRef(taskView.terminalDrawerActiveItem);
-  const shellAvailabilityQuery = useTerminalShellAvailability(remoteConnectionId, {
+  const shellAvailabilityQuery = useTerminalShellAvailability({
     enabled: shouldLoadShellAvailability && !liveActionsDisabled,
   });
   const shellMenuState: TerminalShellMenuState = shellAvailabilityQuery.data
@@ -53,7 +54,7 @@ export const TerminalsPanel = observer(function TerminalsPanel() {
           message:
             shellAvailabilityQuery.error instanceof Error
               ? shellAvailabilityQuery.error.message
-              : 'Failed to load',
+              : '加载失败',
         }
       : { kind: 'loading' };
 
@@ -177,11 +178,15 @@ export const TerminalsPanel = observer(function TerminalsPanel() {
     taskView.setTerminalDrawerActiveItem({ kind: 'script', id: scriptId });
   };
 
+  if (isSshWorkspace) {
+    return <EmptyState label="终端不可用" description="此 SSH 工作区已停用。" />;
+  }
+
   const terminalEmptyState = (
     <EmptyState
       bare
-      label="No terminals yet"
-      description="Add a terminal to run shell commands in this task's working directory."
+      label="还没有终端"
+      description="添加终端，在当前任务的工作目录中运行命令。"
       action={
         <projectAvailabilityUi.LiveActionGuard projectId={projectId}>
           <Button
@@ -191,7 +196,7 @@ export const TerminalsPanel = observer(function TerminalsPanel() {
             onClick={() => void handleCreate()}
             className="flex items-center gap-2"
           >
-            New terminal
+            新建终端
             <BoundShortcut command="task.newTerminal" variant="keycaps" />
           </Button>
         </projectAvailabilityUi.LiveActionGuard>
@@ -202,8 +207,8 @@ export const TerminalsPanel = observer(function TerminalsPanel() {
   const scriptsEmptyState = (
     <EmptyState
       bare
-      label="No scripts configured"
-      description="Add setup, run, or teardown scripts to your project configuration."
+      label="尚未配置脚本"
+      description="在项目配置中添加初始化、运行或清理脚本。"
     />
   );
 
@@ -257,8 +262,8 @@ export const TerminalsPanel = observer(function TerminalsPanel() {
           unavailableState={
             <EmptyState
               bare
-              label="Terminal unavailable"
-              description={liveActionDisabledReason ?? 'Live actions are unavailable.'}
+              label="终端不可用"
+              description={liveActionDisabledReason ?? '当前无法执行操作。'}
             />
           }
           disabledReason={mode === 'terminals' ? liveActionDisabledReason : null}

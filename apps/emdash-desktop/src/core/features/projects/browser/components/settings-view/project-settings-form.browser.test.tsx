@@ -49,48 +49,30 @@ describe('ProjectSettingsForm unavailable copy', () => {
     host.remove();
   });
 
-  it.each([
-    [
-      'local',
-      'Repository-backed settings may be out of date while the local runtime is unavailable.',
-    ],
-    [
-      'ssh',
-      'Repository-backed settings may be out of date while this Project’s Machine is unavailable.',
-    ],
-  ] as const)('uses %s runtime terminology for stale observations', async (projectType, copy) => {
-    await renderForm(root, projectType, 'stale');
+  it('explains stale repository settings when the local runtime is unavailable', async () => {
+    await renderForm(root, 'stale');
 
-    expect(host.textContent).toContain(copy);
-    expect(host.textContent).not.toContain('Host-derived');
+    expect(host.textContent).toContain('本地运行环境暂不可用，仓库设置可能不是最新的。');
   });
 
-  it.each([
-    ['local', 'Repository-backed settings are unavailable until the local runtime is ready.'],
-    ['ssh', 'Repository-backed settings are unavailable until this Project’s Machine is ready.'],
-  ] as const)('uses %s runtime terminology when never observed', async (projectType, copy) => {
-    await renderForm(root, projectType, 'unavailable');
+  it('explains when repository settings become available', async () => {
+    await renderForm(root, 'unavailable');
 
-    expect(host.textContent).toContain(copy);
+    expect(host.textContent).toContain('本地运行环境就绪后，才能访问仓库设置。');
   });
 
   it('lets the Project page own vertical scrolling', async () => {
-    await renderForm(root, 'local', 'unavailable');
+    await renderForm(root, 'unavailable');
 
     expect(host.querySelector('.overflow-y-auto')).toBeNull();
   });
 });
 
-async function renderForm(
-  root: Root,
-  projectType: 'local' | 'ssh',
-  hostObservationKind: 'stale' | 'unavailable'
-): Promise<void> {
+async function renderForm(root: Root, hostObservationKind: 'stale' | 'unavailable'): Promise<void> {
   await act(async () => {
     root.render(
       <ProjectSettingsForm
         projectId="project-1"
-        projectType={projectType}
         domains={{} as never}
         configMigrations={[]}
         hostActionReason={null}

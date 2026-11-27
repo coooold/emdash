@@ -8,7 +8,6 @@ import {
 } from '@core/primitives/keybindings/api';
 import {
   EMDASH_DOCS_URL,
-  EMDASH_ISSUES_NEW_URL,
   EMDASH_RELEASES_URL,
 } from '@core/primitives/urls/api/urls';
 import { telemetryService } from '@main/lib/telemetry';
@@ -64,17 +63,17 @@ export function setupApplicationMenu(
             label: app.name,
             submenu: [
               {
-                label: `About ${app.name}`,
+                label: `关于 ${app.name}`,
                 click: () => app.showAboutPanel(),
               },
               { type: 'separator' as const },
               {
-                label: 'Settings\u2026',
+                label: '设置…',
                 accelerator: acceleratorFor('app.settings'),
                 click: () => emitCommand('app.settings'),
               },
               {
-                label: 'Check for Updates\u2026',
+                label: '检查更新…',
                 click: () => desktopHostEvents.emit(undefined, { type: 'menu-check-for-updates' }),
               },
               { type: 'separator' as const },
@@ -85,7 +84,7 @@ export function setupApplicationMenu(
               { role: 'unhide' as const },
               { type: 'separator' as const },
               {
-                label: `Quit ${app.name}`,
+                label: `退出 ${app.name}`,
                 accelerator: 'CmdOrCtrl+Q',
                 click: () => app.quit(),
               },
@@ -95,13 +94,13 @@ export function setupApplicationMenu(
       : []),
     // File menu
     {
-      label: 'File',
+      label: '文件',
       submenu: [
         // On non-macOS, put Settings in File menu
         ...(!isMac
           ? [
               {
-                label: 'Settings\u2026',
+                label: '设置…',
                 accelerator: acceleratorFor('app.settings'),
                 click: () => emitCommand('app.settings'),
               },
@@ -110,12 +109,12 @@ export function setupApplicationMenu(
           : []),
         isMac
           ? {
-              label: 'Close Tab',
+              label: '关闭标签页',
               accelerator: acceleratorFor('workbench.tabClose'),
               click: () => emitCommand('workbench.tabClose'),
             }
           : {
-              label: 'Quit',
+              label: '退出',
               accelerator: 'CmdOrCtrl+Q',
               click: () => app.quit(),
             },
@@ -123,15 +122,15 @@ export function setupApplicationMenu(
     },
     // Edit menu
     {
-      label: 'Edit',
+      label: '编辑',
       submenu: [
         {
-          label: 'Undo',
+          label: '撤销',
           accelerator: 'CmdOrCtrl+Z',
           click: () => desktopHostEvents.emit(undefined, { type: 'menu-undo' }),
         },
         {
-          label: 'Redo',
+          label: '重做',
           accelerator: isMac ? 'Shift+CmdOrCtrl+Z' : 'CmdOrCtrl+Y',
           click: () => desktopHostEvents.emit(undefined, { type: 'menu-redo' }),
         },
@@ -146,14 +145,14 @@ export function setupApplicationMenu(
     },
     // View menu
     {
-      label: 'View',
+      label: '视图',
       submenu: [
         { role: 'reload' as const },
         { role: 'forceReload' as const },
         { role: 'toggleDevTools' as const },
         { type: 'separator' as const },
         {
-          label: 'Command Palette\u2026',
+          label: '命令面板…',
           accelerator: acceleratorFor('app.commandPalette'),
           click: () => emitCommand('app.commandPalette'),
         },
@@ -170,47 +169,41 @@ export function setupApplicationMenu(
     // Help menu
     {
       role: 'help' as const,
-      label: 'Help',
+      label: '帮助',
       submenu: [
         ...(!isMac
           ? [
               {
-                label: 'Check for Updates\u2026',
+                label: '检查更新…',
                 click: () => desktopHostEvents.emit(undefined, { type: 'menu-check-for-updates' }),
               },
               { type: 'separator' as const },
             ]
           : []),
         {
-          label: 'Docs',
+          label: '文档',
           click: () => {
             void shell.openExternal(EMDASH_DOCS_URL);
           },
         },
         {
-          label: 'Changelog',
+          label: '更新日志',
           click: () => {
             void shell.openExternal(EMDASH_RELEASES_URL);
           },
         },
         { type: 'separator' as const },
         {
-          label: 'Troubleshooting',
+          label: '故障排查',
           submenu: [
             {
-              label: 'Report Issue\u2026',
-              click: () => {
-                void shell.openExternal(EMDASH_ISSUES_NEW_URL);
-              },
-            },
-            {
-              label: 'Copy Installation ID',
+              label: '复制安装 ID',
               click: copyInstallationId,
             },
           ],
         },
         {
-          label: 'Give Feedback',
+          label: '提供反馈',
           click: () => emitCommand('app.giveFeedback'),
         },
       ],

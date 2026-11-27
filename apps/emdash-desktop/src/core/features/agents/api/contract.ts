@@ -20,7 +20,6 @@ import {
   defineContract,
   fallible,
   liveJob,
-  liveLog,
   liveModel,
   liveState,
   procedure,
@@ -133,38 +132,10 @@ export const agentsContract = defineContract({
     data: hooksStatusSchema,
     error: runtimeResolveErrorSchema,
   }),
-  startLogin: fallible({
-    input: agentConfigContract.startLogin.input.extend(hostInputSchema.shape),
-    data: z.void(),
-    error: agentsAuthErrorSchema,
-  }),
-  cancelLogin: fallible({
-    input: providerInputSchema,
-    data: z.void(),
-    error: agentsAuthErrorSchema,
-  }),
-  sendLoginInput: fallible({
-    input: agentConfigContract.sendLoginInput.input.extend(hostInputSchema.shape),
-    data: z.void(),
-    error: agentsAuthErrorSchema,
-  }),
-  resizeLogin: fallible({
-    input: agentConfigContract.resizeLogin.input.extend(hostInputSchema.shape),
-    data: z.void(),
-    error: agentsAuthErrorSchema,
-  }),
-  markUrlHandled: fallible({
-    input: agentConfigContract.markUrlHandled.input.extend(hostInputSchema.shape),
-    data: z.void(),
-    error: agentsAuthErrorSchema,
-  }),
   refreshAuthStatus: fallible({
     input: providerInputSchema,
     data: agentAuthStatusSchema,
     error: agentsAuthErrorSchema,
-  }),
-  loginOutput: liveLog({
-    key: providerInputSchema,
   }),
 });
 

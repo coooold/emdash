@@ -32,7 +32,7 @@ export const SvgRenderer = observer(function SvgRenderer({ tab }: SvgRendererPro
           className="max-h-full max-w-full"
         />
       ) : (
-        <div className="text-xs text-foreground-passive">Empty file</div>
+        <div className="text-xs text-foreground-passive">空文件</div>
       )}
     </div>
   );

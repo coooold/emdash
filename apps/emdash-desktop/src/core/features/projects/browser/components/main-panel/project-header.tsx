@@ -26,7 +26,7 @@ import { openExternal } from '@core/primitives/desktop-host/browser/host-client'
 export const ProjectHeader = observer(function ProjectHeader({ projectId }: { projectId: string }) {
   const store = getProjectStore(projectId);
   const project = store?.data;
-  const displayName = projectDisplayName(store) ?? 'this project';
+  const displayName = projectDisplayName(store) ?? '此项目';
   const confirmDeleteProject = useConfirmDeleteProject();
   const openRename = useOpenModal('renameProjectModal');
   const repositoryStore = getGitRepositoryStore(projectId);
@@ -56,71 +56,62 @@ export const ProjectHeader = observer(function ProjectHeader({ projectId }: { pr
         </Heading>
       }
       actions={
-        <>
-          {repositoryUrl && repositoryLabel ? (
-            <>
-              <Button
-                type="button"
-                variant="ghost"
-                className="group flex max-w-64 items-center gap-1.5 text-sm text-foreground-muted transition-colors hover:text-foreground"
-                onClick={() => void openExternal(repositoryUrl)}
-              >
-                {isGithubUrl ? (
-                  <GithubIcon aria-hidden="true" className="size-3.5" />
-                ) : (
-                  <Globe aria-hidden="true" className="size-3.5" />
-                )}
-                <span className="truncate">{repositoryLabel}</span>
-                <ExternalLink
-                  aria-hidden="true"
-                  className="size-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
-                />
-              </Button>
-              <Separator orientation="vertical" className="h-4 self-center!" />
-            </>
-          ) : null}
-          <OpenInMenu
-            path={project.path}
-            className="h-7 bg-background"
-            isRemote={project.type === 'ssh'}
-            sshConnectionId={project.type === 'ssh' ? project.connectionId : undefined}
-          />
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger
-              render={
+        project.type === 'local' && (
+          <>
+            {repositoryUrl && repositoryLabel ? (
+              <>
                 <Button
                   type="button"
-                  variant="secondary"
-                  size="xs"
-                  icon
-                  aria-label="Project actions"
-                />
-              }
-            >
-              <EllipsisIcon />
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content align="end">
-              <DropdownMenu.Item
-                onClick={() => {
-                  void openRename({ projectId, currentName: displayName });
-                }}
+                  variant="ghost"
+                  className="group flex max-w-64 items-center gap-1.5 text-sm text-foreground-muted transition-colors hover:text-foreground"
+                  onClick={() => void openExternal(repositoryUrl)}
+                >
+                  {isGithubUrl ? (
+                    <GithubIcon aria-hidden="true" className="size-3.5" />
+                  ) : (
+                    <Globe aria-hidden="true" className="size-3.5" />
+                  )}
+                  <span className="truncate">{repositoryLabel}</span>
+                  <ExternalLink
+                    aria-hidden="true"
+                    className="size-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100"
+                  />
+                </Button>
+                <Separator orientation="vertical" className="h-4 self-center!" />
+              </>
+            ) : null}
+            <OpenInMenu path={project.path} className="h-7 bg-background" />
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger
+                render={
+                  <Button type="button" variant="secondary" size="xs" icon aria-label="项目操作" />
+                }
               >
-                <Pencil />
-                Rename Project
-              </DropdownMenu.Item>
-              <DropdownMenu.Separator />
-              <DropdownMenu.Item
-                variant="destructive"
-                onClick={() => {
-                  void confirmDeleteProject({ projectId, projectLabel: displayName });
-                }}
-              >
-                <Trash2 />
-                Remove Project
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
-        </>
+                <EllipsisIcon />
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content align="end">
+                <DropdownMenu.Item
+                  onClick={() => {
+                    void openRename({ projectId, currentName: displayName });
+                  }}
+                >
+                  <Pencil />
+                  重命名项目
+                </DropdownMenu.Item>
+                <DropdownMenu.Separator />
+                <DropdownMenu.Item
+                  variant="destructive"
+                  onClick={() => {
+                    void confirmDeleteProject({ projectId, projectLabel: displayName });
+                  }}
+                >
+                  <Trash2 />
+                  移除项目
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          </>
+        )
       }
     />
   );

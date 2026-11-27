@@ -22,7 +22,7 @@ export function SidebarSpace() {
           </Toggle>
         </Tooltip.Trigger>
         <Tooltip.Content>
-          Toggle left sidebar
+          切换左侧边栏
           <BoundShortcut command="workbench.toggleLeftSidebar" variant="keycaps" />
         </Tooltip.Content>
       </Tooltip.Root>

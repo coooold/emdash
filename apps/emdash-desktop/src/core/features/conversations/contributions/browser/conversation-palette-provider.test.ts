@@ -80,12 +80,12 @@ describe('conversation palette source', () => {
     await expect(source.idle(CONTEXT)).resolves.toEqual([
       expect.objectContaining({
         id: 'conversation-1',
-        section: 'Recent Conversations',
+        section: '最近的对话',
         relevance: { band: 'fuzzy', score: 0, contextAffinity: 1 },
       }),
       expect.objectContaining({
         id: 'conversation-2',
-        section: 'Recent Conversations',
+        section: '最近的对话',
         relevance: { band: 'fuzzy', score: 0, contextAffinity: 1 },
       }),
     ]);

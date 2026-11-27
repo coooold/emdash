@@ -50,7 +50,7 @@ function toIdleMatch(item: ConversationSearchItem): ConversationPaletteMatch {
     item,
     title: item.title,
     subtitle: item.subtitle,
-    section: 'Recent Conversations',
+    section: '最近的对话',
     relevance: {
       band: 'fuzzy',
       score: 0,

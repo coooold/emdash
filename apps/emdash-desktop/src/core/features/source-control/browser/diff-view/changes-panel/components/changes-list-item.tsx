@@ -71,7 +71,7 @@ export function ChangeStatusAffordance({
   return (
     <div
       className="flex shrink-0 items-center gap-1.5"
-      aria-label={`${change.additions} lines added, ${change.deletions} lines removed`}
+      aria-label={`新增 ${change.additions} 行，删除 ${change.deletions} 行`}
     >
       <DiffLineStats additions={change.additions} deletions={change.deletions} />
       <span className="relative flex size-4 items-center justify-center">
@@ -99,7 +99,7 @@ export function ChangeStatusAffordance({
             <Checkbox
               checked={isSelected ?? false}
               onCheckedChange={() => onToggleSelect(change.path)}
-              aria-label={`Select ${filename}`}
+              aria-label={`选择 ${filename}`}
             />
           </span>
         )}

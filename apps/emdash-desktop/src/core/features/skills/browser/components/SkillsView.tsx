@@ -6,8 +6,8 @@ export const SkillsView: React.FC = () => (
   <SkillsPanel
     host={LOCAL_HOST_REF}
     header={{
-      title: 'Skills',
-      description: 'Extend your agents with reusable skill modules',
+      title: '技能',
+      description: '用可复用的技能扩展智能体。',
     }}
   />
 );

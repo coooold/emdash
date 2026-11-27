@@ -84,10 +84,10 @@ describe('BorderlessTitlebar', () => {
     await act(async () => root.render(<BorderlessTitlebar />));
 
     const showSidebar = host.querySelector<HTMLButtonElement>(
-      'button[aria-label="Show left sidebar"]'
+      'button[aria-label="显示左侧边栏"]'
     );
-    const goBack = host.querySelector<HTMLButtonElement>('button[aria-label="Go back"]');
-    const goForward = host.querySelector<HTMLButtonElement>('button[aria-label="Go forward"]');
+    const goBack = host.querySelector<HTMLButtonElement>('button[aria-label="后退"]');
+    const goForward = host.querySelector<HTMLButtonElement>('button[aria-label="前进"]');
 
     expect(showSidebar).not.toBeNull();
     expect(goBack?.disabled).toBe(false);

@@ -28,11 +28,18 @@ export function getProjectStore(projectId: string): ProjectStore | undefined {
 }
 
 /** Summary for routing the project shell; call only inside `observer` (or other MobX reactions). */
-export type ProjectViewKind = 'missing' | 'creating' | 'hydrating' | 'context_error' | 'ready';
+export type ProjectViewKind =
+  | 'missing'
+  | 'creating'
+  | 'legacy-ssh'
+  | 'hydrating'
+  | 'context_error'
+  | 'ready';
 
 export function projectViewKind(store: ProjectStore | undefined): ProjectViewKind {
   if (!store) return 'missing';
   if (isUnregisteredProject(store)) return 'creating';
+  if (store.data?.type === 'ssh') return 'legacy-ssh';
   if (!store.context || store.context.kind === 'hydrating') return 'hydrating';
   if (store.context.kind === 'failed') return 'context_error';
   return 'ready';

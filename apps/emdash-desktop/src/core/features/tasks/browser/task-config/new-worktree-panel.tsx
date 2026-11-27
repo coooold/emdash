@@ -38,7 +38,7 @@ export function NewWorktreePanel({
             <Combobox.Trigger className="flex w-full items-center justify-between gap-2 rounded-lg border border-border px-2.5 py-2 outline-none hover:bg-background-2 data-popup-open:bg-background-1">
               <div className="flex flex-col gap-1 text-left text-sm">
                 <span className="text-xs text-foreground-passive">
-                  {createBranchAndWorktree ? 'From branch' : 'Branch'}
+                  {createBranchAndWorktree ? '来源分支' : '分支'}
                 </span>
                 <span className="flex items-center gap-1">
                   <GitBranch
@@ -46,7 +46,7 @@ export function NewWorktreePanel({
                     strokeWidth={2}
                     className="size-3.5 shrink-0 text-foreground-muted"
                   />
-                  <Combobox.Value placeholder="Select a branch" />
+                  <Combobox.Value placeholder="选择分支" />
                 </span>
               </div>
               <ChevronDown className="size-4 shrink-0 text-foreground-muted" />
@@ -58,16 +58,15 @@ export function NewWorktreePanel({
       {!createBranchAndWorktree && branchConflict && (
         <div className="flex flex-col gap-2 rounded-md border border-border-warning bg-background-warning px-3 py-2.5 text-xs text-foreground-warning">
           <p>
-            <strong className="font-medium">{branchConflict.branchName}</strong> is already checked
-            out in{' '}
+            分支 <strong className="font-medium">{branchConflict.branchName}</strong> 已在
             {branchConflict.taskName ? (
               <>
-                task <strong className="font-medium">{branchConflict.taskName}</strong>
+                任务 <strong className="font-medium">{branchConflict.taskName}</strong> 的工作区
               </>
             ) : (
-              'an existing workspace'
+              '其他工作区'
             )}
-            . A new isolated worktree cannot be created for a branch that is already in use.
+            中检出，无法为该分支创建新的独立工作树。
           </p>
           <Button
             variant="secondary"
@@ -76,7 +75,7 @@ export function NewWorktreePanel({
             className="gap-1.5 self-start border-border-warning bg-transparent text-foreground-warning hover:bg-background-warning-hover hover:text-foreground-warning"
           >
             <Layers className="size-3.5" />
-            Reuse existing workspace
+            复用现有工作区
           </Button>
         </div>
       )}

@@ -115,7 +115,7 @@ const TerminalTabBarItem = observer(function TerminalTabBarItem({
   ctx,
 }: TabBarItemProps<TerminalTabResourceView>) {
   const terminal = tab.resource.terminal;
-  const label = terminal?.data.name ?? 'Terminal';
+  const label = terminal?.data.name ?? '终端';
 
   return (
     <GenericTabItem tab={tab} host={host} ctx={ctx} label={label} preSlot={<TerminalIcon />} />
@@ -127,7 +127,7 @@ const TerminalTabBarItemDragPreview = observer(function TerminalTabBarItemDragPr
 }: {
   tab: ResolvedTab<TerminalTabResourceView>;
 }) {
-  const label = tab.resource.terminal?.data.name ?? 'Terminal';
+  const label = tab.resource.terminal?.data.name ?? '终端';
   return <GenericTabDragPreview preSlot={<TerminalIcon />} label={label} />;
 });
 
@@ -154,18 +154,18 @@ const TerminalTabContent = observer(function TerminalTabContent({ host, ctx }: T
       autoFocus={activeTerminal !== null && host.resolvedActiveTabId === activeTab?.tabId}
       emptyState={
         <EmptyState
-          label={terminalManager?.isLoaded ? 'Terminal unavailable' : 'Loading terminal'}
+          label={terminalManager?.isLoaded ? '终端不可用' : '正在加载终端'}
           description={
             terminalManager?.isLoaded
-              ? 'This terminal was removed from the drawer.'
-              : 'Restoring terminal session.'
+              ? '此终端已从面板移除。'
+              : '正在恢复终端会话。'
           }
         />
       }
       unavailableState={
         <EmptyState
-          label="Terminal unavailable"
-          description={disabledReason ?? 'Live actions are unavailable.'}
+          label="终端不可用"
+          description={disabledReason ?? '当前无法执行操作。'}
         />
       }
       disabledReason={disabledReason}

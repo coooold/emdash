@@ -64,8 +64,7 @@ const config: Configuration = {
     extendInfo: {
       NSMicrophoneUsageDescription:
         'Emdash needs microphone access for voice dictation and voice mode features.',
-      NSLocalNetworkUsageDescription:
-        'Emdash needs local network access to connect to SSH hosts on your network.',
+      NSLocalNetworkUsageDescription: 'Emdash uses local network access to open development previews.',
     },
     target: [
       { target: 'dmg', arch: ['arm64'] },

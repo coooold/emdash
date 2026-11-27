@@ -21,9 +21,7 @@ import {
   Terminal,
 } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
-import { ConnectionStatusDot } from '@core/features/machines/contributions/browser/connection-status-dot';
 import {
-  asAvailableProject,
   getProjectStore,
   projectDisplayName,
 } from '@core/features/projects/api/browser/stores/project-selectors';
@@ -132,14 +130,11 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
   const linesDeleted = gitCheckout.totalLinesDeleted;
   const hasDiffStats = linesAdded > 0 || linesDeleted > 0;
 
-  const projectContext = asAvailableProject(getProjectStore(projectId));
-
   const projectName = projectDisplayName(getProjectStore(projectId));
   const { navigate } = useNavigate();
 
   if (!taskStore || !taskPayload) return null;
 
-  const isRemoteProject = projectContext?.project.type === 'ssh';
   return (
     <Titlebar
       leftSlot={
@@ -159,17 +154,16 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
                   <Popover.Trigger className="flex items-center gap-1 text-sm text-foreground-muted hover:text-foreground">
                     <span className="flex min-w-0 items-center gap-1.5">
                       <span className="max-w-56 truncate">{taskDisplayName(taskStore)}</span>
-                      <ConnectionStatusDot state={workspace.connectionState} />
                     </span>
                     <ChevronDown className="size-3.5 shrink-0" />
                   </Popover.Trigger>
                 }
               />
-              <Tooltip.Content>Link to issue</Tooltip.Content>
+              <Tooltip.Content>任务详情</Tooltip.Content>
             </Tooltip.Root>
             <Popover.Content align="start" className="flex w-96 flex-col gap-2 p-4">
               <div className="flex w-full flex-col gap-1">
-                <MicroLabel className="flex items-center text-foreground-passive">Task</MicroLabel>
+                <MicroLabel className="flex items-center text-foreground-passive">任务</MicroLabel>
                 <span className="text-sm tracking-tight">{taskDisplayName(taskStore)}</span>
               </div>
               <div className="flex flex-col gap-1 rounded-md border border-border p-2">
@@ -190,11 +184,11 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
                             onClick={() => fetch()}
                           >
                             <RefreshCcw className="size-3" />
-                            {isFetching ? 'Fetching...' : 'Fetch'}
+                            {isFetching ? '正在获取…' : '获取'}
                           </Button>
                         </Tooltip.Trigger>
                         <Tooltip.Content>
-                          {isFetching ? 'Fetching...' : 'Fetch changes'}
+                          {isFetching ? '正在获取…' : '获取更改'}
                         </Tooltip.Content>
                       </Tooltip.Root>
                       <Tooltip.Root>
@@ -208,10 +202,10 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
                           >
                             <ArrowDown className="size-3" />
                             {isPulling ? (
-                              'Pulling...'
+                              '正在拉取…'
                             ) : (
                               <span className="flex items-center gap-1">
-                                Pull
+                                拉取
                                 <Badge>{behindCount}</Badge>
                               </span>
                             )}
@@ -219,10 +213,10 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
                         </Tooltip.Trigger>
                         <Tooltip.Content>
                           {isPulling
-                            ? 'Pulling...'
+                            ? '正在拉取…'
                             : behindCount === 0
-                              ? 'Nothing to pull'
-                              : 'Pull changes'}
+                              ? '没有可拉取的更改'
+                              : '拉取更改'}
                         </Tooltip.Content>
                       </Tooltip.Root>
                       <Tooltip.Root>
@@ -236,10 +230,10 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
                           >
                             <ArrowUp className="size-3" />
                             {isPushing ? (
-                              'Pushing...'
+                              '正在推送…'
                             ) : (
                               <span className="flex items-center gap-1">
-                                Push
+                                推送
                                 <Badge>{aheadCount}</Badge>
                               </span>
                             )}
@@ -247,10 +241,10 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
                         </Tooltip.Trigger>
                         <Tooltip.Content>
                           {isPushing
-                            ? 'Pushing...'
+                            ? '正在推送…'
                             : aheadCount === 0
-                              ? 'Nothing to push'
-                              : 'Push changes'}
+                              ? '没有可推送的更改'
+                              : '推送更改'}
                         </Tooltip.Content>
                       </Tooltip.Root>
                     </>
@@ -265,15 +259,15 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
                           onClick={() => publish()}
                         >
                           <ArrowUp className="size-3" />
-                          {isPublishing ? 'Publishing...' : 'Publish'}
+                          {isPublishing ? '正在发布…' : '发布'}
                         </Button>
                       </Tooltip.Trigger>
                       <Tooltip.Content>
                         {isPublishing
-                          ? 'Publishing...'
+                          ? '正在发布…'
                           : gitCheckout.headKind === 'unborn'
-                            ? 'Create an initial commit first'
-                            : 'Publish branch'}
+                            ? '请先创建初始提交'
+                            : '发布分支'}
                       </Tooltip.Content>
                     </Tooltip.Root>
                   )}
@@ -319,8 +313,6 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
             path={workspace.path}
             className="h-7 bg-transparent"
             borderless
-            isRemote={isRemoteProject}
-            sshConnectionId={workspace.sshConnectionId}
           />
           <Separator orientation="vertical" className="h-5 self-center!" />
           <Tooltip.Root>
@@ -335,7 +327,7 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
               </Toggle>
             </Tooltip.Trigger>
             <Tooltip.Content>
-              Toggle terminal{' '}
+              显示或隐藏终端{' '}
               <BoundShortcut command="task.toggleTerminalDrawer" variant="keycaps" />
             </Tooltip.Content>
           </Tooltip.Root>
@@ -357,7 +349,7 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
                   <ToggleGroup.Item
                     value="changes"
                     size="sm"
-                    aria-label="Changes"
+                    aria-label="更改"
                     className={cn('w-auto! min-w-7! gap-0', hasDiffStats && 'w-full px-2!')}
                   >
                     <FileDiff className="size-3.5" />
@@ -382,31 +374,31 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
                 }
               />
               <Tooltip.Content>
-                Changes <BoundShortcut command="task.sidebarChanges" variant="keycaps" />
+                更改 <BoundShortcut command="task.sidebarChanges" variant="keycaps" />
               </Tooltip.Content>
             </Tooltip.Root>
             <Tooltip.Root>
               <Tooltip.Trigger
                 render={
-                  <ToggleGroup.Item size="sm" icon value="files" aria-label="Files">
+                  <ToggleGroup.Item size="sm" icon value="files" aria-label="文件">
                     <FolderOpen className="size-3.5" />
                   </ToggleGroup.Item>
                 }
               />
               <Tooltip.Content>
-                Files <BoundShortcut command="task.sidebarFiles" variant="keycaps" />
+                文件 <BoundShortcut command="task.sidebarFiles" variant="keycaps" />
               </Tooltip.Content>
             </Tooltip.Root>
             <Tooltip.Root>
               <Tooltip.Trigger
                 render={
-                  <ToggleGroup.Item size="sm" icon value="conversations" aria-label="Conversations">
+                  <ToggleGroup.Item size="sm" icon value="conversations" aria-label="对话">
                     <Clock className="size-3.5" />
                   </ToggleGroup.Item>
                 }
               />
               <Tooltip.Content>
-                Conversations{' '}
+                对话{' '}
                 <BoundShortcut command="task.sidebarConversations" variant="keycaps" />
               </Tooltip.Content>
             </Tooltip.Root>
@@ -436,7 +428,7 @@ function LinkedIssueBadge({ issue }: { issue: LinkedIssue }) {
             {displayIdentifier ? (
               <span className="font-sans">{displayIdentifier}</span>
             ) : (
-              <span className="max-w-[180px] truncate">{issue.title || 'Linked issue'}</span>
+              <span className="max-w-[180px] truncate">{issue.title || '关联工单'}</span>
             )}
           </button>
         }

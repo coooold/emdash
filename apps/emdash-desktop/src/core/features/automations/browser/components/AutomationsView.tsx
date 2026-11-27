@@ -78,8 +78,8 @@ export function AutomationsView() {
     const automation = pendingDelete;
     setPendingDelete(null);
     void openConfirm({
-      title: 'Delete automation',
-      description: `"${automation.name}" and its run history will be permanently deleted.`,
+      title: '删除自动化',
+      description: `“${automation.name}”及其运行记录将永久删除。`,
       confirmLabel: 'Delete',
     }).then((outcome) => {
       if (outcome.success) {
@@ -102,8 +102,8 @@ export function AutomationsView() {
         <div className="relative min-h-0 w-full min-w-0 overflow-y-auto px-8">
           <div className="flex w-full flex-col gap-8 py-8">
             <PageLayout.Header
-              title="Automations"
-              description="Run agents on a schedule across your projects"
+              title="自动化"
+              description="按计划在项目中运行代理"
             />
             <view.Root>
               {/* With zero automations the templates render on the page background —
@@ -138,12 +138,12 @@ export function AutomationsView() {
                     automations.isError ? (
                       <EmptyState
                         bare
-                        label="Could not load automations."
+                        label="无法加载自动化。"
                         description={formatAutomationError(automations.error)}
                       />
                     ) : undefined
                   }
-                  emptySlot={<EmptyState bare label="No automations match your search." />}
+                  emptySlot={<EmptyState bare label="未找到匹配的自动化。" />}
                 />
               )}
             </view.Root>
@@ -192,13 +192,13 @@ const AutomationsToolbar = observer(function AutomationsToolbar({
         ref={searchRef}
         value={search.query}
         onValueChange={search.setQuery}
-        placeholder="Search automations…"
+        placeholder="搜索自动化…"
       />
       <CollectionToolbar.Spacer />
       <CollectionToolbar.Group>
         <Button variant="primary" className="shrink-0 whitespace-nowrap" onClick={onNewAutomation}>
           <Plus className="h-3.5 w-3.5" />
-          New Automation
+          新建自动化
         </Button>
       </CollectionToolbar.Group>
     </CollectionToolbar.Root>

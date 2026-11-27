@@ -31,13 +31,13 @@ export const ResetToDefaultButton: React.FC<ResetToDefaultButtonProps> = ({
             className="text-muted-foreground h-7 w-7 shrink-0 hover:text-foreground"
             onClick={onReset}
             disabled={disabled}
-            aria-label="Reset to default"
+            aria-label="恢复默认设置"
           >
             <RotateCcw className="h-3.5 w-3.5" />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content side="top">
-          {defaultLabel !== undefined ? `Reset to default: ${defaultLabel}` : 'Reset to default'}
+          {defaultLabel !== undefined ? `恢复默认设置：${defaultLabel}` : '恢复默认设置'}
         </Tooltip.Content>
       </Tooltip.Root>
     </Tooltip.Provider>

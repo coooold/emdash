@@ -10,27 +10,26 @@ export interface QuitUnsavedChangesDialogArgs {
 
 export function QuitUnsavedChangesDialog({ count }: QuitUnsavedChangesDialogArgs) {
   const controller = useModalController('quitUnsavedChangesModal');
-  const label = count === 1 ? 'file has' : 'files have';
 
   return (
     <>
       <Dialog.Header showCloseButton={false}>
-        <Dialog.Title>Save changes before quitting?</Dialog.Title>
+        <Dialog.Title>退出前保存更改？</Dialog.Title>
       </Dialog.Header>
       <Dialog.Body className="pt-0">
         <p>
-          {count} {label} unsaved changes. Save them before quitting Emdash?
+          有 {count} 个文件包含未保存的更改。要在退出 Emdash 前保存吗？
         </p>
       </Dialog.Body>
       <Dialog.Footer>
         <Button variant="secondary" onClick={controller.dismiss}>
-          Cancel
+          取消
         </Button>
         <Button variant="secondary" onClick={() => controller.complete('discard')}>
-          Discard
+          放弃更改
         </Button>
         <Button variant="primary" onClick={() => controller.complete('save-all')}>
-          Save All
+          全部保存
         </Button>
       </Dialog.Footer>
     </>

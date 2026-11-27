@@ -9,7 +9,6 @@ import { bootBackground } from './phases/background';
 import { bootControllers } from './phases/controllers';
 import { bootDatabase, type DatabaseBundle } from './phases/database';
 import { installGateway } from './phases/gateway';
-import { bootInfrastructure } from './phases/infrastructure';
 import { bootRuntimes } from './phases/runtimes';
 import { bootServices } from './phases/services';
 
@@ -28,26 +27,22 @@ export async function finishBoot(config: AppConfig): Promise<void> {
     startUserEnvCapture();
     database = await step('database', () => bootDatabase(config));
     const databaseBundle = database;
-    const infrastructure = await step('infrastructure', () => bootInfrastructure(databaseBundle));
-    const runtimes = await step('runtimes', () => bootRuntimes(databaseBundle, infrastructure));
-    const services = await step('services', () =>
-      bootServices(databaseBundle, infrastructure, runtimes)
-    );
+    const runtimes = await step('runtimes', () => bootRuntimes(databaseBundle));
+    const services = await step('services', () => bootServices(databaseBundle, runtimes));
     configureQuitCleanupServices({
       automations: services.automations,
       editorBuffers: databaseBundle.editorBuffer,
       projects: services.projects,
-      pullRequests: services.pullRequestsRegistration,
       runtimes,
     });
     configureShutdownRuntimeClients(runtimes.broker, () =>
       services.hostAttachments.attachedHosts()
     );
     const controllers = await step('controllers', () =>
-      bootControllers(databaseBundle, infrastructure, runtimes, services)
+      bootControllers(databaseBundle, runtimes, services)
     );
     await step('gateway', () => installGateway(controllers, databaseBundle, services, runtimes));
-    await stepOptional('background-tasks', () => bootBackground(services, runtimes));
+    await stepOptional('background-tasks', () => bootBackground(runtimes));
   } catch (error) {
     try {
       await appScope.dispose(error);

@@ -45,7 +45,7 @@ export const FileTabBarItem = observer(function FileTabBarItem({
   if (resource.inWorkspace)
     commands.push({
       id: 'file:reveal',
-      label: 'Reveal File',
+      label: '显示文件位置',
       icon: FolderOpen,
       group: 'file',
       run: () => {
@@ -56,7 +56,7 @@ export const FileTabBarItem = observer(function FileTabBarItem({
   if (file && getLanguageServices()?.status(file))
     commands.push({
       id: 'file:language-services',
-      label: 'Language services…',
+      label: '语言服务…',
       icon: Code,
       group: 'file',
       run: () => {
@@ -92,7 +92,7 @@ export const FileTabBarItem = observer(function FileTabBarItem({
         resource.isDirty ? (
           <div
             className="size-2 rounded-full bg-foreground group-hover:opacity-0"
-            title="Unsaved changes"
+            title="有未保存的变更"
           />
         ) : undefined
       }

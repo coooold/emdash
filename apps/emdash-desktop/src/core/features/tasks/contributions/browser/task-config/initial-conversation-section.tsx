@@ -201,7 +201,7 @@ function useModelOptions(
   return models?.kind === 'selectable' ? models.modelOptions : null;
 }
 
-const SLASH_PROMPTS_SECTION = 'Prompts';
+const SLASH_PROMPTS_SECTION = '提示词';
 
 function promptPreview(text: string): string {
   return text.split(/\r?\n/, 1)[0] ?? '';
@@ -303,14 +303,14 @@ export function InitialConversationField({
       requirePromptDelivery &&
       !agentSupportsInitialPromptDelivery(agent.capabilities) &&
       !agentSupportsAcp(agent.capabilities)
-        ? "Doesn't support automation prompts"
+        ? '不支持自动化提示词'
         : null,
     [requirePromptDelivery]
   );
   const initialPromptInfo = !canDeliverInitialPrompt
     ? canToggleChatUi
-      ? `${selectedAgent?.name ?? 'This agent'} doesn't support initial prompts in terminal mode. Enable Chat UI to send an initial prompt.`
-      : `${selectedAgent?.name ?? 'This agent'} doesn't support initial prompts.`
+      ? `${selectedAgent?.name ?? '此代理'}在终端模式下无法接收初始提示词。请切换到聊天界面后再发送。`
+      : `${selectedAgent?.name ?? '此代理'}无法接收初始提示词。`
     : null;
 
   const { isDragOver, dropHandlers } = usePromptFileDrop({
@@ -437,15 +437,16 @@ export function InitialConversationField({
               onCheckedChange={state.setAutoApprove}
               disabled={!state.provider}
             />
-            <Field.Label htmlFor={autoApproveSwitchId}>Auto-approve permissions</Field.Label>
+            <Field.Label htmlFor={autoApproveSwitchId}>自动批准权限</Field.Label>
           </div>
         ) : null}
 
         <ChatComposer
+          locale="zh-CN"
           canSubmit={false}
           showSubmitButton={false}
           placeholder={
-            placeholder ?? 'Describe what the agent should do, or use / to select a prompt...'
+            placeholder ?? '描述要交给代理的任务，或输入 / 选择提示词…'
           }
           onSubmit={() => {}}
           onInputChange={handleComposerInputChange}

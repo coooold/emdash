@@ -32,11 +32,11 @@ export const StagedSectionHeader = observer(function StagedSectionHeader() {
 
   return (
     <SectionHeader
-      label="Staged"
+      label="已暂存"
       count={git.stagedFileChanges.length}
       selectionState={changesView.stagedSelectionState}
       onToggleAll={() => changesView.toggleAllStaged()}
-      actions={<ChangesViewModeToggle value={viewMode} onChange={setViewMode} label="Staged" />}
+      actions={<ChangesViewModeToggle value={viewMode} onChange={setViewMode} label="已暂存" />}
       collapsed={!changesView.expandedSections.staged}
       onToggleCollapsed={() => changesView.toggleExpanded('staged')}
     />
@@ -99,7 +99,7 @@ export const StagedSectionBody = observer(function StagedSectionBody() {
     const paths = [...changesView.stagedSelection];
     void git.unstageFiles(paths).then((result) => {
       if (!result.success) {
-        toast.error(`Failed to unstage changes: ${formatErrorType(result.error)} `);
+        toast.error(`取消暂存失败：${formatErrorType(result.error)} `);
         return;
       }
       changesView.removeStagedSelection(paths);
@@ -109,7 +109,7 @@ export const StagedSectionBody = observer(function StagedSectionBody() {
   const handleUnstageAll = () => {
     void git.unstageAllFiles().then((result) => {
       if (!result.success) {
-        toast.error(`Failed to unstage changes: ${formatErrorType(result.error)} `);
+        toast.error(`取消暂存失败：${formatErrorType(result.error)} `);
       }
     });
   };
@@ -118,8 +118,8 @@ export const StagedSectionBody = observer(function StagedSectionBody() {
     <>
       {!hasChanges && (
         <EmptyState
-          label="Nothing staged"
-          description="Stage files above to include them in a commit."
+          label="没有暂存的变更"
+          description="暂存上方文件后即可将其包含在提交中。"
         />
       )}
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
@@ -131,10 +131,10 @@ export const StagedSectionBody = observer(function StagedSectionBody() {
                 variant="secondary"
                 size="xs"
                 onClick={handleUnstageSelection}
-                title="Unstage selected files"
+                title="取消暂存选中的文件"
               >
                 <Minus className="size-3" />
-                Unstage
+                取消暂存
               </Button>
             }
             generalActions={
@@ -143,10 +143,10 @@ export const StagedSectionBody = observer(function StagedSectionBody() {
                 size="xs"
                 disabled={!hasChanges}
                 onClick={handleUnstageAll}
-                title="Unstage all files"
+                title="取消暂存所有文件"
               >
                 <Minus className="size-3" />
-                Unstage all
+                取消全部暂存
               </Button>
             }
           />

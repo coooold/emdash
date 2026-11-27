@@ -1,27 +1,22 @@
 import { createController, type Controller } from '@emdash/wire/rpc';
-import { integrationOperations } from '@core/features/integrations/node/controller';
 import { integrationsContract } from '../api';
 import { integrationsEvents } from './event-host';
 
+const accountIntegrationUnavailable = {
+  success: false,
+  error: 'Account integrations are unavailable.',
+} as const;
+
 export function createIntegrationsWireController(): Controller {
   return createController(integrationsContract, {
-    listProviders: () => integrationOperations.listProviders(),
-    listAccounts: () => integrationOperations.listAccounts(),
-    connect: ({ integrationId, credentials, accountId, displayName, authMethodId }) =>
-      integrationOperations.connect(integrationId, credentials, {
-        accountId,
-        displayName,
-        authMethodId,
-      }),
-    startDeviceFlow: ({ integrationId, accountId }) =>
-      integrationOperations.startDeviceFlow(integrationId, accountId),
-    completeDeviceFlow: ({ flowId }, meta) =>
-      integrationOperations.completeDeviceFlow(flowId, meta.signal),
-    cancelDeviceFlow: ({ flowId }) => integrationOperations.cancelDeviceFlow(flowId),
-    disconnect: ({ integrationId, accountId }) =>
-      integrationOperations.disconnect(integrationId, accountId),
-    setDefaultAccount: ({ integrationId, accountId }) =>
-      integrationOperations.setDefaultAccount(integrationId, accountId),
+    listProviders: () => [],
+    listAccounts: () => ({}),
+    connect: () => accountIntegrationUnavailable,
+    startDeviceFlow: () => accountIntegrationUnavailable,
+    completeDeviceFlow: () => accountIntegrationUnavailable,
+    cancelDeviceFlow: () => undefined,
+    disconnect: () => accountIntegrationUnavailable,
+    setDefaultAccount: () => accountIntegrationUnavailable,
     events: integrationsEvents,
   });
 }

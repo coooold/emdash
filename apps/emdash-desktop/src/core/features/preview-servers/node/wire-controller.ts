@@ -1,3 +1,4 @@
+import { err } from '@emdash/shared';
 import { createController, type Controller } from '@emdash/wire/rpc';
 import { previewServersContract } from '../api';
 import { previewServerEvents } from './event-host';
@@ -8,7 +9,7 @@ export function createPreviewServersWireController(
 ): Controller {
   return createController(previewServersContract, {
     listForWorkspace: (input) => service.listForWorkspace(input),
-    forwardManual: (input) => service.forwardManual(input),
+    forwardManual: () => err({ type: 'not-ssh-workspace', message: '此版本仅支持本地预览。' }),
     restart: (input) => service.restart(input),
     stop: (input) => service.stop(input),
     events: previewServerEvents,

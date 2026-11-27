@@ -1023,7 +1023,7 @@ describe('AcpChatStore prompt submission', () => {
       expect(store.isEmpty).toBe(false);
       expect(store.loadError).toEqual({
         kind: 'history_unavailable',
-        message: 'Conversation history is unavailable. Retry loading this conversation.',
+        message: '无法获取对话历史，请重试。',
       });
       expect(historySeed).not.toHaveBeenCalled();
     } finally {

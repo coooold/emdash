@@ -11,7 +11,6 @@ import { describe, expect, it } from 'vitest';
 import { createHosts } from '@core/services/hosts/node/hosts';
 import { workspaceServerLayout } from '@core/services/hosts/node/workspace-server/layout';
 import { SshConnectionManager } from '@core/services/ssh/node/lifecycle/ssh-connection-manager';
-import { createDesktopRuntimeBroker } from './runtime-broker';
 
 const remoteTestEnabled = process.env['EMDASH_TEST_REMOTE_WSS'] === '1';
 const defaultRemoteInstallBaseUrl = 'http://minio:9000/emdash-releases/workspace-server';
@@ -68,14 +67,12 @@ describe.skipIf(!remoteTestEnabled)('workspace-server cold install over Docker S
       machineEvents: { on: () => () => {} },
       installBaseUrl,
     });
-    const broker = createDesktopRuntimeBroker({} as never, hosts);
     const service = hosts.get(hostRef('remote', connectionId));
     if (!service) throw new Error('Missing remote Host');
     const layout = workspaceServerLayout('/home/devuser');
     const invalidations: unknown[] = [];
     hosts.onInvalidate((event) => invalidations.push(event));
 
-    const host = hostRef('remote', connectionId);
     try {
       await connect();
       const bootstrapProxy = manager.getProxy(connectionId);
@@ -84,9 +81,8 @@ describe.skipIf(!remoteTestEnabled)('workspace-server cold install over Docker S
       hosts.lease(connectionId, scope);
       await service.runtime.client();
 
-      const resolved = await broker.client(host);
-      if (!resolved.success) throw new Error(resolved.error.message);
-      const homeDirectory = (await resolved.data.files.getHomeDir(undefined)).path;
+      const { client } = await service.runtime.client({ waitForReady: false });
+      const homeDirectory = (await client.files.getHomeDir(undefined)).path;
       expect(homeDirectory).toMatchObject({
         root: { kind: 'posix' },
         segments: ['home', 'devuser'],
@@ -104,7 +100,7 @@ describe.skipIf(!remoteTestEnabled)('workspace-server cold install over Docker S
       let releaseSearchRoot: (() => void) | undefined;
       const contentJobs = createLiveJobReplicaCache(
         fileSearchContract.searchContent,
-        resolved.data.fileSearch.searchContent
+        client.fileSearch.searchContent
       );
       try {
         const smokeFilePath = joinAbsolute(homeDirectory, smokeFile.data);
@@ -112,11 +108,11 @@ describe.skipIf(!remoteTestEnabled)('workspace-server cold install over Docker S
           throw new Error('Could not construct workspace-server ripgrep smoke-file path');
         }
         await expect(
-          resolved.data.files.fs.createDirectory({ path: smokeRoot.data })
+          client.files.fs.createDirectory({ path: smokeRoot.data })
         ).resolves.toMatchObject({ success: true });
         const smokeBytes = Buffer.from('bundled-ripgrep-smoke\n');
         await expect(
-          resolved.data.files.fs.upload(
+          client.files.fs.upload(
             { path: smokeFilePath.data },
             {
               name: 'needle.txt',
@@ -129,7 +125,7 @@ describe.skipIf(!remoteTestEnabled)('workspace-server cold install over Docker S
           )
         ).resolves.toMatchObject({ success: true });
         // Attaching to the activeRoot status state acquires the lease.
-        releaseSearchRoot = await resolved.data.fileSearch.activeRoot
+        releaseSearchRoot = await client.fileSearch.activeRoot
           .state({ root: smokeRoot.data }, 'status')
           .attach(() => {});
 
@@ -146,8 +142,8 @@ describe.skipIf(!remoteTestEnabled)('workspace-server cold install over Docker S
       } finally {
         await contentJobs.dispose();
         releaseSearchRoot?.();
-        await resolved.data.fileSearch.evictRoot({ root: smokeRoot.data });
-        await resolved.data.files.fs.delete({
+        await client.fileSearch.evictRoot({ root: smokeRoot.data });
+        await client.files.fs.delete({
           path: smokeRoot.data,
           recursive: true,
         });
@@ -166,7 +162,7 @@ describe.skipIf(!remoteTestEnabled)('workspace-server cold install over Docker S
       stopWatchingDisconnect();
 
       await expect(connection.ready()).resolves.toMatchObject({ server: { daemonId } });
-      await expect(resolved.data.files.getHomeDir(undefined)).resolves.toMatchObject({
+      await expect(client.files.getHomeDir(undefined)).resolves.toMatchObject({
         path: {
           root: { kind: 'posix' },
           segments: ['home', 'devuser'],

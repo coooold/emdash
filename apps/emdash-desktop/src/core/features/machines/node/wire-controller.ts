@@ -1,26 +1,26 @@
 import { hostRef, LOCAL_HOST_REF } from '@emdash/core/primitives/host/api';
 import { hostDependenciesContract } from '@emdash/core/services/host-dependencies/node';
 import {
+  runtimeHostNotConfigured,
   runtimeResolveErrorAsError,
   type RuntimeBroker,
   type HostRuntimesClient,
 } from '@emdash/core/services/runtime-broker/api';
 import { err, ok } from '@emdash/shared';
 import { createController, type Controller, type LiveModelProvider } from '@emdash/wire/rpc';
-import type { MachinesService } from '@core/features/machines/api/node/machines-service';
 import { forwardLiveModel } from '@core/services/runtime-clients/node/forward-live-model';
 import { runRuntimeLiveJob } from '@core/services/runtime-clients/node/live-job';
 import type { InstallMachineSystemDependenciesResult } from '../api';
 import { machinesContract } from '../api';
 import { mapSystemDependencyView, systemDependencyIds } from '../api/system-dependencies';
 
-export function createMachinesWireController(
-  service: MachinesService,
-  runtimes: RuntimeBroker
-): Controller {
+export function createMachinesWireController(runtimes: RuntimeBroker): Controller {
+  const unavailable = (): never => {
+    throw new Error('此版本仅支持本地开发。');
+  };
   return createController(machinesContract, {
-    getMachines: () => service.getMachines(),
-    getMachineUsage: () => service.getMachineUsage(),
+    getMachines: () => [],
+    getMachineUsage: () => ({}),
     getMachineMetrics: async ({ machineId }) => {
       const runtime = await resolveMachineRuntime(runtimes, machineId);
       const sample = await runtime.resourceUsage.sample(undefined);
@@ -74,10 +74,10 @@ export function createMachinesWireController(
       const runtime = await resolveMachineRuntime(runtimes, machineId);
       return runtime.hostSettings.update(patch);
     },
-    saveMachine: (input) => service.saveMachine(input),
-    setSyncLocalSettings: ({ id, enabled }) => service.setSyncLocalSettings(id, enabled),
-    deleteMachine: ({ id }) => service.deleteMachine(id),
-    renameMachine: ({ id, name }) => service.renameMachine(id, name),
+    saveMachine: unavailable,
+    setSyncLocalSettings: unavailable,
+    deleteMachine: unavailable,
+    renameMachine: unavailable,
   });
 }
 
@@ -121,7 +121,12 @@ async function resolveMachineRuntime(
   runtimes: RuntimeBroker,
   machineId?: string
 ): Promise<HostRuntimesClient> {
-  const runtime = await runtimes.client(machineId ? hostRef('remote', machineId) : LOCAL_HOST_REF);
+  if (machineId) {
+    throw runtimeResolveErrorAsError(
+      runtimeHostNotConfigured(hostRef('remote', machineId), '此版本仅支持本地开发。')
+    );
+  }
+  const runtime = await runtimes.client(LOCAL_HOST_REF);
   if (!runtime.success) throw runtimeResolveErrorAsError(runtime.error);
   return runtime.data;
 }

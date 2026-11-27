@@ -40,10 +40,10 @@ describe('terminal shell menu', () => {
     });
 
     await act(async () => {
-      host.querySelector<HTMLButtonElement>('[aria-label="New terminal with shell"]')!.click();
+      host.querySelector<HTMLButtonElement>('[aria-label="选择 Shell 新建终端"]')!.click();
     });
 
-    expect(document.body.textContent).toContain('Loading shells');
+    expect(document.body.textContent).toContain('正在加载 Shell');
   });
 
   it('offers a retry after an availability failure', async () => {
@@ -62,11 +62,11 @@ describe('terminal shell menu', () => {
     });
 
     await act(async () => {
-      host.querySelector<HTMLButtonElement>('[aria-label="New terminal with shell"]')!.click();
+      host.querySelector<HTMLButtonElement>('[aria-label="选择 Shell 新建终端"]')!.click();
     });
     const retry = Array.from(
       document.body.querySelectorAll<HTMLElement>('[data-slot="dropdown-menu-item"]')
-    ).find((item) => item.textContent?.includes('Failed to load shells'));
+    ).find((item) => item.textContent?.includes('无法加载 Shell'));
 
     expect(retry?.title).toBe('Remote endpoint unavailable');
     await act(async () => retry!.click());
@@ -98,7 +98,7 @@ describe('terminal shell menu', () => {
       );
     });
     const trigger = host.querySelector<HTMLButtonElement>(
-      '[aria-label="New terminal with shell"]'
+      '[aria-label="选择 Shell 新建终端"]'
     )!;
 
     await act(async () => trigger.click());

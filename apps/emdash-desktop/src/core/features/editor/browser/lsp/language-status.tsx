@@ -11,7 +11,7 @@ export const LanguageStatus = observer(function LanguageStatus({ file }: { file:
   const status = services?.status(file);
   const [restarting, setRestarting] = useState(false);
   const [restartError, setRestartError] = useState<string>();
-  if (!status) return <Dialog.Body>Language services are not available for this file.</Dialog.Body>;
+  if (!status) return <Dialog.Body>此文件不支持语言服务。</Dialog.Body>;
   const { connection } = status;
   const server = connection.kind === 'connected' ? connection.server : undefined;
   const starting = connection.kind === 'connecting' || server?.phase === 'starting';
@@ -24,12 +24,12 @@ export const LanguageStatus = observer(function LanguageStatus({ file }: { file:
         <p>{status.serverName}</p>
         <p className="text-foreground-passive">
           {basic
-            ? 'Basic support is available for loaded files. Full project support is unavailable.'
+            ? '已加载文件可使用基础功能，完整的项目功能目前不可用。'
             : starting
-              ? 'Connecting language services…'
+              ? '正在连接语言服务…'
               : unavailable
-                ? 'Language services unavailable.'
-                : 'Language services are ready.'}
+                ? '语言服务不可用。'
+                : '语言服务已就绪。'}
         </p>
         {error && <p className="break-words text-foreground-passive">{error}</p>}
         {restartError && <p role="alert">{restartError}</p>}
@@ -46,7 +46,7 @@ export const LanguageStatus = observer(function LanguageStatus({ file }: { file:
               await services?.restartServer(file);
             } catch (error) {
               setRestartError(
-                error instanceof Error ? error.message : 'Could not restart language services.'
+                error instanceof Error ? error.message : '无法重启语言服务。'
               );
             } finally {
               setRestarting(false);
@@ -54,10 +54,10 @@ export const LanguageStatus = observer(function LanguageStatus({ file }: { file:
           }}
         >
           {starting || restarting
-            ? 'Connecting…'
+            ? '正在连接…'
             : unavailable
-              ? 'Retry'
-              : 'Restart language services'}
+              ? '重试'
+              : '重启语言服务'}
         </Button>
       </Dialog.Footer>
     </>
@@ -68,8 +68,8 @@ function LanguageServicesDialog({ file }: { file: HostFileRef }) {
   return (
     <>
       <Dialog.Header>
-        <Dialog.Title>Language services</Dialog.Title>
-        <Dialog.Description>Project intelligence for this file’s workspace.</Dialog.Description>
+        <Dialog.Title>语言服务</Dialog.Title>
+        <Dialog.Description>提供当前文件工作区的代码提示和导航。</Dialog.Description>
       </Dialog.Header>
       <LanguageStatus file={file} />
     </>

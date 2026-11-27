@@ -28,7 +28,7 @@ it('switches interfaces directly without a highlight and names the current inter
   }
   try {
     await act(async () => root.render(<Control />));
-    const toggle = page.getByRole('button', { name: 'Use chat UI' });
+    const toggle = page.getByRole('button', { name: '使用聊天界面' });
     await expect.element(toggle).toHaveAttribute('aria-pressed', 'true');
     expect(toggle.element().textContent).toBe('');
     expect(toggle.element().querySelectorAll('svg')).toHaveLength(1);

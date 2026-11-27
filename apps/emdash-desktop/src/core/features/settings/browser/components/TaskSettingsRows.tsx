@@ -33,13 +33,13 @@ export const AutoGenerateTaskNamesRow: React.FC = () => {
 
   return (
     <SettingRow
-      title="Auto-generate task names"
-      description="Automatically suggests a task name when creating a new task."
+      title="自动生成任务名称"
+      description="创建任务时自动建议名称。"
       control={
         <>
           <ResetToDefaultButton
             visible={taskSettings.isFieldOverridden('autoGenerateName')}
-            defaultLabel="on"
+            defaultLabel="开启"
             onReset={taskSettings.resetAutoGenerateName}
             disabled={taskSettings.loading || taskSettings.saving}
           />
@@ -61,19 +61,19 @@ export const AutoTrustWorktreesRow: React.FC = () => {
     <SettingRow
       title={
         <div className="flex items-center gap-1.5">
-          Auto-trust worktree directories
+          自动信任工作树目录
           <InfoTooltip
-            label="More info about auto-trust worktrees"
-            content="For agents that support workspace trust, Emdash writes trust entries before launching."
+            label="了解自动信任工作树"
+            content="启动支持工作区信任的智能体之前，Emdash 会添加相应的信任记录。"
           />
         </div>
       }
-      description="Skip the folder trust prompt in supported CLIs for new tasks."
+      description="新任务在支持的 CLI 中可跳过文件夹信任提示。"
       control={
         <>
           <ResetToDefaultButton
             visible={taskSettings.isFieldOverridden('autoTrustWorktrees')}
-            defaultLabel="on"
+            defaultLabel="开启"
             onReset={taskSettings.resetAutoTrustWorktrees}
             disabled={taskSettings.loading || taskSettings.saving}
           />
@@ -93,13 +93,13 @@ export const CreateBranchAndWorktreeRow: React.FC = () => {
 
   return (
     <SettingRow
-      title="Create branch and worktree by default"
-      description="Start new From Branch tasks in a dedicated task branch and worktree unless changed in the task modal."
+      title="默认创建分支和工作树"
+      description="从分支创建任务时，默认使用专用分支和工作树。可在创建任务时调整。"
       control={
         <>
           <ResetToDefaultButton
             visible={taskSettings.isFieldOverridden('createBranchAndWorktree')}
-            defaultLabel="on"
+            defaultLabel="开启"
             onReset={taskSettings.resetCreateBranchAndWorktree}
             disabled={taskSettings.loading || taskSettings.saving}
           />
@@ -119,13 +119,13 @@ export const DeleteBranchByDefaultRow: React.FC = () => {
 
   return (
     <SettingRow
-      title="Delete branch by default"
-      description="Preselect the delete branch option when deleting tasks with a deletable task branch."
+      title="默认删除任务分支"
+      description="删除带有可删除分支的任务时，默认勾选删除分支。"
       control={
         <>
           <ResetToDefaultButton
             visible={taskSettings.isFieldOverridden('deleteBranchByDefault')}
-            defaultLabel="off"
+            defaultLabel="关闭"
             onReset={taskSettings.resetDeleteBranchByDefault}
             disabled={taskSettings.loading || taskSettings.saving}
           />
@@ -145,13 +145,13 @@ export const PreserveTaskNameCapitalizationRow: React.FC = () => {
 
   return (
     <SettingRow
-      title="Preserve task name capitalization"
-      description="Keep uppercase letters in generated and manually entered task names. Defaults to lowercase."
+      title="保留任务名称中的大小写"
+      description="在自动生成或手动输入的任务名称中保留大写字母。默认使用小写。"
       control={
         <>
           <ResetToDefaultButton
             visible={taskSettings.isFieldOverridden('preserveNameCapitalization')}
-            defaultLabel="off"
+            defaultLabel="关闭"
             onReset={taskSettings.resetPreserveNameCapitalization}
             disabled={taskSettings.loading || taskSettings.saving}
           />
@@ -171,13 +171,13 @@ export const IncludeIssueContextByDefaultRow: React.FC = () => {
 
   return (
     <SettingRow
-      title="Include issue context by default"
-      description="Add the selected issue to the initial agent prompt when creating a task from an issue."
+      title="默认包含议题上下文"
+      description="从议题创建任务时，将其加入发给智能体的首条提示。"
       control={
         <>
           <ResetToDefaultButton
             visible={taskSettings.isFieldOverridden('includeIssueContextByDefault')}
-            defaultLabel="on"
+            defaultLabel="开启"
             onReset={taskSettings.resetIncludeIssueContextByDefault}
             disabled={taskSettings.loading || taskSettings.saving}
           />
@@ -207,17 +207,17 @@ export const EnableTmuxRow: React.FC = () => {
 
   return (
     <SettingRow
-      title="Enable tmux"
+      title="启用 tmux"
       description={
         tmuxSupported
-          ? 'Run agent sessions and terminals in tmux sessions by default.'
-          : 'tmux is unavailable for Windows sessions. Your stored preference is preserved.'
+          ? '默认在 tmux 中运行智能体会话和终端。'
+          : 'Windows 会话无法使用 tmux。此偏好会保留。'
       }
       control={
         <>
           <ResetToDefaultButton
             visible={isFieldOverridden('tmuxByDefault')}
-            defaultLabel="off"
+            defaultLabel="关闭"
             onReset={() => resetField('tmuxByDefault')}
             disabled={loading || saving || !tmuxSupported}
           />

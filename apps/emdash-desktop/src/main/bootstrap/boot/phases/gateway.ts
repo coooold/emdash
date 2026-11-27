@@ -8,9 +8,7 @@ import { tuiAgentStatusBridge } from '@main/core/agent-status/tui-agent-status-b
 import type { DesktopRuntimes } from '@main/gateway/desktop-runtimes';
 import { installDesktopWire, registerDesktopWireControllers } from '@main/gateway/desktop-wire';
 import { createDesktopDevServerBridgeParticipant } from '@main/gateway/dev-server-bridge';
-import { log } from '@main/lib/logger';
 import { appScope } from '../../core/app-scope';
-import { runInBackground } from '../../core/background';
 import type { ControllersBundle } from './controllers';
 import type { DatabaseBundle } from './database';
 import type { ServicesBundle } from './services';
@@ -74,10 +72,4 @@ export function installGateway(
     })
   );
 
-  runInBackground('account-session', async () => {
-    const result = await services.account.initialize();
-    if (!result.success) {
-      log.warn('Failed to load account session token:', result.error);
-    }
-  });
 }

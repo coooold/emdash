@@ -50,7 +50,7 @@ describe('ChangesListItem', () => {
       );
     });
 
-    const checkbox = container.querySelector('[aria-label="Select example.ts"]');
+    const checkbox = container.querySelector('[aria-label="选择 example.ts"]');
     expect(checkbox).not.toBeNull();
 
     act(() => {
@@ -74,7 +74,7 @@ describe('ChangesListItem', () => {
       );
     });
 
-    const checkbox = container.querySelector('[aria-label="Select example.ts"]');
+    const checkbox = container.querySelector('[aria-label="选择 example.ts"]');
     expect(checkbox).not.toBeNull();
 
     act(() => {

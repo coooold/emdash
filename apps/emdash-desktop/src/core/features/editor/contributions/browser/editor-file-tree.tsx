@@ -83,10 +83,10 @@ const MAX_COPY_FILE_BYTES = 10 * 1024 * 1024;
 const PLATFORM = detectPlatformContext().os;
 const REVEAL_LABEL =
   PLATFORM === 'mac'
-    ? 'Show in Finder'
+    ? '在访达中显示'
     : PLATFORM === 'windows'
-      ? 'Show in File Explorer'
-      : 'Show in File Manager';
+      ? '在文件资源管理器中显示'
+      : '在文件管理器中显示';
 
 type ResultLikeError =
   | TreeMutationError
@@ -95,10 +95,10 @@ type FileTreeClipboard = { mode: 'cut' | 'copy'; paths: string[] };
 
 function resultErrorMessage(error: ResultLikeError | string | undefined): string {
   if (typeof error === 'string') return error;
-  if (!error) return 'Unknown error';
+  if (!error) return '未知错误';
   if ('message' in error && error.message) return error.message;
   if ('path' in error && error.path) return `${error.type}: ${error.path}`;
-  return error.type ?? 'Unknown error';
+  return error.type ?? '未知错误';
 }
 
 function conflictPaths(error: ResultLikeError): string[] {
@@ -124,15 +124,15 @@ async function importLocalFiles(args: {
   } = args;
   const oversizedFile = sourceFiles.find((file) => file.size > MAX_FILE_UPLOAD_BYTES);
   if (oversizedFile) {
-    toast.error('Import failed', {
+    toast.error('导入失败', {
       description: `${oversizedFile.name} exceeds the 10 MB upload limit.`,
     });
     return;
   }
   const destinations = sourceFiles.map((file) => joinFileTreePath(destDirPath, file.name));
   if (new Set(destinations).size !== destinations.length) {
-    toast.error('Import failed', {
-      description: 'Multiple dropped files have the same destination name.',
+    toast.error('导入失败', {
+      description: '多个拖入的文件具有相同的目标名称。',
     });
     return;
   }
@@ -151,12 +151,12 @@ async function importLocalFiles(args: {
     if (existingPaths.length > 0 && !overwrite) {
       const description =
         existingPaths.length === 1
-          ? `${existingPaths[0]} already exists. Replace it with the dropped file?`
-          : `${existingPaths.length} files already exist: ${existingPaths.join(', ')}. Replace them with the dropped files?`;
+          ? `${existingPaths[0]} 已存在。要用拖入的文件替换它吗？`
+          : `${existingPaths.length} 个文件已存在：${existingPaths.join('、')}。要用拖入的文件替换它们吗？`;
       const outcome = await openModal('confirmActionModal', {
-        title: existingPaths.length === 1 ? 'Replace existing file?' : 'Replace existing files?',
+        title: '替换现有文件？',
         description,
-        confirmLabel: 'Replace',
+        confirmLabel: '替换',
         variant: 'destructive',
       });
       if (outcome.success) {
@@ -172,7 +172,7 @@ async function importLocalFiles(args: {
       return;
     }
 
-    toast.error('Import failed', { description: message });
+    toast.error('导入失败', { description: message });
   };
 
   try {
@@ -192,7 +192,7 @@ async function importLocalFiles(args: {
       if (conflicts.length > 0) {
         await handleFailure({
           type: 'conflict',
-          message: 'Files already exist',
+          message: '文件已存在',
           paths: conflicts,
         });
         return;
@@ -218,7 +218,7 @@ async function importLocalFiles(args: {
   } catch (error) {
     await handleFailure({
       type: 'fs_error',
-      message: error instanceof Error ? error.message : 'The file could not be imported.',
+      message: error instanceof Error ? error.message : '无法导入文件。',
     });
   }
 }
@@ -232,9 +232,10 @@ export const EditorFileTree = observer(function EditorFileTree() {
   const editorView = taskView.editorView;
   const files = editorView.files;
   const directoryErrors = files?.directoryErrors;
-  const liveActionDisabledReason = projectAvailabilityUi.getLiveActionDisabledReason(
-    taskView.projectId
-  );
+  const isSshWorkspace = Boolean(workspace.sshConnectionId);
+  const liveActionDisabledReason = isSshWorkspace
+    ? '此 SSH 工作区已停用。'
+    : projectAvailabilityUi.getLiveActionDisabledReason(taskView.projectId);
   const liveActionsDisabled = Boolean(liveActionDisabledReason);
   const { value: filesSettings } = useAppSettingsKey('files');
   const openConfirmActionModal = useOpenModal('confirmActionModal');
@@ -326,7 +327,7 @@ export const EditorFileTree = observer(function EditorFileTree() {
     if (!revealRequest) return;
     if (revealRequest.status === 'error') {
       editorView.consumeRevealFileRequest(revealRequest.id);
-      toast.error('Reveal failed', { description: resultErrorMessage(revealRequest.error) });
+      toast.error('定位文件失败', { description: resultErrorMessage(revealRequest.error) });
       return;
     }
     setSelectedPaths(new Set([revealRequest.path]));
@@ -363,7 +364,7 @@ export const EditorFileTree = observer(function EditorFileTree() {
       if (!files) return;
       void files.retry(path).then((result) => {
         if (!result.success) {
-          toast.error('Folder load failed', { description: resultErrorMessage(result.error) });
+          toast.error('加载文件夹失败', { description: resultErrorMessage(result.error) });
         }
       });
     },
@@ -382,7 +383,7 @@ export const EditorFileTree = observer(function EditorFileTree() {
     try {
       const result = await files.refresh();
       if (!result.success) {
-        toast.error('Refresh failed', { description: resultErrorMessage(result.error) });
+        toast.error('刷新失败', { description: resultErrorMessage(result.error) });
       }
     } finally {
       setIsRefreshing(false);
@@ -394,7 +395,7 @@ export const EditorFileTree = observer(function EditorFileTree() {
     const path = joinFileTreePath(parentPath, name);
     const result = await files.createFile(path);
     if (!result.success) {
-      toast.error('Create failed', { description: resultErrorMessage(result.error) });
+      toast.error('创建失败', { description: resultErrorMessage(result.error) });
       return;
     }
     editorView.expandPath(parentPath);
@@ -407,7 +408,7 @@ export const EditorFileTree = observer(function EditorFileTree() {
     const path = joinFileTreePath(parentPath, name);
     const result = await files.createDirectory(path);
     if (!result.success) {
-      toast.error('Create failed', { description: resultErrorMessage(result.error) });
+      toast.error('创建失败', { description: resultErrorMessage(result.error) });
       return;
     }
     editorView.expandPath(parentPath);
@@ -420,12 +421,12 @@ export const EditorFileTree = observer(function EditorFileTree() {
     const targetPath = joinFileTreePath(node.parentPath ?? '', name);
     const result = await files.rename(node.path, name);
     if (!result.success) {
-      toast.error('Rename failed', { description: resultErrorMessage(result.error) });
+      toast.error('重命名失败', { description: resultErrorMessage(result.error) });
       return;
     }
     await editorView.retargetOpenFiles(node.path, targetPath);
     setRenamePath(null);
-    toast(node.type === 'directory' ? 'Folder renamed' : 'File renamed');
+    toast(node.type === 'directory' ? '已重命名文件夹' : '已重命名文件');
   };
 
   const handleMove = async (sourcePaths: string[], targetDirPath: string) => {
@@ -436,13 +437,13 @@ export const EditorFileTree = observer(function EditorFileTree() {
       const targetPath = joinFileTreePath(targetDirPath, basenameFromPath(sourcePath));
       const result = await files.move(sourcePath, targetDirPath);
       if (!result.success) {
-        toast.error('Move failed', { description: resultErrorMessage(result.error) });
+        toast.error('移动失败', { description: resultErrorMessage(result.error) });
         return;
       }
       await editorView.retargetOpenFiles(sourcePath, targetPath);
       moved += 1;
     }
-    toast(moved === 1 ? 'Item moved' : `${moved} items moved`);
+    toast(moved === 1 ? '已移动项目' : `已移动 ${moved} 项`);
   };
 
   const closeDeletedFileTabs = (nodes: readonly FileTreeNode[]) => {
@@ -475,27 +476,27 @@ export const EditorFileTree = observer(function EditorFileTree() {
       const outcome = await openConfirmActionModal({
         title: single
           ? single.type === 'directory'
-            ? 'Delete folder?'
+            ? '删除文件夹？'
             : single.type === 'symlink'
-              ? 'Delete link?'
-              : 'Delete file?'
-          : `Delete ${targets.length} items?`,
+              ? '删除链接？'
+              : '删除文件？'
+          : `删除这 ${targets.length} 项？`,
         description:
           single?.type === 'directory'
-            ? `"${single.path}" and all of its contents will be deleted from the workspace.`
+            ? `将从工作区删除「${single.path}」及其全部内容。`
             : single?.type === 'symlink'
-              ? `"${single.path}" will be removed from the workspace. Its target will not be deleted.`
+              ? `将从工作区移除链接「${single.path}」，保留它指向的项目。`
               : single
-                ? `"${single.path}" will be deleted from the workspace.`
-                : `${targets.map((node) => `"${node.path}"`).join(', ')} will be deleted from the workspace.`,
-        confirmLabel: 'Delete',
+                ? `将从工作区删除「${single.path}」。`
+                : `将从工作区删除：${targets.map((node) => `「${node.path}」`).join('、')}。`,
+        confirmLabel: '删除',
         variant: 'destructive',
       });
       if (!outcome.success) return;
       for (const node of targets) {
         const result = await files.deleteEntry(node.path, node.type === 'directory');
         if (!result.success) {
-          toast.error('Delete failed', { description: resultErrorMessage(result.error) });
+          toast.error('删除失败', { description: resultErrorMessage(result.error) });
           return;
         }
       }
@@ -505,11 +506,11 @@ export const EditorFileTree = observer(function EditorFileTree() {
       toast(
         single
           ? single.type === 'directory'
-            ? 'Folder deleted'
+            ? '已删除文件夹'
             : single.type === 'symlink'
-              ? 'Link deleted'
-              : 'File deleted'
-          : `${targets.length} items deleted`
+              ? '已删除链接'
+              : '已删除文件'
+          : `已删除 ${targets.length} 项`
       );
     })();
   };
@@ -523,18 +524,18 @@ export const EditorFileTree = observer(function EditorFileTree() {
         options: { maxBytes: MAX_COPY_FILE_BYTES },
       });
       if (!result.success) {
-        toast.error('Copy failed', { description: resultErrorMessage(result.error) });
+        toast.error('复制失败', { description: resultErrorMessage(result.error) });
         return;
       }
       if (result.data.truncated) {
-        toast.error('Copy failed', { description: 'File is too large to copy.' });
+        toast.error('复制失败', { description: '文件过大，无法复制。' });
         return;
       }
       await copyTextToClipboard(result.data.content);
       toast('File copied');
     } catch (error) {
-      toast.error('Copy failed', {
-        description: error instanceof Error ? error.message : 'The file could not be copied.',
+      toast.error('复制失败', {
+        description: error instanceof Error ? error.message : '无法复制文件。',
       });
     }
   };
@@ -546,14 +547,14 @@ export const EditorFileTree = observer(function EditorFileTree() {
         uri: encodeResourceUri(hostFileRefFromNativePath(node.path, workspace.sshConnectionId)),
       });
       if (!result.success) {
-        toast.error('Copy failed', { description: resultErrorMessage(result.error) });
+        toast.error('复制失败', { description: resultErrorMessage(result.error) });
         return;
       }
       await copyTextToClipboard(nativePathFromHost(result.data.path));
       toast('Path copied');
     } catch (error) {
-      toast.error('Copy failed', {
-        description: error instanceof Error ? error.message : 'The path could not be copied.',
+      toast.error('复制失败', {
+        description: error instanceof Error ? error.message : '无法复制路径。',
       });
     }
   };
@@ -563,8 +564,8 @@ export const EditorFileTree = observer(function EditorFileTree() {
       await copyTextToClipboard(relativeToWorkspace(workspace.path, node.path));
       toast('Relative path copied');
     } catch (error) {
-      toast.error('Copy failed', {
-        description: error instanceof Error ? error.message : 'The path could not be copied.',
+      toast.error('复制失败', {
+        description: error instanceof Error ? error.message : '无法复制路径。',
       });
     }
   };
@@ -578,11 +579,11 @@ export const EditorFileTree = observer(function EditorFileTree() {
         relativePath: relativeToWorkspace(workspace.path, node.path),
       });
       if (!result.success) {
-        toast.error('Show failed', { description: resultErrorMessage(result.error) });
+        toast.error('打开位置失败', { description: resultErrorMessage(result.error) });
       }
     } catch (error) {
-      toast.error('Show failed', {
-        description: error instanceof Error ? error.message : 'The item could not be shown.',
+      toast.error('打开位置失败', {
+        description: error instanceof Error ? error.message : '无法显示项目位置。',
       });
     }
   };
@@ -597,14 +598,14 @@ export const EditorFileTree = observer(function EditorFileTree() {
     const paths = dedupeDescendantPaths(selectionOrNode(node).map((entry) => entry.path));
     if (paths.length === 0) return;
     setClipboard({ mode: 'cut', paths });
-    toast(paths.length === 1 ? 'Item cut' : `${paths.length} items cut`);
+    toast(paths.length === 1 ? '已剪切项目' : `已剪切 ${paths.length} 项`);
   };
 
   const copySelection = (node?: FileTreeNode) => {
     const paths = dedupeDescendantPaths(selectionOrNode(node).map((entry) => entry.path));
     if (paths.length === 0) return;
     setClipboard({ mode: 'copy', paths });
-    toast(paths.length === 1 ? 'Item copied' : `${paths.length} items copied`);
+    toast(paths.length === 1 ? '已复制项目' : `已复制 ${paths.length} 项`);
   };
 
   const pasteClipboard = async (targetDirPath = pasteTargetPath()) => {
@@ -638,7 +639,7 @@ export const EditorFileTree = observer(function EditorFileTree() {
           ? await files.move(sourcePath, targetDirPath, nextName)
           : await files.copy(sourcePath, targetDirPath, nextName);
       if (!result.success) {
-        toast.error(clipboard.mode === 'cut' ? 'Move failed' : 'Copy failed', {
+        toast.error(clipboard.mode === 'cut' ? '移动失败' : '复制失败', {
           description: resultErrorMessage(result.error),
         });
         return;
@@ -652,11 +653,11 @@ export const EditorFileTree = observer(function EditorFileTree() {
     toast(
       clipboard.mode === 'cut'
         ? completed === 1
-          ? 'Item moved'
-          : `${completed} items moved`
+          ? '已移动项目'
+          : `已移动 ${completed} 项`
         : completed === 1
-          ? 'Item copied'
-          : `${completed} items copied`
+          ? '已复制项目'
+          : `已复制 ${completed} 项`
     );
   };
 
@@ -676,19 +677,19 @@ export const EditorFileTree = observer(function EditorFileTree() {
     items.push(
       {
         id: 'cut',
-        label: 'Cut',
+        label: '剪切',
         icon: <Scissors size={14} />,
         onSelect: () => cutSelection(node),
       },
       {
         id: 'copy',
-        label: 'Copy',
+        label: '复制',
         icon: <Copy size={14} />,
         onSelect: () => copySelection(node),
       },
       {
         id: 'paste',
-        label: 'Paste',
+        label: '粘贴',
         icon: <ClipboardPaste size={14} />,
         disabled: !clipboard || clipboard.paths.length === 0,
         onSelect: () => void pasteClipboard(creationTargetForNode(node, workspace.path)),
@@ -697,7 +698,7 @@ export const EditorFileTree = observer(function EditorFileTree() {
     if (isOpenableFileTreeNode(node)) {
       items.push({
         id: 'copy-file',
-        label: 'Copy Contents',
+        label: '复制内容',
         icon: <FileText size={14} />,
         onSelect: () => void copyFile(node),
       });
@@ -705,13 +706,13 @@ export const EditorFileTree = observer(function EditorFileTree() {
     items.push(
       {
         id: 'copy-path',
-        label: 'Copy path',
+        label: '复制路径',
         icon: <Copy size={14} />,
         onSelect: () => void copyPath(node),
       },
       {
         id: 'copy-relative-path',
-        label: 'Copy relative path',
+        label: '复制相对路径',
         icon: <Copy size={14} />,
         onSelect: () => void copyRelativePath(node),
       }
@@ -727,14 +728,14 @@ export const EditorFileTree = observer(function EditorFileTree() {
     items.push(
       {
         id: 'rename',
-        label: 'Rename',
+        label: '重命名',
         icon: <FilePen size={14} />,
         disabled: liveActionsDisabled || selection.length !== 1,
         onSelect: () => setRenamePath(selection[0]?.path ?? node.path),
       },
       {
         id: 'delete',
-        label: 'Delete',
+        label: '删除',
         icon: <Trash2 size={14} />,
         variant: 'destructive',
         disabled: liveActionsDisabled,
@@ -755,11 +756,11 @@ export const EditorFileTree = observer(function EditorFileTree() {
       execute: renameSelection,
     }),
     'editor.fileTree.cut': () => ({
-      availability: () => (selectedNodes.length > 0 ? enabled : disabled('No selection')),
+      availability: () => (selectedNodes.length > 0 ? enabled : disabled('未选择项目')),
       execute: () => cutSelection(),
     }),
     'editor.fileTree.copy': () => ({
-      availability: () => (selectedNodes.length > 0 ? enabled : disabled('No selection')),
+      availability: () => (selectedNodes.length > 0 ? enabled : disabled('未选择项目')),
       execute: () => copySelection(),
     }),
     'editor.fileTree.paste': () => ({
@@ -768,7 +769,7 @@ export const EditorFileTree = observer(function EditorFileTree() {
           ? disabled(liveActionDisabledReason)
           : clipboard
             ? enabled
-            : disabled('Nothing to paste'),
+            : disabled('没有可粘贴的内容'),
       execute: () => void pasteClipboard(),
     }),
     'editor.fileTree.delete': () => ({
@@ -794,10 +795,10 @@ export const EditorFileTree = observer(function EditorFileTree() {
   };
 
   const content =
-    files?.observation.kind === 'unavailable' ? (
+    isSshWorkspace || files?.observation.kind === 'unavailable' ? (
       <EmptyState
-        label="Files unavailable"
-        description={liveActionDisabledReason ?? 'The file tree has not been observed yet.'}
+        label="文件不可用"
+        description={liveActionDisabledReason ?? '尚未读取文件树。'}
       />
     ) : searchQuery && !liveActionsDisabled ? (
       <FileContentSearchResults workspaceId={workspaceId} query={searchQuery} />
@@ -819,7 +820,7 @@ export const EditorFileTree = observer(function EditorFileTree() {
           const items: FileTreeRootMenuItem[] = [
             {
               id: 'new-file',
-              label: 'New File',
+              label: '新建文件',
               icon: <FilePlus size={14} />,
               disabled: liveActionsDisabled,
               onSelect: () =>
@@ -827,7 +828,7 @@ export const EditorFileTree = observer(function EditorFileTree() {
             },
             {
               id: 'new-folder',
-              label: 'New Folder',
+              label: '新建文件夹',
               icon: <FolderPlus size={14} />,
               disabled: liveActionsDisabled,
               onSelect: () =>
@@ -837,7 +838,7 @@ export const EditorFileTree = observer(function EditorFileTree() {
           if (clipboard && clipboard.paths.length > 0) {
             items.push({
               id: 'paste',
-              label: 'Paste',
+              label: '粘贴',
               icon: <ClipboardPaste size={14} />,
               disabled: liveActionsDisabled,
               onSelect: () => void pasteClipboard(normalizeFileTreePath(workspace.path)),
@@ -974,8 +975,8 @@ export function FileTreeHeaderBar({
           ref={setSearchInputRef}
           value={searchQuery}
           maxLength={FILE_SEARCH_MAX_QUERY_LENGTH}
-          aria-label="Search"
-          placeholder="Search"
+          aria-label="搜索文件"
+          placeholder="搜索文件"
           onClear={() => setSearchQuery('')}
           onChange={(event) => setSearchQuery(event.target.value)}
           onKeyDown={(event) => {
@@ -988,24 +989,24 @@ export function FileTreeHeaderBar({
       actions={
         <>
           <HeaderAction
-            label={liveActionDisabledReason ?? 'New file'}
+            label={liveActionDisabledReason ?? '新建文件'}
             disabled={Boolean(liveActionDisabledReason)}
             onClick={() => context.startDraft('file')}
           >
             <FilePlus className="size-3.5" />
           </HeaderAction>
           <HeaderAction
-            label={liveActionDisabledReason ?? 'New folder'}
+            label={liveActionDisabledReason ?? '新建文件夹'}
             disabled={Boolean(liveActionDisabledReason)}
             onClick={() => context.startDraft('directory')}
           >
             <FolderPlus className="size-3.5" />
           </HeaderAction>
-          <HeaderAction label="Collapse all" onClick={context.collapseAll}>
+          <HeaderAction label="全部折叠" onClick={context.collapseAll}>
             <CopyMinus className="size-3.5" />
           </HeaderAction>
           <HeaderAction
-            label={liveActionDisabledReason ?? 'Refresh'}
+            label={liveActionDisabledReason ?? '刷新'}
             onClick={onRefresh}
             disabled={isRefreshing || Boolean(liveActionDisabledReason)}
           >
@@ -1171,8 +1172,8 @@ export function FileTreeGitChangeIndicator({ status }: { status: GitChangeStatus
     <span
       className="flex size-4 items-center justify-center"
       style={{ color: fileTreeGitStatusColor(status) }}
-      aria-label="Contains emphasized items"
-      title="Contains emphasized items"
+      aria-label="包含重点项目"
+      title="包含重点项目"
     >
       <Circle aria-hidden className="size-2 fill-current opacity-40" strokeWidth={0} />
     </span>

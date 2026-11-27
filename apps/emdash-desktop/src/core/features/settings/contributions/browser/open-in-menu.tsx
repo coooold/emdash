@@ -18,19 +18,15 @@ interface OpenInMenuProps {
   path: string;
   className?: string;
   borderless?: boolean;
-  isRemote?: boolean;
-  sshConnectionId?: string;
 }
 
 export const OpenInMenu: React.FC<OpenInMenuProps> = ({
   path,
   className,
   borderless = false,
-  isRemote = false,
-  sshConnectionId,
 }) => {
   const { toast } = useToast();
-  const { icons, labels, installedApps, availability, platform } = useOpenInApps();
+  const { icons, labels, installedApps, availability } = useOpenInApps();
   const { value: openIn, update } = useAppSettingsKey('openIn');
 
   const defaultApp: OpenInAppId | null =
@@ -49,24 +45,23 @@ export const OpenInMenu: React.FC<OpenInMenuProps> = ({
       try {
         const res = await (
           await getHostClient()
-        ).openIn({ app: appId, path, isRemote, sshConnectionId }, { timeoutMs: 75_000 });
+        ).openIn({ app: appId, path }, { timeoutMs: 75_000 });
         if (!res?.success) {
-          toast.error(`Open in ${label} failed`, {
-            description: res?.error || 'Application not available.',
+          toast.error(`无法在 ${label} 中打开`, {
+            description: res?.error || '应用不可用。',
           });
         }
       } catch (e: unknown) {
         log.warn('[open-in] Launch request failed', {
           appId,
-          isRemote,
           error: e instanceof Error ? e.message : String(e),
         });
-        toast.error(`Open in ${label} failed`, {
+        toast.error(`无法在 ${label} 中打开`, {
           description: e instanceof Error ? e.message : String(e),
         });
       }
     },
-    [isRemote, labels, path, sshConnectionId, toast]
+    [labels, path, toast]
   );
 
   const selectAndOpenApp = useCallback(
@@ -78,18 +73,13 @@ export const OpenInMenu: React.FC<OpenInMenuProps> = ({
   );
 
   const sortedApps = useMemo(() => {
-    const availableApps = isRemote
-      ? installedApps.filter(
-          (app) => app.supportsRemote && (app.id !== 'terminal' || platform === 'darwin')
-        )
-      : installedApps;
-    if (!defaultApp) return availableApps;
-    return [...availableApps].sort((a, b) => {
+    if (!defaultApp) return installedApps;
+    return [...installedApps].sort((a, b) => {
       if (a.id === defaultApp) return -1;
       if (b.id === defaultApp) return 1;
       return 0;
     });
-  }, [defaultApp, installedApps, isRemote, platform]);
+  }, [defaultApp, installedApps]);
 
   const menuApps = useMemo(
     () => sortedApps.filter((app) => availability[app.id] === 'detected'),
@@ -138,7 +128,7 @@ export const OpenInMenu: React.FC<OpenInMenuProps> = ({
                   void triggerOpenIn(buttonAppId);
                 }}
                 disabled={!buttonAppId}
-                aria-label={buttonAppLabel ? `Open in ${buttonAppLabel}` : 'Open'}
+                aria-label={buttonAppLabel ? `在 ${buttonAppLabel} 中打开` : '打开'}
               >
                 {buttonAppId && icons[buttonAppId] && (
                   <img
@@ -154,7 +144,7 @@ export const OpenInMenu: React.FC<OpenInMenuProps> = ({
           />
           <Tooltip.Content side="bottom">
             <div className="flex flex-col gap-1">
-              <span>Open in {buttonAppLabel || 'editor'}</span>
+              <span>在 {buttonAppLabel || '编辑器'} 中打开</span>
               <BoundShortcut command="app.openInEditor" variant="keycaps" />
             </div>
           </Tooltip.Content>
@@ -166,14 +156,14 @@ export const OpenInMenu: React.FC<OpenInMenuProps> = ({
             render={
               <DropdownMenu.Trigger
                 className="group flex size-6 shrink-0 items-center justify-center border-none bg-transparent transition-colors hover:bg-background-1 hover:text-foreground"
-                aria-label="Open in options"
+                aria-label="打开方式选项"
                 disabled={menuApps.length === 0}
               >
                 <ChevronDown className="size-3.5" />
               </DropdownMenu.Trigger>
             }
           ></Tooltip.Trigger>
-          <Tooltip.Content side="bottom">Select open in app</Tooltip.Content>
+          <Tooltip.Content side="bottom">选择打开方式</Tooltip.Content>
         </Tooltip.Root>
         <DropdownMenu.Content align="end" sideOffset={6} width="content">
           <DropdownMenu.RadioGroup

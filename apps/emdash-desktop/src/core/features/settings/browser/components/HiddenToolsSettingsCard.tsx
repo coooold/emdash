@@ -32,11 +32,11 @@ export default function HiddenToolsSettingsCard() {
       <div className="space-y-2">
         {hasDetectionProblem ? (
           <Button variant="secondary" size="sm" disabled={refreshing} onClick={refresh}>
-            Retry
+            重试
           </Button>
         ) : refreshing ? (
           <p role="status" className="px-3 text-sm text-foreground-muted">
-            Checking applications…
+            正在检查应用…
           </p>
         ) : null}
         {sortedApps.map((app) => {
@@ -48,17 +48,17 @@ export default function HiddenToolsSettingsCard() {
           const icon = icons[app.id];
           const indicatorClass = isDetected ? 'bg-foreground-success' : 'bg-foreground-passive/50';
           const statusLabel = {
-            detected: 'Detected',
-            'not-detected': 'Not detected',
+            detected: '已检测到',
+            'not-detected': '未检测到',
             checking: null,
-            unknown: 'Couldn’t check',
+            unknown: '无法检查',
           }[state];
           const tooltipLabel = isDetected
             ? isVisible
-              ? 'Hide from menu'
-              : 'Show in menu'
+              ? '在菜单中隐藏'
+              : '在菜单中显示'
             : state === 'not-detected'
-              ? 'Install this tool to show it in menu'
+              ? '安装此工具后即可在菜单中显示'
               : undefined;
 
           return (
@@ -93,7 +93,7 @@ export default function HiddenToolsSettingsCard() {
                           checked={isVisible}
                           disabled={isLoading || isSaving || !canToggleVisibility}
                           onCheckedChange={(checked) => toggle(app.id, checked)}
-                          aria-label={`${isVisible ? 'Hide' : 'Show'} ${label} in open menu`}
+                          aria-label={`在打开方式菜单中${isVisible ? '隐藏' : '显示'} ${label}`}
                         />
                       </span>
                     </Tooltip.Trigger>

@@ -56,7 +56,7 @@ export function TerminalShellOptionLabel({
     <span className="flex min-w-0 flex-1 items-center gap-2">
       <TerminalShellIcon shell={entry.id === 'system' ? entry.label : entry.id} />
       <span className="truncate">{entry.label}</span>
-      {showSystemBadge && entry.isSystemDefault ? <Badge>system</Badge> : null}
+      {showSystemBadge && entry.isSystemDefault ? <Badge>系统</Badge> : null}
     </span>
   );
 }

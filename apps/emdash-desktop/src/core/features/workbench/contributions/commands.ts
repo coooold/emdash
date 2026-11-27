@@ -4,8 +4,8 @@ import { code, keybinding } from '@core/primitives/keybindings/api';
 
 export const settingsCommand = defineCommand({
   id: 'app.settings',
-  title: 'Open Settings',
-  description: 'Open application settings',
+  title: '打开设置',
+  description: '打开应用设置',
   category: 'App',
   icon: 'settings',
   keybinding: keybinding.settings('settings', 'Mod+,'),
@@ -13,8 +13,8 @@ export const settingsCommand = defineCommand({
 
 export const newProjectCommand = defineCommand({
   id: 'app.newProject',
-  title: 'New Project',
-  description: 'Add a new local or SSH project',
+  title: '新建项目',
+  description: '添加本地项目',
   category: 'App',
   icon: 'folder-plus',
   keybinding: keybinding.settings('newProject', 'Mod+Shift+N'),
@@ -22,8 +22,8 @@ export const newProjectCommand = defineCommand({
 
 export const newTaskCommand = defineCommand({
   id: 'app.newTask',
-  title: 'New Task',
-  description: 'Create a new task in this project',
+  title: '新建任务',
+  description: '在此项目中新建任务',
   category: 'App',
   icon: 'square-plus',
   // Keybindings invoke without input; contextual callers may supply a project.
@@ -33,24 +33,24 @@ export const newTaskCommand = defineCommand({
 
 export const giveFeedbackCommand = defineCommand({
   id: 'app.giveFeedback',
-  title: 'Give Feedback',
-  description: 'Send feedback to the emdash team',
+  title: '提供反馈',
+  description: '向 Emdash 团队发送反馈',
   category: 'App',
   icon: 'message-square-share',
 });
 
 export const toggleThemeCommand = defineCommand({
   id: 'app.toggleTheme',
-  title: 'Toggle Theme',
-  description: 'Switch between light and dark themes',
+  title: '切换主题',
+  description: '在浅色和深色主题之间切换',
   category: 'View',
   icon: 'palette',
 });
 
 export const navigateBackCommand = defineCommand({
   id: 'app.navigateBack',
-  title: 'Go Back',
-  description: 'Navigate to the previous location',
+  title: '后退',
+  description: '返回上一处位置',
   category: 'Navigation',
   icon: 'arrow-left',
   keybinding: keybinding.settings('navigateBack', code(['Mod'], 'BracketLeft')),
@@ -58,8 +58,8 @@ export const navigateBackCommand = defineCommand({
 
 export const navigateForwardCommand = defineCommand({
   id: 'app.navigateForward',
-  title: 'Go Forward',
-  description: 'Navigate to the next location',
+  title: '前进',
+  description: '前往下一处位置',
   category: 'Navigation',
   icon: 'arrow-right',
   keybinding: keybinding.settings('navigateForward', code(['Mod'], 'BracketRight')),
@@ -67,128 +67,128 @@ export const navigateForwardCommand = defineCommand({
 
 export const commandPaletteCommand = defineCommand({
   id: 'app.commandPalette',
-  title: 'Command Palette',
-  description: 'Open the command palette to quickly search and navigate',
+  title: '命令面板',
+  description: '打开命令面板以快速搜索和导航',
   category: 'Navigation',
   keybinding: keybinding.settings('commandPalette', 'Mod+K'),
 });
 
 export const openInEditorCommand = defineCommand({
   id: 'app.openInEditor',
-  title: 'Open in Editor',
-  description: 'Open the project in the default editor',
+  title: '在编辑器中打开',
+  description: '在默认编辑器中打开项目',
   category: 'Navigation',
   keybinding: keybinding.settings('openInEditor', 'Mod+O'),
 });
 
 export const confirmCommand = defineCommand({
   id: 'app.confirm',
-  title: 'Confirm',
-  description: 'Confirm the current action',
+  title: '确认',
+  description: '确认当前操作',
   category: 'App',
   keybinding: keybinding.settings('confirm', 'Mod+Enter'),
 });
 
 export const closeModalCommand = defineCommand({
   id: 'modal.close',
-  title: 'Close Modal',
-  description: 'Close the current modal or dialog',
+  title: '关闭对话框',
+  description: '关闭当前对话框',
   category: 'Navigation',
   keybinding: keybinding.fixed('Escape'),
 });
 
 export const nextTabCommand = defineCommand({
   id: 'workbench.tabNext',
-  title: 'Next Tab',
-  description: 'Switch to the next tab',
+  title: '下一个标签页',
+  description: '切换到下一个标签页',
   category: 'Tab Navigation',
   keybinding: keybinding.settings('tabNext', 'Mod+Alt+ArrowRight'),
 });
 
 export const previousTabCommand = defineCommand({
   id: 'workbench.tabPrev',
-  title: 'Previous Tab',
-  description: 'Switch to the previous tab',
+  title: '上一个标签页',
+  description: '切换到上一个标签页',
   category: 'Tab Navigation',
   keybinding: keybinding.settings('tabPrev', 'Mod+Alt+ArrowLeft'),
 });
 
 export const closeTabCommand = defineCommand({
   id: 'workbench.tabClose',
-  title: 'Close Tab',
-  description: 'Close the active tab',
+  title: '关闭标签页',
+  description: '关闭当前标签页',
   category: 'Tab Navigation',
   keybinding: keybinding.settings('tabClose', 'Mod+W'),
 });
 
 export const reopenTabCommand = defineCommand({
   id: 'workbench.tabReopen',
-  title: 'Reopen Closed Tab',
-  description: 'Reopen the most recently closed tab',
+  title: '重新打开已关闭的标签页',
+  description: '重新打开最近关闭的标签页',
   category: 'Tab Navigation',
   keybinding: keybinding.settings('tabReopen', 'Mod+Shift+T'),
 });
 
 export const renameTabCommand = defineCommand({
   id: 'workbench.tabRename',
-  title: 'Rename Tab',
-  description: 'Rename the active tab',
+  title: '重命名标签页',
+  description: '重命名当前标签页',
   category: 'Tab Navigation',
   keybinding: keybinding.settings('tabRename', 'Mod+Shift+R'),
 });
 
 export const splitPaneCommand = defineCommand({
   id: 'workbench.splitPane',
-  title: 'Split Pane',
-  description: 'Move the active tab to a new pane on the right',
+  title: '拆分面板',
+  description: '将当前标签页移到右侧的新面板',
   category: 'Tab Navigation',
   keybinding: keybinding.settings('splitPane', code(['Mod'], 'Backslash')),
 });
 
 export const cycleNextTabCommand = defineCommand({
   id: 'workbench.tabCycleNext',
-  title: 'Cycle to Next Tab',
-  description: 'Switch to the next tab',
+  title: '切换到下一个标签页',
+  description: '切换到下一个标签页',
   category: 'Tab Navigation',
   keybinding: keybinding.fixed('Control+Tab', { allowWhenTerminalFocused: true }),
 });
 
 export const cyclePreviousTabCommand = defineCommand({
   id: 'workbench.tabCyclePrev',
-  title: 'Cycle to Previous Tab',
-  description: 'Switch to the previous tab',
+  title: '切换到上一个标签页',
+  description: '切换到上一个标签页',
   category: 'Tab Navigation',
   keybinding: keybinding.fixed('Control+Shift+Tab', { allowWhenTerminalFocused: true }),
 });
 
 export const saveEditorCommand = defineCommand({
   id: 'editor.save',
-  title: 'Save File',
-  description: 'Save the active editor file',
+  title: '保存文件',
+  description: '保存编辑器中的当前文件',
   category: 'Editor',
   keybinding: keybinding.fixed('Mod+S', { ignoreWhenBrowserFocused: true }),
 });
 
 export const saveAllEditorsCommand = defineCommand({
   id: 'editor.saveAll',
-  title: 'Save All Files',
-  description: 'Save all open editor files',
+  title: '保存所有文件',
+  description: '保存所有打开的文件',
   category: 'Editor',
   keybinding: keybinding.fixed('Mod+Shift+S', { ignoreWhenBrowserFocused: true }),
 });
 
 export const findInTerminalCommand = defineCommand({
   id: 'terminal.find',
-  title: 'Find in Terminal',
-  description: 'Search the focused terminal',
+  title: '在终端中搜索',
+  description: '在当前终端中搜索',
   category: 'Terminal',
   keybinding: keybinding.fixed('Mod+F', { allowWhenTerminalFocused: true }),
 });
 
 export const closeTerminalSearchCommand = defineCommand({
   id: 'terminalSearch.close',
-  title: 'Close Terminal Search',
-  description: 'Close terminal search',
+  title: '关闭终端搜索',
+  description: '关闭终端搜索',
   category: 'Terminal',
   keybinding: keybinding.fixed('Escape'),
 });
@@ -196,8 +196,8 @@ export const closeTerminalSearchCommand = defineCommand({
 function defineTabIndexCommand<const TIndex extends number>(index: TIndex) {
   return defineCommand({
     id: `workbench.tab${index}` as const,
-    title: `Open Tab ${index}`,
-    description: `Switch to tab ${index}`,
+    title: `打开第 ${index} 个标签页`,
+    description: `切换到第 ${index} 个标签页`,
     category: 'Tab Navigation',
     keybinding: keybinding.fixed(`Mod+${index}`),
   });
@@ -217,16 +217,16 @@ export const tabIndexCommands = [
 
 export const toggleLeftSidebarCommand = defineCommand({
   id: 'workbench.toggleLeftSidebar',
-  title: 'Toggle Left Sidebar',
-  description: 'Show or hide the left sidebar',
+  title: '切换左侧边栏',
+  description: '显示或隐藏左侧边栏',
   category: 'View',
   keybinding: keybinding.settings('toggleLeftSidebar', 'Mod+B'),
 });
 
 export const zenModeCommand = defineCommand({
   id: 'workbench.zenMode',
-  title: 'Zen Mode',
-  description: 'Hide both sidebars',
+  title: '专注模式',
+  description: '隐藏两侧边栏',
   category: 'View',
   keybinding: keybinding.settings('zenMode', 'Control+Z', {
     ignoreWhenEditorFocused: true,

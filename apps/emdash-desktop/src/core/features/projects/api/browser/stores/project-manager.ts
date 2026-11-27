@@ -1,4 +1,4 @@
-import { hostRef, LOCAL_HOST_REF } from '@emdash/core/primitives/host/api';
+import { LOCAL_HOST_REF } from '@emdash/core/primitives/host/api';
 import { splitNameWithOwner } from '@emdash/core/primitives/repository/api';
 import { isRuntimeResolveError } from '@emdash/core/services/runtime-broker/api';
 import { err, ok, type Result } from '@emdash/shared';
@@ -178,7 +178,9 @@ export class ProjectManagerStore {
     const inFlight = this._projectContextHydrations.get(projectId);
     if (inFlight) return inFlight.promise;
     const store = this.projects.get(projectId);
-    if (!store?.data || store.context?.kind === 'available') return Promise.resolve();
+    if (store?.data?.type !== 'local' || store.context?.kind === 'available') {
+      return Promise.resolve();
+    }
 
     const project = store.data;
     const identity = {};
@@ -365,7 +367,9 @@ export class ProjectManagerStore {
     data: ModeData,
     options: StartProjectCreationOptions = {}
   ): Promise<StartProjectCreationResult> {
-    const isSsh = projectType.type === 'ssh';
+    if (projectType.type !== 'local') {
+      throw new Error('此版本不再支持通过 SSH 开发。');
+    }
     const projectId = options.id ?? crypto.randomUUID();
     const targetPathResult =
       data.mode === 'pick'
@@ -373,7 +377,7 @@ export class ProjectManagerStore {
         : await (
             await getProjectsWireClient()
           ).resolveRepositoryDestination({
-            host: isSsh ? hostRef('remote', projectType.connectionId) : LOCAL_HOST_REF,
+            host: LOCAL_HOST_REF,
             name: data.name,
             chosenDir: data.path,
           });
@@ -399,11 +403,7 @@ export class ProjectManagerStore {
     const targetPath = targetPathResult.data;
     const inspection = await (
       await getProjectsWireClient()
-    ).inspectProjectPath(
-      isSsh
-        ? { type: 'ssh', path: targetPath, connectionId: projectType.connectionId }
-        : { type: 'local', path: targetPath }
-    );
+    ).inspectProjectPath({ type: 'local', path: targetPath });
     if (inspection.existingProject) {
       return { kind: 'existing', projectId: inspection.existingProject.id };
     }
@@ -421,24 +421,19 @@ export class ProjectManagerStore {
       );
     });
 
-    const completion = this._doCreateProject(projectType, data, projectId, targetPath).finally(
-      () => {
-        runInAction(() => this.pendingCreationIds.delete(projectId));
-      }
-    );
+    const completion = this._doCreateProject(data, projectId, targetPath).finally(() => {
+      runInAction(() => this.pendingCreationIds.delete(projectId));
+    });
 
     return { kind: 'creating', projectId, completion };
   }
 
   private async _doCreateProject(
-    projectType: ProjectType,
     data: ModeData,
     projectId: string,
     targetPath: string
   ): Promise<ProjectCreationCompletion> {
     const projectsClient = await getProjectsWireClient();
-    const isSsh = projectType.type === 'ssh';
-    const projectTelemetryType: 'local' | 'ssh' = isSsh ? 'ssh' : 'local';
     const projectTelemetryStrategy: 'open' | 'create' | 'clone' =
       data.mode === 'clone' ? 'clone' : data.mode === 'create' ? 'create' : 'open';
 
@@ -450,25 +445,14 @@ export class ProjectManagerStore {
             data.initGitRepository && data.githubAccountId
               ? { github: { kind: 'account', accountId: data.githubAccountId } }
               : undefined;
-          const projectResult =
-            projectType.type === 'ssh'
-              ? await projectsClient.createProject({
-                  type: 'ssh',
-                  id: projectId,
-                  path: targetPath,
-                  name: data.name,
-                  connectionId: projectType.connectionId,
-                  initGitRepository: data.initGitRepository,
-                  initialIntegrationAccounts,
-                })
-              : await projectsClient.createProject({
-                  type: 'local',
-                  id: projectId,
-                  path: targetPath,
-                  name: data.name,
-                  initGitRepository: data.initGitRepository,
-                  initialIntegrationAccounts,
-                });
+          const projectResult = await projectsClient.createProject({
+            type: 'local',
+            id: projectId,
+            path: targetPath,
+            name: data.name,
+            initGitRepository: data.initGitRepository,
+            initialIntegrationAccounts,
+          });
           if (!projectResult.success) {
             result = err(projectResult.error);
             break;
@@ -483,10 +467,6 @@ export class ProjectManagerStore {
         case 'clone': {
           const projectResult = await this._createProjectFromRemote({
             projectId,
-            host:
-              projectType.type === 'ssh'
-                ? { type: 'ssh', connectionId: projectType.connectionId }
-                : { type: 'local' },
             mode: 'clone',
             repositoryUrl: data.repositoryUrl,
             targetPath,
@@ -539,7 +519,6 @@ export class ProjectManagerStore {
           }
 
           const projectResult = await this._cloneAndCreateHostedProject({
-            projectType,
             projectId,
             targetPath,
             name: data.name,
@@ -562,7 +541,7 @@ export class ProjectManagerStore {
     } catch (error) {
       this._markUnexpectedCreationError(projectId, error);
       captureTelemetry('project_added', {
-        type: projectTelemetryType,
+        type: 'local',
         strategy: projectTelemetryStrategy,
         success: false,
       });
@@ -577,7 +556,7 @@ export class ProjectManagerStore {
       }
     }
     captureTelemetry('project_added', {
-      type: projectTelemetryType,
+      type: 'local',
       strategy: projectTelemetryStrategy,
       success: result.success,
     });
@@ -667,30 +646,6 @@ export class ProjectManagerStore {
     });
   }
 
-  async updateProjectConnection(projectId: string, newConnectionId: string): Promise<void> {
-    await (
-      await getProjectsWireClient()
-    ).updateProjectConnection({
-      projectId,
-      connectionId: newConnectionId,
-    });
-
-    const store = this.projects.get(projectId);
-    const data = store?.data;
-    if (!store || !data || data.type !== 'ssh') return;
-
-    runInAction(() => {
-      store.updateData({ ...data, connectionId: newConnectionId });
-    });
-    if (store.context?.kind === 'available') {
-      await this._trackProjectContextHostAccess(
-        projectId,
-        store,
-        store.context.context as ProjectContext
-      );
-    }
-  }
-
   removeUnregisteredProject(projectId: string): void {
     runInAction(() => {
       const store = this.projects.get(projectId);
@@ -743,7 +698,6 @@ export class ProjectManagerStore {
 
   private async _createProjectFromRemote(opts: {
     projectId: string;
-    host: { type: 'local' } | { type: 'ssh'; connectionId: string };
     mode: 'clone' | 'create';
     account?: ProviderAccountRef;
     initialIntegrationAccounts?: StoredIntegrationAccounts;
@@ -755,7 +709,7 @@ export class ProjectManagerStore {
     const jobs = createLiveJobReplicaCache(projectsWireContract.create, client.create);
     const lease = await jobs.start({
       projectId: opts.projectId,
-      host: opts.host,
+      host: { type: 'local' },
       mode: opts.mode,
       account: opts.account,
       initialIntegrationAccounts: opts.initialIntegrationAccounts,
@@ -788,7 +742,6 @@ export class ProjectManagerStore {
   }
 
   private async _cloneAndCreateHostedProject(opts: {
-    projectType: ProjectType;
     projectId: string;
     targetPath: string;
     name: string;
@@ -801,10 +754,6 @@ export class ProjectManagerStore {
     try {
       result = await this._createProjectFromRemote({
         projectId: opts.projectId,
-        host:
-          opts.projectType.type === 'ssh'
-            ? { type: 'ssh', connectionId: opts.projectType.connectionId }
-            : { type: 'local' },
         mode: 'create',
         account: opts.accountId
           ? { providerId: opts.provider, accountId: opts.accountId }

@@ -1,4 +1,4 @@
-import { hostRef } from '@emdash/core/primitives/host/api';
+import { LOCAL_HOST_REF } from '@emdash/core/primitives/host/api';
 import {
   GIT_DEPENDENCY_DESCRIPTOR,
   hostDependenciesContract,
@@ -15,7 +15,6 @@ import { encodeTopic, type LiveSource } from '@emdash/wire/rpc';
 import { createTestWire } from '@emdash/wire/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { machinesContract, type InstallMachineSystemDependenciesInput } from '../api';
-import type { MachinesService } from '../api/node/machines-service';
 import { createMachinesWireController } from './wire-controller';
 
 const runRuntimeLiveJob = vi.hoisted(() => vi.fn());
@@ -23,8 +22,6 @@ const runRuntimeLiveJob = vi.hoisted(() => vi.fn());
 vi.mock('@core/services/runtime-clients/node/live-job', () => ({
   runRuntimeLiveJob,
 }));
-
-const remoteHost = hostRef('remote', 'ssh-1');
 
 describe('createMachinesWireController system dependencies', () => {
   it('forwards the raw dependency snapshot state for a machine runtime', async () => {
@@ -53,14 +50,12 @@ describe('createMachinesWireController system dependencies', () => {
         },
       })
     );
-    const controller = createMachinesWireController(createService(), { client } as never);
-    const topic = encodeTopic(machinesContract.systemDependencies.states.current.id, {
-      machineId: 'ssh-1',
-    });
+    const controller = createMachinesWireController({ client } as never);
+    const topic = encodeTopic(machinesContract.systemDependencies.states.current.id, {});
     const lease = controller.acquireLive(topic);
 
     await expect(lease?.ready()).resolves.toBe(source);
-    expect(client).toHaveBeenCalledWith(remoteHost);
+    expect(client).toHaveBeenCalledWith(LOCAL_HOST_REF);
     expect(state).toHaveBeenCalledWith(undefined, 'current');
     expect(mutate).not.toHaveBeenCalled();
 
@@ -84,8 +79,8 @@ describe('createMachinesWireController system dependencies', () => {
       })
     );
     const client = vi.fn(async () => ok({ hostDependencies: { snapshot: { mutate } } }));
-    const controller = createMachinesWireController(createService(), { client } as never);
-    const key = { machineId: 'ssh-1' };
+    const controller = createMachinesWireController({ client } as never);
+    const key = {};
 
     await expect(
       controller.call('systemDependencies.refresh', {
@@ -105,7 +100,7 @@ describe('createMachinesWireController system dependencies', () => {
         ],
       })
     );
-    expect(client).toHaveBeenCalledWith(remoteHost);
+    expect(client).toHaveBeenCalledWith(LOCAL_HOST_REF);
     expect(mutate).toHaveBeenCalledWith('refresh', {
       key: undefined,
       input: {},
@@ -118,11 +113,10 @@ describe('createMachinesWireController system dependencies', () => {
     runRuntimeLiveJob.mockResolvedValueOnce(ok({ git: ok(view) }));
     const runInstallBatch = {};
     const client = vi.fn(async () => ok({ hostDependencies: { runInstallBatch } }));
-    const controller = createMachinesWireController(createService(), { client } as never);
+    const controller = createMachinesWireController({ client } as never);
 
     await expect(
       runInstallJob(controller, {
-        machineId: 'ssh-1',
         dependencies: [{ id: 'git', method: 'homebrew' }],
       })
     ).resolves.toEqual({
@@ -147,11 +141,10 @@ describe('createMachinesWireController system dependencies', () => {
 
   it('rejects non-system dependency installation ids', async () => {
     const client = vi.fn(async () => ok({ hostDependencies: { runInstallBatch: {} } }));
-    const controller = createMachinesWireController(createService(), { client } as never);
+    const controller = createMachinesWireController({ client } as never);
 
     await expect(
       runInstallJob(controller, {
-        machineId: 'ssh-1',
         dependencies: [{ id: 'fake-agent' }],
       })
     ).resolves.toEqual({
@@ -177,11 +170,10 @@ describe('createMachinesWireController system dependencies', () => {
     );
     const runInstallBatch = {};
     const client = vi.fn(async () => ok({ hostDependencies: { runInstallBatch } }));
-    const controller = createMachinesWireController(createService(), { client } as never);
+    const controller = createMachinesWireController({ client } as never);
 
     await expect(
       runInstallJob(controller, {
-        machineId: 'ssh-1',
         dependencies: [{ id: 'git' }, { id: 'node', method: 'apt' }],
       })
     ).resolves.toEqual({
@@ -222,7 +214,7 @@ describe('createMachinesWireController system dependencies', () => {
       }
     );
     const client = vi.fn(async () => ok({ hostDependencies: { runInstallBatch: {} } }));
-    const controller = createMachinesWireController(createService(), { client } as never);
+    const controller = createMachinesWireController({ client } as never);
     const wire = createTestWire(machinesContract, controller);
     const jobs = createLiveJobReplicaCache(
       machinesContract.installSystemDependencies,
@@ -242,18 +234,34 @@ describe('createMachinesWireController system dependencies', () => {
   });
 
   it('throws runtime resolve errors for unavailable machine runtimes', async () => {
-    const runtimeError = runtimeHostUnavailable(remoteHost, 'unavailable');
-    const controller = createMachinesWireController(createService(), {
+    const runtimeError = runtimeHostUnavailable(LOCAL_HOST_REF, 'unavailable');
+    const controller = createMachinesWireController({
       client: async () => err(runtimeError),
     } as never);
 
-    const topic = encodeTopic(machinesContract.systemDependencies.states.current.id, {
-      machineId: 'ssh-1',
-    });
+    const topic = encodeTopic(machinesContract.systemDependencies.states.current.id, {});
     const lease = controller.acquireLive(topic);
 
     await expect(lease?.ready()).rejects.toThrow('unavailable');
     await lease?.release();
+  });
+
+  it('lists no remote machines and rejects remote operations without contacting workers', async () => {
+    const client = vi.fn();
+    const controller = createMachinesWireController({ client } as never);
+    const wire = createTestWire(machinesContract, controller);
+    try {
+      await expect(wire.client.getMachines()).resolves.toEqual([]);
+      await expect(wire.client.getMachineMetrics({ machineId: 'saved-ssh-host' })).rejects.toThrow(
+        '此版本仅支持本地开发。'
+      );
+      await expect(wire.client.deleteMachine({ id: 'saved-ssh-host' })).rejects.toThrow(
+        '此版本仅支持本地开发。'
+      );
+      expect(client).not.toHaveBeenCalled();
+    } finally {
+      await wire.dispose();
+    }
   });
 });
 
@@ -292,16 +300,6 @@ function hostDependencyView(
     status: options.status ?? (resolvedPath ? 'available' : 'missing'),
     checkedAt: 1,
   };
-}
-
-function createService(): MachinesService {
-  return {
-    getMachines: vi.fn(),
-    getMachineUsage: vi.fn(),
-    saveMachine: vi.fn(),
-    deleteMachine: vi.fn(),
-    renameMachine: vi.fn(),
-  } as never;
 }
 
 async function runInstallJob(

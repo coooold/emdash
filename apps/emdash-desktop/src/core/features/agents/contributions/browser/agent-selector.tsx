@@ -46,7 +46,7 @@ export const AgentSelector: React.FC<AgentSelectorProps> = observer(
     getDisabledReason,
     installable = true,
     autoFocus = false,
-    placeholder = 'No agent installed',
+    placeholder = '尚未安装代理',
     trailingControl,
   }) => {
     const [open, setOpen] = useState(false);
@@ -95,7 +95,7 @@ export const AgentSelector: React.FC<AgentSelectorProps> = observer(
       >
         <div
           role="group"
-          aria-label={trailingControl ? 'Agent and interface' : 'Agent'}
+          aria-label={trailingControl ? '代理和界面' : '代理'}
           className={cn(
             'flex h-9 w-full min-w-0 items-center rounded-lg border border-border bg-transparent text-sm',
             disabled && 'cursor-not-allowed opacity-60',
@@ -127,11 +127,11 @@ export const AgentSelector: React.FC<AgentSelectorProps> = observer(
           ref={setAnchorEl}
           className={cn('min-w-(--anchor-width)', contentClassName)}
         >
-          <Combobox.Input showTrigger={false} placeholder="Search agents..." />
+          <Combobox.Input showTrigger={false} placeholder="搜索代理…" />
           <Combobox.List className="pb-0">
             {(group: AgentGroup) => (
               <Combobox.Group key={group.value} items={group.items} className="py-1">
-                <Combobox.Label>{group.label}</Combobox.Label>
+                <Combobox.Label>{group.value === 'installed' ? '已安装' : '未安装'}</Combobox.Label>
                 <Combobox.Collection>
                   {(item: AgentOption) => {
                     const showInstall = canInstallAgentOption(item, installable);

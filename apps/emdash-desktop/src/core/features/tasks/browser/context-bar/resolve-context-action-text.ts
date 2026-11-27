@@ -1,8 +1,6 @@
-import { refreshLinkedIssueContext } from '@core/features/tasks/browser/issue-context/refresh-linked-issue-context';
 import type { LinkedIssue } from '@core/primitives/linked-issues/api';
 import {
   buildContextActionText,
-  buildLinkedIssueContextAction,
   type ContextAction,
 } from '../context-bar/context-actions';
 
@@ -11,12 +9,5 @@ export async function resolveContextActionText(args: {
   linkedIssue?: LinkedIssue;
   projectId?: string;
 }): Promise<string> {
-  const { action, linkedIssue, projectId } = args;
-  if (action.kind !== 'linked-issue' || !linkedIssue) {
-    return buildContextActionText(action);
-  }
-
-  const refreshedIssue = await refreshLinkedIssueContext(linkedIssue, projectId);
-  const refreshedAction = buildLinkedIssueContextAction(refreshedIssue);
-  return refreshedAction ? buildContextActionText(refreshedAction) : buildContextActionText(action);
+  return buildContextActionText(args.action);
 }

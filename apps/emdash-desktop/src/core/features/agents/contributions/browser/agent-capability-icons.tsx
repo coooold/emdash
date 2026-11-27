@@ -6,11 +6,11 @@ export function AgentCapabilityIcons({ supportsChatUi }: { supportsChatUi: boole
   return (
     <div className="flex shrink-0 items-center gap-2">
       {supportsChatUi && (
-        <CapabilityIcon label="Supports Chat UI">
+        <CapabilityIcon label="支持聊天界面">
           <MessageSquare className="size-3.5 text-foreground-passive" aria-hidden />
         </CapabilityIcon>
       )}
-      <CapabilityIcon label="Supports TUI">
+      <CapabilityIcon label="支持终端界面">
         <SquareTerminal className="size-3.5 text-foreground-passive" aria-hidden />
       </CapabilityIcon>
     </div>

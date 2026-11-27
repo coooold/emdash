@@ -77,7 +77,7 @@ export const conversationTabProvider: TabProvider<
 
   commands: {
     rename: {
-      label: 'Rename',
+      label: '重命名',
       exec: (resource: ConversationTabResource, name?: string) => {
         if (name) resource.rename(name);
       },

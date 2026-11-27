@@ -24,13 +24,13 @@ const SidebarMetadataSettingsCard: React.FC = () => {
     <SettingsCard>
       <SeparatedList gap="1rem" direction="column">
         <SettingRow
-          title="Left sidebar line changes"
-          description="Show added and removed line counts for tasks in the left sidebar."
+          title="侧边栏中的行数变更"
+          description="在左侧边栏显示任务新增和删除的行数。"
           control={
             <>
               <ResetToDefaultButton
                 visible={isFieldOverridden('showLeftSidebarLineChanges')}
-                defaultLabel="on"
+                defaultLabel="开启"
                 onReset={() => resetField('showLeftSidebarLineChanges')}
                 disabled={busy}
               />
@@ -38,19 +38,19 @@ const SidebarMetadataSettingsCard: React.FC = () => {
                 checked={showLineChanges}
                 onCheckedChange={(checked) => update({ showLeftSidebarLineChanges: checked })}
                 disabled={busy}
-                aria-label="Show left sidebar line changes"
+                aria-label="显示侧边栏中的行数变更"
               />
             </>
           }
         />
         <SettingRow
-          title="Left sidebar PR status"
-          description="Show GitHub PR merge and status icons for tasks in the left sidebar."
+          title="侧边栏中的拉取请求状态"
+          description="在左侧边栏显示 GitHub 拉取请求的合并和状态图标。"
           control={
             <>
               <ResetToDefaultButton
                 visible={isFieldOverridden('showLeftSidebarPrStatus')}
-                defaultLabel="on"
+                defaultLabel="开启"
                 onReset={() => resetField('showLeftSidebarPrStatus')}
                 disabled={busy}
               />
@@ -58,19 +58,19 @@ const SidebarMetadataSettingsCard: React.FC = () => {
                 checked={showPrStatus}
                 onCheckedChange={(checked) => update({ showLeftSidebarPrStatus: checked })}
                 disabled={busy}
-                aria-label="Show left sidebar PR status"
+                aria-label="显示侧边栏中的拉取请求状态"
               />
             </>
           }
         />
         <SettingRow
-          title="Left sidebar timestamps"
-          description="Show the relative task timestamp in the left sidebar."
+          title="侧边栏中的时间戳"
+          description="在左侧边栏显示任务的相对时间。"
           control={
             <>
               <ResetToDefaultButton
                 visible={isFieldOverridden('showLeftSidebarTimestamps')}
-                defaultLabel="on"
+                defaultLabel="开启"
                 onReset={() => resetField('showLeftSidebarTimestamps')}
                 disabled={busy}
               />
@@ -78,7 +78,7 @@ const SidebarMetadataSettingsCard: React.FC = () => {
                 checked={showTimestamps}
                 onCheckedChange={(checked) => update({ showLeftSidebarTimestamps: checked })}
                 disabled={busy}
-                aria-label="Show left sidebar timestamps"
+                aria-label="显示侧边栏中的时间戳"
               />
             </>
           }

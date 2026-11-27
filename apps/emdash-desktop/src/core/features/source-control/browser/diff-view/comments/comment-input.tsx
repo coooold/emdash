@@ -41,7 +41,7 @@ export const CommentInput: React.FC<CommentInputProps> = ({
     <Comment.Root>
       <Comment.Header>
         <Comment.Title>
-          {existingContent ? 'Edit comment' : 'Add comment'}
+          {existingContent ? '编辑评论' : '添加评论'}
           <Comment.Meta className="ml-2">(Line {lineNumber})</Comment.Meta>
         </Comment.Title>
         <Comment.Actions>
@@ -51,8 +51,8 @@ export const CommentInput: React.FC<CommentInputProps> = ({
             icon
             className="h-8 w-8"
             onClick={onCancel}
-            title="Cancel (Esc)"
-            aria-label="Cancel comment"
+            title="取消（Esc）"
+            aria-label="取消评论"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -63,8 +63,8 @@ export const CommentInput: React.FC<CommentInputProps> = ({
             className="h-8 w-8"
             onClick={handleSubmit}
             disabled={!content.trim()}
-            title="Submit (Cmd/Ctrl+Enter)"
-            aria-label="Submit comment"
+            title="提交（Cmd/Ctrl+Enter）"
+            aria-label="提交评论"
           >
             <Check className="h-4 w-4 text-foreground-success" />
           </Button>
@@ -77,7 +77,7 @@ export const CommentInput: React.FC<CommentInputProps> = ({
           value={content}
           onChange={(e) => setContent(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Add a note about this line..."
+          placeholder="为此行添加备注…"
           autoFocus
         />
       </Comment.Body>

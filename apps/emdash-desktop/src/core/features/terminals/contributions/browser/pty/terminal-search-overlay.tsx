@@ -61,9 +61,9 @@ export function TerminalSearchOverlay({
               return;
             }
           }}
-          placeholder="Find in terminal..."
+          placeholder="在终端中查找…"
           className="h-8 min-w-0 border-0 bg-transparent pr-2 pl-8 text-xs shadow-none focus-visible:ring-0"
-          aria-label="Find in terminal"
+          aria-label="在终端中查找"
         />
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-0.5">
@@ -78,7 +78,7 @@ export function TerminalSearchOverlay({
           onClick={() => onStep('prev')}
           disabled={!searchQuery || searchStatus.total === 0}
           className="shrink-0 text-foreground-muted"
-          aria-label="Previous terminal match"
+          aria-label="上一个匹配项"
         >
           <ChevronUp className="size-3.5" />
         </Button>
@@ -90,7 +90,7 @@ export function TerminalSearchOverlay({
           onClick={() => onStep('next')}
           disabled={!searchQuery || searchStatus.total === 0}
           className="shrink-0 text-foreground-muted"
-          aria-label="Next terminal match"
+          aria-label="下一个匹配项"
         >
           <ChevronDown className="size-3.5" />
         </Button>
@@ -101,7 +101,7 @@ export function TerminalSearchOverlay({
           icon
           onClick={onClose}
           className="shrink-0 text-foreground-muted"
-          aria-label="Close terminal search"
+          aria-label="关闭终端搜索"
         >
           <X className="size-3.5" />
         </Button>

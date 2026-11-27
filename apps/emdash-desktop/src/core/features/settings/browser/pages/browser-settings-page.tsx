@@ -6,8 +6,8 @@ export function BrowserSettingsPage() {
     <div className="space-y-8">
       <PageLayout.Header
         sticky
-        title="Browser"
-        description="Manage browser profiles and their stored logins."
+        title="浏览器"
+        description="管理浏览器配置和保存的网站登录状态。"
       />
       <BrowserSettingsCard />
     </div>

@@ -193,6 +193,8 @@ export interface ComposerAgentOption {
 // ── Props ─────────────────────────────────────────────────────────────────────
 
 export interface ChatComposerProps {
+  /** Language for built-in labels. Provider and user content keep their original text. */
+  locale?: 'en' | 'zh-CN';
   disabled?: boolean;
   isWorking?: boolean;
   /** False while the session is still starting up. Blocks Send/Enter but keeps the editor typeable. */
@@ -441,7 +443,12 @@ function buildAgentGroups(options: ComposerAgentOption[]): AgentGroup[] {
   return Array.from(grouped.entries()).map(([label, items]) => ({ label, items }));
 }
 
+function lockedAgentLabel(name: string, chinese: boolean): string {
+  return `${name} — ${chinese ? '对话开始后无法切换代理' : "agents can't be switched after a conversation starts"}`;
+}
+
 interface ComposerAgentSelectorProps {
+  chinese: boolean;
   options: ComposerAgentOption[];
   selectedId?: string;
   onSelect: (agentId: string) => void;
@@ -450,6 +457,7 @@ interface ComposerAgentSelectorProps {
 }
 
 function ComposerAgentSelector({
+  chinese,
   options,
   selectedId,
   onSelect,
@@ -463,9 +471,9 @@ function ComposerAgentSelector({
 
   const triggerLabel = selected
     ? locked
-      ? `${selected.name} — agents can't be switched after a conversation starts`
+      ? lockedAgentLabel(selected.name, chinese)
       : selected.name
-    : 'Select agent';
+    : chinese ? '选择代理' : 'Select agent';
 
   // When locked or session closed, show a static disabled icon button.
   if (isDisabled) {
@@ -508,7 +516,7 @@ function ComposerAgentSelector({
       </Combobox.Trigger>
       {/* Portaled out of the composer root — must carry the theme-bridge scope. */}
       <Combobox.Content className={composerThemeScope} style={{ minWidth: '11.25rem' }}>
-        <Combobox.Input showTrigger={false} placeholder="Search agents…" />
+        <Combobox.Input showTrigger={false} placeholder={chinese ? '搜索代理…' : 'Search agents…'} />
         <Combobox.List>
           {groups.map((group) =>
             group.label ? (
@@ -658,6 +666,7 @@ function ComposerModeSelect({
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function ChatComposer({
+  locale = 'en',
   disabled = false,
   isWorking = false,
   canSubmit = true,
@@ -712,6 +721,7 @@ export function ChatComposer({
   onSendQueuedPromptNow,
   className,
 }: ChatComposerProps) {
+  const chinese = locale === 'zh-CN';
   const mcpFailureCount = mcpServers.filter((server) => server.startupError).length;
   const editorRef = useRef<PromptEditorRef | null>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -834,7 +844,7 @@ export function ChatComposer({
       : null;
   const selectedAgentTitle = selectedAgentItem
     ? agentLocked
-      ? `${selectedAgentItem.name} — agents can't be switched after a conversation starts`
+      ? lockedAgentLabel(selectedAgentItem.name, chinese)
       : selectedAgentItem.name
     : undefined;
 
@@ -876,16 +886,20 @@ export function ChatComposer({
   // The permission band takes priority over the notice band.
   const hasBand = canShowQueuedPrompts || !!(permissionRequest ?? notice);
   const shouldHandleSubmitAttempt = !disabled && (isWorking ? !!onSubmitWhileWorking : canSubmit);
+  const placeholders = chinese
+    ? { closed: '会话已关闭', followUp: '添加后续消息', idle: '发送消息，使用 @ 引用文件或 / 调用命令' }
+    : { closed: 'Session closed', followUp: 'Add a follow-up', idle: 'Send a message, tag @files or use /commands' };
   const resolvedPlaceholder = disabled
-    ? 'Session closed'
+    ? placeholders.closed
     : isWorking
-      ? 'Add a follow-up'
-      : (placeholder ?? 'Send a message, tag @files or use /commands');
+      ? placeholders.followUp
+      : (placeholder ?? placeholders.idle);
 
   return (
     <div className={cx(styles.composerRoot, composerThemeScope, className)}>
       {canShowQueuedPrompts && (
         <QueuedPromptsBand
+          chinese={chinese}
           prompts={queuedPrompts}
           onEdit={onEditQueuedPrompt}
           onDelete={onDeleteQueuedPrompt}
@@ -898,6 +912,7 @@ export function ChatComposer({
       {/* Permission band — shown when the agent is awaiting user approval. */}
       {permissionRequest && onResolvePermission && (
         <PermissionBand
+          chinese={chinese}
           request={permissionRequest}
           queueCount={permissionQueueCount}
           onResolve={onResolvePermission}
@@ -935,7 +950,7 @@ export function ChatComposer({
               <div key={att.id} className={styles.attachmentThumb} data-attachment-thumb>
                 <button
                   type="button"
-                  aria-label={`View image: ${att.name}`}
+                  aria-label={chinese ? `查看图片 ${att.name}` : `View image: ${att.name}`}
                   onClick={() => onViewImage?.(att)}
                   className={styles.attachmentThumbBtn}
                 >
@@ -943,7 +958,7 @@ export function ChatComposer({
                 </button>
                 <button
                   type="button"
-                  aria-label={`Remove ${att.name}`}
+                  aria-label={chinese ? `移除 ${att.name}` : `Remove ${att.name}`}
                   onClick={() => removeAttachment(att.id)}
                   className={styles.attachmentRemoveBtn}
                 >
@@ -992,6 +1007,7 @@ export function ChatComposer({
           <div className={styles.toolbarLeft}>
             {agentOptions && agentOptions.length > 0 && modelItems.length === 0 && (
               <ComposerAgentSelector
+                chinese={chinese}
                 options={agentOptions}
                 selectedId={selectedAgent}
                 onSelect={(id) => onAgentChange?.(id)}
@@ -1007,7 +1023,7 @@ export function ChatComposer({
                 itemToKey={(item) => item.id}
                 itemToLabel={(item) => item.name}
                 disabled={disabled || !onModelChange}
-                searchPlaceholder="Search models…"
+                searchPlaceholder={chinese ? '搜索模型…' : 'Search models…'}
                 contentClassName={composerThemeScope}
                 contentStyle={{ minWidth: '12.5rem' }}
                 triggerTitle={() => selectedAgentTitle}
@@ -1037,7 +1053,7 @@ export function ChatComposer({
                         lineHeight: 1.25,
                       }}
                     >
-                      {selected?.name ?? 'Model…'}
+                      {selected?.name ?? (chinese ? '选择模型…' : 'Model…')}
                       {selected && selectedEffortItem ? (
                         <span className={styles.selectedModelEffort}>
                           {' '}
@@ -1071,9 +1087,9 @@ export function ChatComposer({
                             className={styles.effortRow}
                             disabled={disabled || !onEffortChange}
                           >
-                            <span className={styles.effortRowLabel}>Effort</span>
+                            <span className={styles.effortRowLabel}>{chinese ? '推理强度' : 'Effort'}</span>
                             <span className={styles.effortRowValue}>
-                              {selectedEffortItem?.name ?? 'Default'}
+                              {selectedEffortItem?.name ?? (chinese ? '默认' : 'Default')}
                               <ChevronRight
                                 style={{ width: '0.75rem', height: '0.75rem', flexShrink: 0 }}
                               />
@@ -1109,8 +1125,8 @@ export function ChatComposer({
                 onChange={onCollaborationModeChange}
                 disabled={disabled || !onCollaborationModeChange}
                 isFirst={collaborationModeIsFirst}
-                ariaLabel="Collaboration mode"
-                placeholder="Collaboration…"
+                ariaLabel={chinese ? '协作模式' : 'Collaboration mode'}
+                placeholder={chinese ? '选择协作模式…' : 'Collaboration…'}
                 icon={<ListTodo style={{ width: '0.75rem', height: '0.75rem', flexShrink: 0 }} />}
               />
             )}
@@ -1121,8 +1137,8 @@ export function ChatComposer({
                 onChange={onPermissionModeChange}
                 disabled={disabled || !onPermissionModeChange}
                 isFirst={permissionModeIsFirst}
-                ariaLabel="Permission mode"
-                placeholder="Permissions…"
+                ariaLabel={chinese ? '权限模式' : 'Permission mode'}
+                placeholder={chinese ? '选择权限模式…' : 'Permissions…'}
                 icon={
                   <ShieldCheck style={{ width: '0.75rem', height: '0.75rem', flexShrink: 0 }} />
                 }
@@ -1135,9 +1151,11 @@ export function ChatComposer({
                   className={styles.mcpTrigger}
                   data-failed={mcpFailureCount > 0 ? '' : undefined}
                   openOnHover
-                  aria-label={`${mcpServers.length} session MCP ${
-                    mcpServers.length === 1 ? 'server' : 'servers'
-                  }${mcpFailureCount ? `, ${mcpFailureCount} startup ${mcpFailureCount === 1 ? 'failure' : 'failures'}` : ''}`}
+                  aria-label={
+                    chinese
+                      ? `此会话有 ${mcpServers.length} 个 MCP 服务器${mcpFailureCount ? `，${mcpFailureCount} 个启动失败` : ''}`
+                      : `${mcpServers.length} session MCP ${mcpServers.length === 1 ? 'server' : 'servers'}${mcpFailureCount ? `, ${mcpFailureCount} startup ${mcpFailureCount === 1 ? 'failure' : 'failures'}` : ''}`
+                  }
                 >
                   <McpIcon size={12} />
                   {mcpServers.length}
@@ -1145,7 +1163,7 @@ export function ChatComposer({
                 <Popover.Content
                   align="start"
                   className={cx(styles.mcpPopoverContent, composerThemeScope)}
-                  aria-label="Session MCP servers"
+                  aria-label={chinese ? '会话 MCP 服务器' : 'Session MCP servers'}
                   initialFocus={false}
                 >
                   <div className={styles.mcpList}>
@@ -1161,7 +1179,7 @@ export function ChatComposer({
                             <Tooltip.Root>
                               <Tooltip.Trigger
                                 render={<Button variant="ghost" size="xs" icon />}
-                                aria-label={`${server.name} startup error`}
+                                aria-label={chinese ? `${server.name} 启动失败` : `${server.name} startup error`}
                               >
                                 <Info className={styles.mcpInfoIcon} aria-hidden="true" />
                               </Tooltip.Trigger>
@@ -1190,7 +1208,7 @@ export function ChatComposer({
           {/* Right: usage donut + attach + send/stop */}
           <div className={styles.toolbarRight}>
             {contextUsage && contextUsage.size > 0 && (
-              <ContextUsageIndicator usage={contextUsage} disabled={disabled} />
+              <ContextUsageIndicator usage={contextUsage} disabled={disabled} chinese={chinese} />
             )}
             {onAttach && (
               <Button
@@ -1199,7 +1217,7 @@ export function ChatComposer({
                 icon
                 onClick={onAttach}
                 disabled={disabled}
-                aria-label="Add attachment"
+                aria-label={chinese ? '添加附件' : 'Add attachment'}
               >
                 <Paperclip />
               </Button>
@@ -1214,7 +1232,7 @@ export function ChatComposer({
                   icon
                   className={styles.sendButtonRound}
                   onClick={onStop}
-                  aria-label="Stop generation"
+                  aria-label={chinese ? '停止生成' : 'Stop generation'}
                 >
                   <span className={styles.stopIcon} aria-hidden="true" />
                 </Button>
@@ -1226,7 +1244,7 @@ export function ChatComposer({
                   className={styles.sendButtonRound}
                   onClick={() => handleSubmit(editorRef.current?.getText() ?? '')}
                   disabled={disabled || (!isWorking && !canSubmit)}
-                  aria-label={isWorking ? 'Queue message' : 'Send message'}
+                  aria-label={isWorking ? (chinese ? '将消息加入队列' : 'Queue message') : (chinese ? '发送消息' : 'Send message')}
                 >
                   <ArrowUp />
                 </Button>

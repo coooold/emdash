@@ -1,13 +1,5 @@
 import { DropdownMenu, MicroLabel } from '@emdash/ui/react/primitives';
-import {
-  ChevronDown,
-  Clipboard,
-  ExternalLink,
-  Globe,
-  Loader2,
-  RefreshCcw,
-  Square,
-} from 'lucide-react';
+import { ChevronDown, Clipboard, ExternalLink, Globe, Loader2, Square } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import {
   usePreviewServers,
@@ -18,7 +10,7 @@ import {
   copyTextToClipboard,
   openExternal,
 } from '@core/primitives/desktop-host/browser/host-client';
-import type { PreviewServer } from '@core/primitives/preview-servers/api';
+import type { DirectPreviewServer } from '@core/primitives/preview-servers/api';
 import { previewServerUrl } from '@core/primitives/preview-servers/api';
 import { cn } from '@core/primitives/styling/browser/cn';
 import {
@@ -30,7 +22,7 @@ import {
 export const PreviewServerPill = observer(function PreviewServerPill({
   server,
 }: {
-  server: PreviewServer;
+  server: DirectPreviewServer;
 }) {
   const previews = usePreviewServers();
   const taskView = useTaskComposition();
@@ -39,13 +31,8 @@ export const PreviewServerPill = observer(function PreviewServerPill({
   );
   const url = previewServerUrl(server);
   const hasUrl = url !== null;
-  // 'not-listening' is advisory: the tunnel is open, so opening the URL is a
-  // legitimate retry (a successful dial flips the status back to ready).
-  const canOpen =
-    (server.status.kind === 'ready' || server.status.kind === 'not-listening') && hasUrl;
-  const title = hasUrl
-    ? `${previewServerStatusLabel(server)} at ${url}`
-    : `${previewServerStatusLabel(server)} for ${formatPreviewServerLabel(server)}`;
+  const canOpen = server.status.kind === 'ready' && hasUrl;
+  const title = `${previewServerStatusLabel(server)}：${url ?? formatPreviewServerLabel(server)}`;
 
   return (
     <DropdownMenu.Root>
@@ -57,7 +44,7 @@ export const PreviewServerPill = observer(function PreviewServerPill({
               'flex h-7 items-center gap-1.5 rounded-lg px-2 text-xs transition-colors',
               previewServerStatusClasses(server)
             )}
-            aria-label={`Open preview ${formatPreviewServerLabel(server)}`}
+            aria-label={`打开预览 ${formatPreviewServerLabel(server)}`}
             title={title}
           />
         }
@@ -72,24 +59,12 @@ export const PreviewServerPill = observer(function PreviewServerPill({
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="end" className="min-w-56">
         <div className="px-2 py-1.5">
-          <MicroLabel className="mb-1 flex items-center">Preview</MicroLabel>
+          <MicroLabel className="mb-1 flex items-center">预览</MicroLabel>
           <div className="truncate text-xs text-foreground-muted" title={url ?? undefined}>
-            {url ?? 'No local URL'}
+            {url ?? '无本地 URL'}
           </div>
-          {server.kind === 'forwarded' ? (
-            <div className="mt-1 text-xs text-foreground-passive">
-              {server.localPort === undefined
-                ? `Remote ${server.remotePort}`
-                : `Remote ${server.remotePort} to local ${server.localPort}`}
-            </div>
-          ) : null}
           {server.status.kind === 'failed' ? (
             <div className="mt-1 text-xs text-foreground-destructive">{server.status.message}</div>
-          ) : null}
-          {server.status.kind === 'not-listening' ? (
-            <div className="mt-1 text-xs text-foreground-warning">
-              Remote port not listening yet
-            </div>
           ) : null}
           {liveActionDisabledReason ? (
             <div className="mt-1 text-xs text-foreground-warning">{liveActionDisabledReason}</div>
@@ -106,36 +81,27 @@ export const PreviewServerPill = observer(function PreviewServerPill({
           }}
         >
           <Globe className="size-3.5" />
-          Open in Emdash Browser
+          在 Emdash 浏览器中打开
         </DropdownMenu.Item>
         <DropdownMenu.Item
           disabled={!canOpen || Boolean(liveActionDisabledReason)}
           onClick={() => canOpen && url && void openExternal(url)}
         >
           <ExternalLink className="size-3.5" />
-          Open in System Browser
+          在系统浏览器中打开
         </DropdownMenu.Item>
         <DropdownMenu.Item disabled={!hasUrl} onClick={() => url && void copyTextToClipboard(url)}>
           <Clipboard className="size-3.5" />
-          Copy URL
+          复制 URL
         </DropdownMenu.Item>
         <DropdownMenu.Separator />
-        {server.kind === 'forwarded' ? (
-          <DropdownMenu.Item
-            disabled={Boolean(liveActionDisabledReason)}
-            onClick={() => void previews.restart(server.id)}
-          >
-            <RefreshCcw className="size-3.5" />
-            Restart Forward
-          </DropdownMenu.Item>
-        ) : null}
         <DropdownMenu.Item
           disabled={Boolean(liveActionDisabledReason)}
           variant="destructive"
           onClick={() => void previews.stop(server.id)}
         >
           <Square className="size-3.5" />
-          Stop
+          停止
         </DropdownMenu.Item>
       </DropdownMenu.Content>
     </DropdownMenu.Root>

@@ -35,10 +35,10 @@ export const FileContentToolbar = observer(function FileContentToolbar({
           }}
         >
           <ToggleGroup.Item size="sm" value="source" className="text-xs">
-            Raw
+            源码
           </ToggleGroup.Item>
           <ToggleGroup.Item size="sm" value="preview" className="text-xs">
-            Preview
+            预览
           </ToggleGroup.Item>
         </ToggleGroup.Root>
       )}

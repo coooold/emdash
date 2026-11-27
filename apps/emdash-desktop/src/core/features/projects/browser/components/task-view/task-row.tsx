@@ -104,7 +104,7 @@ export const TaskRow = observer(function TaskRow({
             checked={isSelected}
             onCheckedChange={() => selection.toggle(id)}
             className="pointer-events-none"
-            aria-label="Select task"
+            aria-label="选择任务"
           />
         </span>
         <div className="flex min-w-0 flex-1 items-center gap-2">

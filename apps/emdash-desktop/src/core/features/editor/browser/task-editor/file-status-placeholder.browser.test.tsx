@@ -83,14 +83,14 @@ describe('FileStatusPlaceholder rendering states', () => {
 
   it('shows the bounded loading state', async () => {
     await render();
-    expect(host.textContent).toContain('Loading file');
+    expect(host.textContent).toContain('正在加载文件');
   });
 
   it('shows the orphaned placeholder and auto-recovers to nothing when ready again', async () => {
     await render();
 
     await act(async () => fake.setStatus({ kind: 'orphaned' }));
-    expect(host.textContent).toContain('File was deleted on disk');
+    expect(host.textContent).toContain('文件已从磁盘删除');
 
     await act(async () => fake.setStatus({ kind: 'ready' }));
     expect(host.textContent).toBe('');
@@ -99,10 +99,10 @@ describe('FileStatusPlaceholder rendering states', () => {
   it('offers a retry that re-acquires the leases for retryable errors', async () => {
     await render();
     await act(async () => fake.setStatus({ kind: 'error', code: 'not-found' }));
-    expect(host.textContent).toContain('File not found');
+    expect(host.textContent).toContain('找不到文件');
 
     const before = fake.acquireCount;
-    const retry = [...host.querySelectorAll('button')].find((b) => b.textContent === 'Retry');
+    const retry = [...host.querySelectorAll('button')].find((b) => b.textContent === '重试');
     expect(retry).toBeDefined();
     await act(async () => retry!.click());
     expect(fake.acquireCount).toBe(before + 2);
@@ -112,15 +112,15 @@ describe('FileStatusPlaceholder rendering states', () => {
     await render();
 
     await act(async () => fake.setStatus({ kind: 'error', code: 'binary' }));
-    expect(host.textContent).toContain('Binary file');
+    expect(host.textContent).toContain('二进制文件');
     expect([...host.querySelectorAll('button')].map((b) => b.textContent)).toContain(
-      'Open in default app'
+      '用默认应用打开'
     );
 
     await act(async () => fake.setStatus({ kind: 'error', code: 'too-large' }));
-    expect(host.textContent).toContain('File too large');
+    expect(host.textContent).toContain('文件过大');
     expect([...host.querySelectorAll('button')].map((b) => b.textContent)).toContain(
-      'Open in default app'
+      '用默认应用打开'
     );
   });
 });

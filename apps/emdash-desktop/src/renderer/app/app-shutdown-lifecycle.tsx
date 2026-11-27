@@ -30,8 +30,8 @@ export function AppShutdownLifecycle() {
           if (outcome.data === 'save-all') {
             const allSaved = await openFileStore.saveAllDirty();
             if (!allSaved) {
-              toast.error('Could not save all files', {
-                description: 'Resolve any file conflicts and try quitting again.',
+              toast.error('无法保存所有文件', {
+                description: '请解决文件冲突后再退出。',
               });
               return false;
             }
@@ -40,8 +40,8 @@ export function AppShutdownLifecycle() {
           }
         } catch (error) {
           log.error('Failed to resolve unsaved files before quit:', error);
-          toast.error('Could not resolve unsaved files', {
-            description: 'Your changes were kept. Try quitting again.',
+          toast.error('无法处理未保存的文件', {
+            description: '更改已保留，请重试退出。',
           });
           return false;
         }
@@ -49,9 +49,9 @@ export function AppShutdownLifecycle() {
 
       if (activeRequestId.current !== requestId) return false;
       const confirmation = await openConfirmQuitModal({
-        title: 'Quit Emdash?',
+        title: '退出 Emdash？',
         description: describeShutdownImpact(summary),
-        confirmLabel: 'Quit',
+        confirmLabel: '退出',
       });
       return confirmation.success && activeRequestId.current === requestId;
     },
@@ -143,14 +143,14 @@ function ShutdownOverlay() {
       ref={overlay}
       role="alertdialog"
       aria-modal="true"
-      aria-label="Shutting down Emdash"
+      aria-label="正在退出 Emdash"
       tabIndex={-1}
       className="fixed inset-0 z-9999 flex items-center justify-center bg-background/95"
     >
       <div className="flex flex-col items-center gap-3">
         <Spinner />
         <p className="text-muted-foreground text-sm">
-          Shutting down — stopping sessions and saving state…
+          正在停止会话并保存状态…
         </p>
       </div>
     </div>
@@ -161,21 +161,14 @@ function describeShutdownImpact(summary: ActiveSessionSummary): string {
   const localAgents = summary.acpSessions + summary.localTuiSessions;
   const impacts: string[] = [];
   if (localAgents > 0) {
-    impacts.push(`${localAgents} running agent ${localAgents === 1 ? 'session' : 'sessions'}`);
+    impacts.push(`${localAgents} 个运行中的代理会话`);
   }
   if (summary.terminals > 0) {
-    impacts.push(`${summary.terminals} ${summary.terminals === 1 ? 'terminal' : 'terminals'}`);
+    impacts.push(`${summary.terminals} 个终端`);
   }
 
-  const stopped =
-    impacts.length > 0
-      ? `${summary.incomplete ? 'At least ' : ''}${impacts.join(' and ')} may be stopped.`
-      : summary.incomplete
-        ? 'Running agent sessions and terminals may be stopped.'
-        : 'Background services and automations will stop.';
-  const remote =
-    summary.remoteSessions > 0
-      ? ` ${summary.incomplete ? 'At least ' : ''}${summary.remoteSessions} remote ${summary.remoteSessions === 1 ? 'session' : 'sessions'} will keep running.`
-      : '';
-  return `${stopped}${remote}`;
+  if (impacts.length > 0) {
+    return `${summary.incomplete ? '至少 ' : ''}${impacts.join('和')}可能会停止。`;
+  }
+  return summary.incomplete ? '运行中的代理会话和终端可能会停止。' : '后台服务和自动化将停止。';
 }

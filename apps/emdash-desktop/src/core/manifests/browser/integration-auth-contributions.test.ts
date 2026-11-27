@@ -5,13 +5,13 @@ import {
 } from './integration-auth-contributions';
 
 describe('integration authentication UI contributions', () => {
-  it('selects the provider UI only for its declared acquisition methods', () => {
+  it('does not offer GitHub OAuth or token-form sign-in', () => {
     expect(
       getIntegrationAuthUi({
         id: 'github',
         auth: { methods: [{ kind: 'oauth', providerId: 'github' }] },
-      })?.integrationId
-    ).toBe('github');
+      })
+    ).toBeUndefined();
     expect(
       getIntegrationAuthUi({
         id: 'github',

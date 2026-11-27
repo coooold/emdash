@@ -12,14 +12,14 @@ export function SidebarRecoveryControls({ onShowSidebar }: { onShowSidebar: () =
             variant="ghost"
             size="sm"
             className="size-7 p-0"
-            aria-label="Show left sidebar"
+            aria-label="显示左侧边栏"
             onClick={onShowSidebar}
           >
             <PanelLeft className="h-4 w-4" />
           </Button>
         </Tooltip.Trigger>
         <Tooltip.Content>
-          Show left sidebar
+          显示左侧边栏
           <BoundShortcut command="workbench.toggleLeftSidebar" variant="keycaps" />
         </Tooltip.Content>
       </Tooltip.Root>

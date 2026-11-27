@@ -14,8 +14,8 @@ export const DiffToolbar = observer(function DiffToolbar({ tab }: DiffToolbarPro
   const canPreview = tab.renderer.kind === 'text' && tab.renderer.previewKind !== undefined;
 
   const diffSourceLabel = (() => {
-    if (tab.diffGroup === 'staged') return 'Staged';
-    if (tab.diffGroup === 'disk') return 'Changed';
+    if (tab.diffGroup === 'staged') return '已暂存';
+    if (tab.diffGroup === 'disk') return '未暂存';
     if (tab.diffGroup === 'pr') return 'PR';
     if (tab.diffGroup === 'git') return 'Git';
     return undefined;
@@ -38,10 +38,10 @@ export const DiffToolbar = observer(function DiffToolbar({ tab }: DiffToolbarPro
             }}
           >
             <ToggleGroup.Item size="sm" value="diff" className="text-xs">
-              Diff
+              差异
             </ToggleGroup.Item>
             <ToggleGroup.Item size="sm" value="preview" className="text-xs">
-              Preview
+              预览
             </ToggleGroup.Item>
           </ToggleGroup.Root>
         )}
@@ -55,10 +55,10 @@ export const DiffToolbar = observer(function DiffToolbar({ tab }: DiffToolbarPro
               }
             }}
           >
-            <ToggleGroup.Item size="sm" icon value="unified" aria-label="Unified diff">
+            <ToggleGroup.Item size="sm" icon value="unified" aria-label="统一差异视图">
               <AlignJustify className="h-3.5 w-3.5" />
             </ToggleGroup.Item>
-            <ToggleGroup.Item size="sm" icon value="split" aria-label="Split diff">
+            <ToggleGroup.Item size="sm" icon value="split" aria-label="并排差异视图">
               <Columns2 className="h-3.5 w-3.5" />
             </ToggleGroup.Item>
           </ToggleGroup.Root>

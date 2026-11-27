@@ -1,5 +1,4 @@
 import { PageLayout, SettingsSection } from '@emdash/ui/react/patterns';
-import { AccountTab } from '../components/AccountTab';
 import NotificationSettingsCard from '../components/NotificationSettingsCard';
 import {
   AutoGenerateTaskNamesRow,
@@ -7,7 +6,6 @@ import {
   CreateBranchAndWorktreeRow,
   DeleteBranchByDefaultRow,
   EnableTmuxRow,
-  IncludeIssueContextByDefaultRow,
   PreserveTaskNameCapitalizationRow,
 } from '../components/TaskSettingsRows';
 import TelemetryCard from '../components/TelemetryCard';
@@ -19,26 +17,22 @@ export function GeneralSettingsPage() {
       <PageLayout.Header
         sticky
         draggable
-        title="General"
-        description="Manage your account, app updates, and task preferences."
+        title="常规"
+        description="管理应用更新和任务偏好。"
       />
-      <SettingsSection>
-        <AccountTab />
-      </SettingsSection>
-      <SettingsSection title="App">
+      <SettingsSection title="应用">
         <UpdateCard />
         <TelemetryCard />
       </SettingsSection>
-      <SettingsSection title="Notifications" bare>
+      <SettingsSection title="通知" bare>
         <NotificationSettingsCard />
       </SettingsSection>
-      <SettingsSection title="Preferences">
+      <SettingsSection title="偏好设置">
         <AutoGenerateTaskNamesRow />
         <AutoTrustWorktreesRow />
         <CreateBranchAndWorktreeRow />
         <DeleteBranchByDefaultRow />
         <PreserveTaskNameCapitalizationRow />
-        <IncludeIssueContextByDefaultRow />
         <EnableTmuxRow />
       </SettingsSection>
     </div>

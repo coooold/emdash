@@ -202,7 +202,7 @@ it('attaches diff comments only through the mention menu and preserves unsent dr
     expect(store.draftText).toContain(`@${diffCommentsMention.id}`);
     expect(parent.querySelector(`[data-mention-id="${diffCommentsMention.id}"]`)).not.toBeNull();
   };
-  const send = () => act(async () => page.getByRole('button', { name: 'Send message' }).click());
+  const send = () => act(async () => page.getByRole('button', { name: '发送消息' }).click());
   try {
     await act(async () => root.render(<AcpChatPanel />));
     expect(parent.textContent).not.toContain('diff comment will be attached');
@@ -285,13 +285,13 @@ it('starts a fresh session in place when the saved provider session is missing',
   const root = createRoot(parent);
   try {
     await act(async () => root.render(<AcpChatPanel />));
-    await expect.element(page.getByRole('button', { name: 'Start fresh session' })).toBeVisible();
-    await expect.element(page.getByRole('button', { name: 'Retry', exact: true })).toBeVisible();
-    await act(async () => page.getByRole('button', { name: 'Retry', exact: true }).click());
+    await expect.element(page.getByRole('button', { name: '开启新会话' })).toBeVisible();
+    await expect.element(page.getByRole('button', { name: '重试', exact: true })).toBeVisible();
+    await act(async () => page.getByRole('button', { name: '重试', exact: true }).click());
     expect(retry).toHaveBeenCalledOnce();
     expect(vi.mocked(openModal)).not.toHaveBeenCalled();
 
-    await act(async () => page.getByRole('button', { name: 'Start fresh session' }).click());
+    await act(async () => page.getByRole('button', { name: '开启新会话' }).click());
     expect(retry).toHaveBeenLastCalledWith({ mode: 'fresh' });
     expect(store.conversationId).toBe('startup-diagnostic');
     expect(openModal).not.toHaveBeenCalled();
@@ -396,7 +396,7 @@ it.each([false, true])(
       });
       expect(retry).not.toHaveBeenCalled();
       const authError = store.loadError;
-      await act(async () => page.getByRole('button', { name: 'Retry', exact: true }).click());
+      await act(async () => page.getByRole('button', { name: '重试', exact: true }).click());
       expect(retry).toHaveBeenCalledOnce();
       await act(async () =>
         runInAction(() => {
@@ -672,7 +672,7 @@ it.each([
       expect(parent.textContent).toContain('Cached model');
       expect(parent.textContent).toContain('Medium');
       expect(parent.textContent).toContain('Ask permissions');
-      await expect.element(page.getByRole('combobox', { name: 'Permission mode' })).toBeDisabled();
+      await expect.element(page.getByRole('combobox', { name: '权限模式' })).toBeDisabled();
       await expect.element(page.getByRole('switch', { name: 'Fast mode' })).toBeDisabled();
       await expect
         .element(page.getByRole('switch', { name: 'Fast mode' }))
@@ -688,14 +688,14 @@ it.each([
       await vi.waitFor(() => expect(editor()).not.toBeNull());
       expect(editorY()).toBeLessThan(450);
       initialEditorY = editorY();
-      expect(parent.textContent).toContain('What are we building today?');
+      expect(parent.textContent).toContain('今天想做什么？');
     }
     store.bootstrap();
     await vi.waitFor(() => expect(loadHistory).toHaveBeenCalledOnce());
     expect(store.historyLoading).toBe(true);
     if (restored) {
       expect(editor()).toBeNull();
-      expect(parent.textContent).toContain('Loading chat...');
+      expect(parent.textContent).toContain('正在加载聊天…');
     } else {
       expect(store.isEmpty).toBe(true);
       expect(editorY()).toBeLessThan(450);
@@ -763,14 +763,14 @@ it.each([
     if (initialEditorY !== undefined) expect(editorY()).toBeCloseTo(initialEditorY, 1);
     const originalEditor = editor();
     const originalY = editorY();
-    const mcpTrigger = parent.querySelector<HTMLElement>('[aria-label="1 session MCP server"]')!;
+    const mcpTrigger = parent.querySelector<HTMLElement>('[aria-label="此会话有 1 个 MCP 服务器"]')!;
     const mcpWidth = mcpTrigger.getBoundingClientRect().width;
     const mcpColor = getComputedStyle(mcpTrigger).color;
     mcpServers.set([{ name: 'docs', transport: 'http', startupError: 'Connection refused' }]);
     flushStateTurn();
     await vi.waitFor(() =>
       expect(
-        parent.querySelector('[aria-label="1 session MCP server, 1 startup failure"]')
+        parent.querySelector('[aria-label="此会话有 1 个 MCP 服务器，1 个启动失败"]')
       ).not.toBeNull()
     );
     expect(store.isEmpty).toBe(!populated);
@@ -786,14 +786,14 @@ it.each([
     else expect(editorY()).toBeLessThan(450);
     expect(parent.textContent).not.toContain('Loading controls');
     if (!restored) {
-      await page.getByRole('button', { name: '1 session MCP server, 1 startup failure' }).click();
+      await page.getByRole('button', { name: '此会话有 1 个 MCP 服务器，1 个启动失败' }).click();
       expect(document.body.textContent).not.toContain('Connection refused');
-      await page.getByRole('button', { name: 'docs startup error' }).hover();
+      await page.getByRole('button', { name: 'docs 启动失败' }).hover();
       await vi.waitFor(() => expect(document.body.textContent).toContain('Connection refused'));
       await page.getByRole('tooltip').hover();
       expect(page.getByRole('tooltip').element().textContent).toBe('Connection refused');
       const info = page
-        .getByRole('button', { name: 'docs startup error' })
+        .getByRole('button', { name: 'docs 启动失败' })
         .element() as HTMLElement;
       const row = info.parentElement!.parentElement!;
       const nameBounds = row.querySelector('span')!.getBoundingClientRect();
@@ -811,14 +811,14 @@ it.each([
       await vi.waitFor(() =>
         expect(page.getByRole('tooltip').element().textContent).toBe('Connection refused')
       );
-      await page.getByRole('button', { name: '1 session MCP server, 1 startup failure' }).click();
+      await page.getByRole('button', { name: '此会话有 1 个 MCP 服务器，1 个启动失败' }).click();
     }
     if (!populated) {
       state.set({ ...peek(state), transcript: transcriptSnapshot(userTurn) });
       flushStateTurn();
       await vi.waitFor(() => expect(store.isEmpty).toBe(false));
       await vi.waitFor(() => expect(editorY()).toBeGreaterThan(500));
-      expect(parent.textContent).not.toContain('What are we building today?');
+      expect(parent.textContent).not.toContain('今天想做什么？');
       expect(editor()).toBe(originalEditor);
     }
   } finally {
@@ -959,7 +959,7 @@ it.each([
       store.bootstrap();
       await vi.waitFor(() => expect(store.messageCount).toBe(2));
       await vi.waitFor(() => expect(parent.textContent).toContain('Work currently in progress'));
-      await vi.waitFor(() => expect(parent.textContent).not.toContain('Loading chat...'));
+      await vi.waitFor(() => expect(parent.textContent).not.toContain('正在加载聊天…'));
       expect(store.session?.usable).toBe(true);
       expect(parent.querySelector('[contenteditable="true"]')).not.toBeNull();
       if (delayed === 'history') expect(store.historyLoading).toBe(true);

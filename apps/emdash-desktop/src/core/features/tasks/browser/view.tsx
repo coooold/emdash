@@ -49,11 +49,13 @@ export const taskViewRuntime = defineViewRuntime(taskViewDef, {
     main: TaskMainPanel,
   },
   resolve: ({ projectId, taskId }) => {
-    if (
-      !getProjectManagerStore().projects.has(projectId) &&
-      !getProjectManagerStore().pendingCreationIds.has(projectId)
-    ) {
+    const manager = getProjectManagerStore();
+    const project = manager.projects.get(projectId);
+    if (!project && !manager.pendingCreationIds.has(projectId)) {
       return { kind: 'redirect', ref: homeViewDef() };
+    }
+    if (project?.data?.type === 'ssh') {
+      return { kind: 'redirect', ref: projectViewDef({ projectId }) };
     }
     const taskManager = getTaskManagerStore(projectId);
     if (taskManager && !taskManager.tasks.has(taskId)) {

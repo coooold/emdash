@@ -1,4 +1,3 @@
-import { accountContract, accountDomain } from '@core/features/account/api';
 import { agentsContract, agentsDomain } from '@core/features/agents/api';
 import { automationsContract, automationsDomain } from '@core/features/automations/api';
 import { browserContract, browserDomain } from '@core/features/browser/api';
@@ -7,9 +6,7 @@ import { conversationsContract, conversationsDomain } from '@core/features/conve
 import { devPerfContract, devPerfDomain } from '@core/features/dev-perf/api';
 import { editorContract, editorDomain } from '@core/features/editor/api';
 import { filesDomain, filesWireContract } from '@core/features/files/api';
-import { githubContract, githubDomain } from '@core/features/github/api';
 import { integrationsContract, integrationsDomain } from '@core/features/integrations/api';
-import { issuesContract, issuesDomain } from '@core/features/issues/api';
 import { legacyPortContract, legacyPortDomain } from '@core/features/legacy-port/api';
 import { promptLibraryContract, promptLibraryDomain } from '@core/features/library/api';
 import { machinesContract, machinesDomain } from '@core/features/machines/api';
@@ -23,7 +20,6 @@ import { sourceControlContract, sourceControlDomain } from '@core/features/sourc
 import { tasksDomain, tasksWireContract } from '@core/features/tasks/api';
 import { terminalsContract, terminalsDomain } from '@core/features/terminals/api';
 import { updatesContract, updatesDomain } from '@core/features/updates/api';
-import { usageContract, usageDomain } from '@core/features/usage/api/contract';
 import { waitlistContract, waitlistDomain } from '@core/features/waitlist/api/contract';
 import {
   lifecycleScriptsDomain,
@@ -46,13 +42,9 @@ import { mementosDomain, mementosWireContract } from '@core/primitives/mementos/
 import { telemetryContract, telemetryDomain } from '@core/primitives/telemetry/api/wire-contract';
 import { hostsContract, hostsDomain } from '@core/services/hosts/api';
 import { notificationsContract, notificationsDomain } from '@core/services/notifications/api';
-import { pullRequestsContract, pullRequestsDomain } from '@core/services/pull-requests/api';
 import { appSettingsContract, appSettingsDomain } from '@core/services/settings/api';
-import { sshContract, sshDomain } from '@core/services/ssh/api';
 
 export const desktopDomainContracts = {
-  [usageDomain]: usageContract,
-  [accountDomain]: accountContract,
   [agentsDomain]: agentsContract,
   [appSettingsDomain]: appSettingsContract,
   [devPerfDomain]: devPerfContract,
@@ -73,7 +65,6 @@ export const desktopDomainContracts = {
   [terminalsDomain]: terminalsContract,
   [mementosDomain]: mementosWireContract,
   [notificationsDomain]: notificationsContract,
-  [pullRequestsDomain]: pullRequestsContract,
   [catalogDomain]: catalogWireContract,
   [workspacesDomain]: workspacesWireContract,
   [workspaceRegistryDomain]: workspaceRegistryWireContract,
@@ -83,10 +74,7 @@ export const desktopDomainContracts = {
   [browserDomain]: browserContract,
   [conversationsDomain]: conversationsContract,
   [previewServersDomain]: previewServersContract,
-  [githubDomain]: githubContract,
   [integrationsDomain]: integrationsContract,
-  [issuesDomain]: issuesContract,
-  [sshDomain]: sshContract,
   [hostsDomain]: hostsContract,
   [tasksDomain]: tasksWireContract,
   [updatesDomain]: updatesContract,

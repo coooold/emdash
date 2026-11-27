@@ -1,7 +1,6 @@
 import { Tooltip } from '@emdash/ui/react/primitives';
 import { observer } from 'mobx-react-lite';
 import type { ReactElement } from 'react';
-import { getMachinesStore } from '@core/features/machines/contributions/app-stores';
 import {
   asAvailableProject,
   getProjectStore,
@@ -34,19 +33,10 @@ export const ProjectLiveActionGuard = observer(function ProjectLiveActionGuard({
 });
 
 export function getProjectLiveActionDisabledReason(projectId: string): string | null {
-  const context = asAvailableProject(getProjectStore(projectId));
+  const store = getProjectStore(projectId);
+  if (store?.data?.type === 'ssh') return '此版本已移除 SSH 开发。';
+  const context = asAvailableProject(store);
   if (!context) return DEFAULT_PROJECT_LIVE_ACTION_DISABLED_REASON;
   if (context.host.state.kind === 'ready') return null;
-  const project = context.project;
-  const machine =
-    project.type === 'ssh'
-      ? getMachinesStore().connections.find((connection) => connection.id === project.connectionId)
-      : undefined;
-  return projectLiveActionDisabledReason({
-    host:
-      project.type === 'local'
-        ? { kind: 'local' }
-        : { kind: 'ssh', ...(machine?.name ? { machineName: machine.name } : {}) },
-    state: context.host.state,
-  });
+  return projectLiveActionDisabledReason({ host: { kind: 'local' }, state: context.host.state });
 }

@@ -6,10 +6,10 @@ export function RepositorySettingsPage() {
     <div className="space-y-8">
       <PageLayout.Header
         sticky
-        title="Repository"
-        description="Configure repository and branch settings."
+        title="仓库"
+        description="配置仓库和分支设置。"
       />
-      <SettingsSection title="Branches" bare>
+      <SettingsSection title="分支" bare>
         <RepositorySettingsCard />
       </SettingsSection>
     </div>

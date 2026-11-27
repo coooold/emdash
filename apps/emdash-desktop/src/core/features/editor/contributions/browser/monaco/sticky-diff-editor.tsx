@@ -99,14 +99,14 @@ function diffNotice(
     const message = errorMessage(error.code);
     return {
       placement,
-      message: attached ? `${message}. Showing the last loaded version.` : message,
+      message: attached ? `${message}。正在显示上次加载的版本。` : message,
       loading: false,
     };
   }
   if (sides.some((side) => side.type === 'pending')) {
     return {
       placement,
-      message: attached ? 'Reloading diff...' : 'Loading diff...',
+      message: attached ? '正在重新加载差异…' : '正在加载差异…',
       loading: true,
     };
   }
@@ -116,13 +116,13 @@ function diffNotice(
 function errorMessage(code: SeamErrorCode): string {
   switch (code) {
     case 'no-permissions':
-      return 'Permission denied';
+      return '权限不足';
     case 'too-large':
-      return 'File too large to display in the editor';
+      return '文件过大，无法在编辑器中显示';
     case 'binary':
-      return 'Binary file — no diff available';
+      return '二进制文件无法显示差异';
     default:
-      return 'Could not load file';
+      return '无法加载文件';
   }
 }
 

@@ -46,9 +46,6 @@ vi.mock('@core/features/conversations/api/browser/stores/conversation-registry',
 vi.mock('@core/features/conversations/api/browser/use-effective-provider', () => ({
   useEffectiveProvider: () => ({ providerId: mocks.providerId, createDisabled: false }),
 }));
-vi.mock('@core/features/projects/api/browser/stores/project-selectors', () => ({
-  getProjectSshConnectionId: () => null,
-}));
 vi.mock('@core/manifests/browser/project-availability-ui', () => ({
   projectAvailabilityUi: { getLiveActionDisabledReason: () => null },
 }));

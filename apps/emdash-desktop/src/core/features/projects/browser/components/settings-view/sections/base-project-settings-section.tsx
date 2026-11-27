@@ -29,7 +29,6 @@ import type {
   Resolved,
 } from '@core/primitives/project-settings/api';
 import { formatDefaultBranch, resolveTmux } from '@core/primitives/project-settings/api';
-import type { Project } from '@core/primitives/projects/api';
 import { cn } from '@core/primitives/styling/browser/cn';
 import type { ProjectPlacementDomainSnapshot } from '../../../../api/project-settings-page';
 import {
@@ -37,28 +36,22 @@ import {
   storedDefaultBranchToBranchRef,
   type FormUpdate,
   type GitIdentityFormState,
-  type IntegrationAccountsFormState,
   type PlacementFormState,
 } from '../project-settings-form-model';
-import { IntegrationAccountsSection } from './integration-accounts-section';
 
 const AGENT_GIT_CREDENTIALS_OPTIONS: { value: AgentGitCredentialsSetting; label: string }[] = [
-  { value: 'effective-account', label: 'Effective account' },
-  { value: 'system', label: 'System' },
-  { value: 'none', label: 'None' },
+  { value: 'system', label: '系统凭据' },
+  { value: 'none', label: '不使用' },
 ];
 
 type BaseProjectSettingsSectionProps = {
   projectId: string;
   gitIdentityForm: GitIdentityFormState;
-  integrationAccountsForm: IntegrationAccountsFormState;
   placementForm: PlacementFormState;
   placement: ProjectPlacementDomainSnapshot;
-  projectType: Project['type'];
   remotes: GitRemote[];
   worktreeDirectoryError: string | null;
   updateGitIdentity: FormUpdate<GitIdentityFormState>;
-  updateIntegrationAccounts: FormUpdate<IntegrationAccountsFormState>;
   updatePlacement: FormUpdate<PlacementFormState>;
   hostActionReason: string | null;
   hostObservationKind: 'fresh' | 'stale' | 'unavailable';
@@ -125,14 +118,11 @@ function brokenFallbackDisplay(resolved: Resolved<unknown> | null): string | nul
 export const BaseProjectSettingsSection = observer(function BaseProjectSettingsSection({
   projectId,
   gitIdentityForm,
-  integrationAccountsForm,
   placementForm,
   placement,
-  projectType,
   remotes,
   worktreeDirectoryError,
   updateGitIdentity,
-  updateIntegrationAccounts,
   updatePlacement,
   hostActionReason,
   hostObservationKind,
@@ -155,7 +145,7 @@ export const BaseProjectSettingsSection = observer(function BaseProjectSettingsS
     hostTmux: placement.layers.hostTmux,
     appDefaultTmux: placement.layers.appDefaultTmux,
   });
-  const tmuxSupported = projectType !== 'local' || detectPlatformContext().os !== 'windows';
+  const tmuxSupported = detectPlatformContext().os !== 'windows';
   const derivedPoolPath =
     projectPath !== null && effectiveWorktreeRoot !== null
       ? deriveWorktreePoolPath({ worktreeRoot: effectiveWorktreeRoot, repoPath: projectPath })
@@ -169,8 +159,8 @@ export const BaseProjectSettingsSection = observer(function BaseProjectSettingsS
       const result = await (
         await getHostClient()
       ).openSelectDirectoryDialog({
-        title: 'Select worktree root',
-        message: 'Choose the directory where worktrees should be created.',
+        title: '选择工作树根目录',
+        message: '选择用于创建工作树的目录。',
         defaultPath:
           placementForm.worktreeDirectory || (effectiveWorktreeRoot ?? inheritedWorktreeRoot),
       });
@@ -189,32 +179,19 @@ export const BaseProjectSettingsSection = observer(function BaseProjectSettingsS
 
   return (
     <>
-      <IntegrationAccountsSection
-        integrationAccountsForm={integrationAccountsForm}
-        updateIntegrationAccounts={updateIntegrationAccounts}
-        repositoryHost={
-          inputs && effective
-            ? (inputs.repoFacts.remotes.find((remote) => remote.name === effective.baseRemote.value)
-                ?.host ?? null)
-            : undefined
-        }
-      />
-
       {hostObservationKind === 'unavailable' ? (
         <Field.Root>
-          <Field.Label>Worktree root</Field.Label>
+          <Field.Label>工作树根目录</Field.Label>
           <Field.Description className="text-foreground-muted">
-            {projectType === 'local'
-              ? 'Worktree placement is unavailable until the local runtime is ready.'
-              : 'Worktree placement is unavailable until this Project’s Machine is ready.'}
+            本地运行环境就绪后，才能设置工作树位置。
           </Field.Description>
         </Field.Root>
       ) : (
         <>
           <fieldset disabled={hostActionReason !== null} className="contents">
             <ProvenanceField
-              label="Worktree root"
-              description="Where task worktrees are created."
+              label="工作树根目录"
+              description="任务的 Git 工作树将创建在此目录。"
               resolved={hostActionReason ? null : (effective?.worktreeRoot ?? null)}
               flavor="inherited"
               isExplicit={placementForm.worktreeDirectory.trim() !== ''}
@@ -235,21 +212,19 @@ export const BaseProjectSettingsSection = observer(function BaseProjectSettingsS
                     </span>
                   ) : null}
                 </div>
-                {projectType === 'local' ? (
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    disabled={isBrowsingWorktreeDirectory}
-                    onClick={handleBrowseWorktreeDirectory}
-                  >
-                    <Folder data-icon="inline-start" className="size-4" />
-                    Browse
-                  </Button>
-                ) : null}
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={isBrowsingWorktreeDirectory}
+                  onClick={handleBrowseWorktreeDirectory}
+                >
+                  <Folder data-icon="inline-start" className="size-4" />
+                  浏览
+                </Button>
               </div>
               {derivedPoolPath ? (
                 <span className="text-xs text-foreground-muted">
-                  Worktrees for this repository go in{' '}
+                  此仓库的工作树目录：
                   <code className="font-mono break-all">{derivedPoolPath}</code>
                 </span>
               ) : null}
@@ -257,7 +232,7 @@ export const BaseProjectSettingsSection = observer(function BaseProjectSettingsS
           </fieldset>
           {hostActionReason ? (
             <p role="status" className="text-xs text-foreground-muted">
-              Worktree placement is {hostActionReason.toLocaleLowerCase()}
+              {hostActionReason}
             </p>
           ) : null}
         </>
@@ -266,8 +241,8 @@ export const BaseProjectSettingsSection = observer(function BaseProjectSettingsS
       <Separator />
 
       <ProvenanceField
-        label="Default branch"
-        description="The branch new tasks are created from by default."
+        label="默认分支"
+        description="新任务默认基于此分支创建。"
         resolved={effective?.defaultBranch ?? null}
         isExplicit={gitIdentityForm.defaultBranch !== null}
         onReset={() => updateGitIdentity('defaultBranch', null)}
@@ -282,8 +257,8 @@ export const BaseProjectSettingsSection = observer(function BaseProjectSettingsS
       <Separator />
 
       <ProvenanceField
-        label="Base remote"
-        description="Used for fetching remote branches, choosing task base branches and targeting pull requests."
+        label="基准远程仓库"
+        description="用于获取远程分支和选择任务的基准分支。"
         resolved={effective?.baseRemote ?? null}
         isExplicit={gitIdentityForm.baseRemote.trim() !== ''}
         onReset={() => updateGitIdentity('baseRemote', '')}
@@ -299,8 +274,8 @@ export const BaseProjectSettingsSection = observer(function BaseProjectSettingsS
       <Separator />
 
       <ProvenanceField
-        label="Push remote"
-        description="Used when publishing task branches and pushing commits."
+        label="推送目标"
+        description="用于发布任务分支和推送提交。"
         resolved={effective?.pushRemote ?? null}
         isExplicit={gitIdentityForm.pushRemote.trim() !== ''}
         onReset={() => updateGitIdentity('pushRemote', '')}
@@ -316,15 +291,12 @@ export const BaseProjectSettingsSection = observer(function BaseProjectSettingsS
       <Separator />
 
       <Field.Root>
-        <Field.Label>Git credentials</Field.Label>
+        <Field.Label>Git 凭据</Field.Label>
         <Field.Description className="text-foreground-muted">
-          Which git credentials this project uses. Effective account uses the account above for
-          agent and terminal sessions and for Emdash's own pushes, pulls, and fetches. System uses
-          your machine's credentials for both. None disables credential helpers in agent and
-          terminal sessions; Emdash's own git operations still use the account above.
+          选择代理和终端会话是否使用本机的 Git 凭据。
         </Field.Description>
         <Select.Root
-          value={gitIdentityForm.agentGitCredentials}
+          value={gitIdentityForm.agentGitCredentials === 'none' ? 'none' : 'system'}
           onValueChange={(value) => {
             if (!value) return;
             updateGitIdentity('agentGitCredentials', value as AgentGitCredentialsSetting);
@@ -333,7 +305,7 @@ export const BaseProjectSettingsSection = observer(function BaseProjectSettingsS
           <Select.Trigger className="w-full min-w-0">
             {AGENT_GIT_CREDENTIALS_OPTIONS.find(
               (option) => option.value === gitIdentityForm.agentGitCredentials
-            )?.label ?? 'Effective account'}
+            )?.label ?? '系统凭据'}
           </Select.Trigger>
           <Select.Content align="start" alignItemWithTrigger={false} sideOffset={6}>
             {AGENT_GIT_CREDENTIALS_OPTIONS.map((option) => (
@@ -350,7 +322,7 @@ export const BaseProjectSettingsSection = observer(function BaseProjectSettingsS
       <Field.Root orientation="horizontal">
         <div className="flex flex-1 flex-col gap-1">
           <div className="flex items-center gap-2">
-            <Field.Label>Enable tmux</Field.Label>
+            <Field.Label>启用 tmux</Field.Label>
             {tmuxSupported &&
             (hostObservationKind !== 'unavailable' || placementForm.tmux !== undefined) ? (
               <ProvenanceBadge provenance={effectiveTmux.provenance} flavor="inherited" />
@@ -364,10 +336,10 @@ export const BaseProjectSettingsSection = observer(function BaseProjectSettingsS
           </div>
           <Field.Description className="text-foreground-muted">
             {!tmuxSupported
-              ? 'tmux is unavailable for local Windows sessions. Your stored preference is preserved.'
+              ? 'Windows 本地会话不支持 tmux，已保存的偏好仍会保留。'
               : hostObservationKind === 'unavailable' && placementForm.tmux === undefined
-                ? 'The inherited tmux value is unavailable. Choose a value to set a Project override.'
-                : 'Run the agent session inside a tmux session.'}
+                ? '无法读取继承的 tmux 设置。可以为此项目指定设置。'
+                : '在 tmux 中运行代理会话。'}
           </Field.Description>
         </div>
         <Switch

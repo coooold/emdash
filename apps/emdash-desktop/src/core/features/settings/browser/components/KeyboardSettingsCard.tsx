@@ -81,10 +81,10 @@ const KeyboardSettingsCard: React.FC = observer(function KeyboardSettingsCard() 
       if (rejected) {
         const conflictingTitle =
           COMMAND_CATALOG.byId(rejected.id)?.title ??
-          (rejected.id === SYSTEM_HIDE_ENTRY.id ? 'Hide Emdash' : rejected.id);
+          (rejected.id === SYSTEM_HIDE_ENTRY.id ? '隐藏 Emdash' : rejected.id);
         toast.error(
-          rejected.severity === 'reserved' ? 'Shortcut is reserved' : 'Shortcut conflict',
-          { description: `Conflicts with "${conflictingTitle}". Choose a different shortcut.` }
+          rejected.severity === 'reserved' ? '此快捷键已保留' : '快捷键冲突',
+          { description: `与「${conflictingTitle}」冲突。请选择其他快捷键。` }
         );
         setEditingKey(null);
         return;
@@ -93,12 +93,12 @@ const KeyboardSettingsCard: React.FC = observer(function KeyboardSettingsCard() 
       update({ [editingKey]: candidate });
       const shadowing = conflicts.find((conflict) => conflict.severity === 'shadowing');
       const label = keyboardLayoutService.displayLabel(candidate, platform).join(' + ');
-      toast('Shortcut updated', {
+      toast('已更新快捷键', {
         description: shadowing
-          ? `${editingEntry.command.title} is now ${label}. It shadows ${
+          ? `「${editingEntry.command.title}」的快捷键已设为 ${label}。在部分场景中会优先于「${
               COMMAND_CATALOG.byId(shadowing.id)?.title ?? shadowing.id
-            } in some contexts.`
-          : `${editingEntry.command.title} is now ${label}.`,
+            }」的快捷键。`
+          : `「${editingEntry.command.title}」的快捷键已设为 ${label}。`,
       });
       setEditingKey(null);
     },
@@ -147,7 +147,7 @@ const KeyboardSettingsCard: React.FC = observer(function KeyboardSettingsCard() 
                             onClick={recorder.cancelRecording}
                             disabled={saving}
                           >
-                            Press keys...
+                            请按下快捷键…
                           </Button>
                           <Button
                             type="button"
@@ -156,7 +156,7 @@ const KeyboardSettingsCard: React.FC = observer(function KeyboardSettingsCard() 
                             onClick={recorder.cancelRecording}
                             disabled={saving}
                           >
-                            Cancel
+                            取消
                           </Button>
                         </>
                       ) : (
@@ -174,17 +174,17 @@ const KeyboardSettingsCard: React.FC = observer(function KeyboardSettingsCard() 
                                         className="text-muted-foreground hover:text-foreground"
                                         onClick={() => {
                                           resetField(key);
-                                          toast('Shortcut reset', {
-                                            description: `${entry.command.title} reset to default.`,
+                                          toast('已重置快捷键', {
+                                            description: `已将「${entry.command.title}」恢复为默认设置。`,
                                           });
                                         }}
                                         disabled={loading || saving}
-                                        aria-label="Reset to default"
+                                        aria-label="恢复默认设置"
                                       >
                                         <RotateCcw className="h-3.5 w-3.5" />
                                       </Button>
                                     </Tooltip.Trigger>
-                                    <Tooltip.Content side="top">Reset to default</Tooltip.Content>
+                                    <Tooltip.Content side="top">恢复默认设置</Tooltip.Content>
                                   </Tooltip.Root>
                                 )}
                                 {showClear && (
@@ -197,17 +197,17 @@ const KeyboardSettingsCard: React.FC = observer(function KeyboardSettingsCard() 
                                         className="text-muted-foreground hover:text-foreground"
                                         onClick={() => {
                                           update({ [key]: null });
-                                          toast('Shortcut removed', {
-                                            description: `${entry.command.title} no longer has a key binding.`,
+                                          toast('已移除快捷键', {
+                                            description: `已移除「${entry.command.title}」的按键绑定。`,
                                           });
                                         }}
                                         disabled={loading || saving}
-                                        aria-label="Remove shortcut"
+                                        aria-label="移除快捷键"
                                       >
                                         <X className="h-3.5 w-3.5" />
                                       </Button>
                                     </Tooltip.Trigger>
-                                    <Tooltip.Content side="top">Remove shortcut</Tooltip.Content>
+                                    <Tooltip.Content side="top">移除快捷键</Tooltip.Content>
                                   </Tooltip.Root>
                                 )}
                               </Tooltip.Provider>

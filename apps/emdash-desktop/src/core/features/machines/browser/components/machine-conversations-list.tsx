@@ -148,7 +148,7 @@ export function MachineConversationsList({
       });
       await refresh();
     } catch (error) {
-      toast.error('Could not link conversation', {
+      toast.error('无法关联对话', {
         description: error instanceof Error ? error.message : String(error),
       });
     } finally {
@@ -158,9 +158,9 @@ export function MachineConversationsList({
 
   const deleteConversation = async (item: MachineConversationItem) => {
     const outcome = await openConfirm({
-      title: 'Delete conversation?',
-      description: `This permanently deletes “${item.conversation.title}” from its machine. If the machine is offline, the deletion runs when it reconnects.`,
-      confirmLabel: 'Delete',
+      title: '删除对话？',
+      description: `这将永久删除本机的对话「${item.conversation.title}」。`,
+      confirmLabel: '删除',
       variant: 'destructive',
     });
     if (!outcome.success) return;
@@ -169,7 +169,7 @@ export function MachineConversationsList({
       await deleteMachineConversation(item.conversation.id);
       await refresh();
     } catch (error) {
-      toast.error('Could not delete conversation', {
+      toast.error('无法删除对话', {
         description: error instanceof Error ? error.message : String(error),
       });
     } finally {
@@ -210,7 +210,7 @@ export function MachineConversationsList({
         errorSlot={
           <EmptyState
             bare
-            label="Could not load conversations."
+            label="无法加载对话"
             description={
               conversationsQuery.error instanceof Error
                 ? conversationsQuery.error.message
@@ -223,8 +223,8 @@ export function MachineConversationsList({
             bare
             label={
               items.length > 0
-                ? 'No conversations match the current search.'
-                : 'No conversations on this machine.'
+                ? '没有匹配的对话。'
+                : '本机暂无对话。'
             }
           />
         }
@@ -251,7 +251,7 @@ const ConversationsToolbar = observer(function ConversationsToolbar({
         ref={searchRef}
         value={search.query}
         onValueChange={search.setQuery}
-        placeholder="Search conversations, tasks, workspaces…"
+        placeholder="搜索对话、任务和工作区…"
       />
       <CollectionToolbar.Spacer />
       <CollectionToolbar.Group>
@@ -288,13 +288,13 @@ function ConversationStatusCell({ item }: { item: MachineConversationItem }) {
           </span>
         </span>
       ) : (
-        <Pill tone="warning">Not linked</Pill>
+        <Pill tone="warning">未关联</Pill>
       )}
-      {item.missing && <Pill tone="destructive">Missing on host</Pill>}
-      {item.dangling && !item.missing && <Pill tone="warning">Workspace removed</Pill>}
+      {item.missing && <Pill tone="destructive">本机未找到</Pill>}
+      {item.dangling && !item.missing && <Pill tone="warning">工作区已移除</Pill>}
       {item.pendingRemoval && (
         <Pill tone="warning" pulse>
-          Removal pending…
+          等待删除…
         </Pill>
       )}
     </div>
@@ -321,7 +321,7 @@ function ConversationActionsCell({
             variant="ghost"
             size="xs"
             icon
-            aria-label={`Actions for ${item.conversation.title || 'conversation'}`}
+            aria-label={`「${item.conversation.title || '对话'}」的操作`}
             disabled={busy || item.pendingRemoval}
           />
         }
@@ -331,7 +331,7 @@ function ConversationActionsCell({
       <DropdownMenu.Content align="end">
         <DropdownMenu.Item onClick={onLink}>
           <Link2Icon />
-          {item.linked ? 'Link to another task…' : 'Link to a task…'}
+          {item.linked ? '关联其他任务…' : '关联任务…'}
         </DropdownMenu.Item>
         <DropdownMenu.Separator />
         <DropdownMenu.Item variant="destructive" onClick={onDelete}>

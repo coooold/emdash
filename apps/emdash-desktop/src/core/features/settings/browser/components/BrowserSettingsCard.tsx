@@ -72,10 +72,10 @@ export function BrowserSettingsCard() {
 
   const clearProfileStorage = (profile: BrowserProfile) => {
     void openConfirm({
-      title: `Clear ${profile.name} browser storage?`,
+      title: `清除「${profile.name}」的浏览器存储？`,
       description:
-        'This clears cookies, local storage, IndexedDB, and cache for this profile. Browser tabs using it will be signed out.',
-      confirmLabel: 'Clear Storage',
+        '将清除该配置的 Cookie、本地存储、IndexedDB 和缓存。使用此配置的标签页将退出网站登录。',
+      confirmLabel: '清除存储',
       variant: 'destructive',
     }).then((outcome) => {
       if (outcome.success) void clearProfileStorageAndReload(profile.id);
@@ -87,15 +87,15 @@ export function BrowserSettingsCard() {
     try {
       const result = await (await getBrowserClient()).clearBrowsingData({ kind });
       if (!result.success) {
-        toast.error('Could not clear browsing data', {
-          description: 'Try again, or reload the browser view manually.',
+        toast.error('无法清除浏览数据', {
+          description: '请重试或手动重新加载浏览器视图。',
         });
         return;
       }
       reloadAllBrowserSessions();
       toast(`${label} cleared`);
     } catch (error) {
-      toast.error('Could not clear browsing data', { description: errorMessage(error) });
+      toast.error('无法清除浏览数据', { description: errorMessage(error) });
     } finally {
       setIsClearingBrowsingData(false);
     }
@@ -113,10 +113,10 @@ export function BrowserSettingsCard() {
   const deleteProfile = (profile: BrowserProfile) => {
     if (profiles.length <= 1) return;
     void openConfirm({
-      title: `Delete ${profile.name} browser profile?`,
+      title: `删除浏览器配置「${profile.name}」？`,
       description:
-        'This removes the profile and clears its cookies, local storage, IndexedDB, and cache.',
-      confirmLabel: 'Delete Profile',
+        '将移除此配置，并清除相关 Cookie、本地存储、IndexedDB 和缓存。',
+      confirmLabel: '删除配置',
       variant: 'destructive',
     }).then((outcome) => {
       if (!outcome.success) return;
@@ -139,8 +139,8 @@ export function BrowserSettingsCard() {
       <SettingsCard>
         <SeparatedList gap="1rem" direction="column">
           <SettingRow
-            title="Default browser profile"
-            description="New browser tabs open with this profile. You can switch an individual tab's profile from its toolbar menu."
+            title="默认浏览器配置"
+            description="新浏览器标签页使用此配置。可通过标签页工具栏菜单切换配置。"
             control={
               <Select.Root
                 value={selectedDefault}
@@ -158,15 +158,15 @@ export function BrowserSettingsCard() {
                       {profile.name}
                     </Select.Item>
                   ))}
-                  <Select.Item value={BROWSER_ISOLATED_PROFILE_ID}>Isolated per task</Select.Item>
+                  <Select.Item value={BROWSER_ISOLATED_PROFILE_ID}>按任务隔离</Select.Item>
                 </Select.Content>
               </Select.Root>
             }
           />
 
           <SettingRow
-            title="Disable CORS for localhost"
-            description="Allows pages opened from localhost in Emdash browser tabs to call APIs that do not send matching CORS headers."
+            title="关闭 localhost 的 CORS 限制"
+            description="允许 Emdash 浏览器中的 localhost 页面访问缺少匹配 CORS 响应头的 API。"
             control={
               <Switch
                 checked={browserSettings?.relaxCorsForLocalhost ?? false}
@@ -178,10 +178,10 @@ export function BrowserSettingsCard() {
         </SeparatedList>
       </SettingsCard>
 
-      <SettingsSection title="Browser profiles" bare>
+      <SettingsSection title="浏览器配置" bare>
         <SettingsCard>
           <div className="text-xs text-foreground-passive">
-            Each profile keeps its own cookies and logins, shared across tasks. Profiles do not
+            每个配置独立保存 Cookie 和登录状态，可跨任务使用。 Profiles do not
             import anything from your system browser.
           </div>
 
@@ -195,7 +195,7 @@ export function BrowserSettingsCard() {
                       autoFocus
                       defaultValue={profile.name}
                       disabled={disabled}
-                      aria-label={`Rename ${profile.name} browser profile`}
+                      aria-label={`重命名浏览器配置「${profile.name}」`}
                       className="h-7 min-w-0 flex-1"
                       onFocus={(event) => event.currentTarget.select()}
                       onKeyDown={(event) => {
@@ -210,7 +210,7 @@ export function BrowserSettingsCard() {
                       icon
                       className="size-7 shrink-0 text-foreground-muted"
                       disabled={disabled}
-                      aria-label={`Save ${profile.name} browser profile name`}
+                      aria-label={`保存浏览器配置「${profile.name}」的名称`}
                       onClick={() => renameProfile(profile.id, renameInputRef.current?.value ?? '')}
                     >
                       <Check className="size-4" />
@@ -221,7 +221,7 @@ export function BrowserSettingsCard() {
                       icon
                       className="size-7 shrink-0 text-foreground-muted"
                       disabled={disabled}
-                      aria-label={`Cancel renaming ${profile.name} browser profile`}
+                      aria-label={`取消重命名浏览器配置「${profile.name}」`}
                       onClick={() => setEditingProfileId(null)}
                     >
                       <X className="size-4" />
@@ -241,7 +241,7 @@ export function BrowserSettingsCard() {
                             icon
                             className="size-7 shrink-0 text-foreground-muted"
                             disabled={disabled}
-                            aria-label={`${profile.name} browser profile actions`}
+                            aria-label={`浏览器配置「${profile.name}」的操作`}
                           />
                         }
                       >
@@ -254,11 +254,11 @@ export function BrowserSettingsCard() {
                       >
                         <DropdownMenu.Item onClick={() => setEditingProfileId(profile.id)}>
                           <Pencil className="size-4" />
-                          Rename
+                          重命名
                         </DropdownMenu.Item>
                         <DropdownMenu.Item onClick={() => clearProfileStorage(profile)}>
                           <Eraser className="size-4" />
-                          Clear storage
+                          清除存储
                         </DropdownMenu.Item>
                         <DropdownMenu.Separator />
                         <DropdownMenu.Item
@@ -267,7 +267,7 @@ export function BrowserSettingsCard() {
                           onClick={() => deleteProfile(profile)}
                         >
                           <Trash2 className="size-4" />
-                          Delete
+                          删除
                         </DropdownMenu.Item>
                       </DropdownMenu.Content>
                     </DropdownMenu.Root>
@@ -284,8 +284,8 @@ export function BrowserSettingsCard() {
                   ref={addInputRef}
                   autoFocus
                   disabled={disabled}
-                  placeholder="Profile name"
-                  aria-label="New browser profile name"
+                  placeholder="配置名称"
+                  aria-label="新浏览器配置名称"
                   className="h-7 min-w-0 flex-1"
                   onKeyDown={(event) => {
                     if (event.key === 'Enter') addProfile(event.currentTarget.value);
@@ -298,7 +298,7 @@ export function BrowserSettingsCard() {
                   icon
                   className="size-7 shrink-0 text-foreground-muted"
                   disabled={disabled}
-                  aria-label="Save new browser profile"
+                  aria-label="保存新浏览器配置"
                   onClick={() => addProfile(addInputRef.current?.value ?? '')}
                 >
                   <Check className="size-4" />
@@ -309,7 +309,7 @@ export function BrowserSettingsCard() {
                   icon
                   className="size-7 shrink-0 text-foreground-muted"
                   disabled={disabled}
-                  aria-label="Cancel adding profile"
+                  aria-label="取消添加配置"
                   onClick={() => setIsAdding(false)}
                 >
                   <X className="size-4" />
@@ -325,19 +325,19 @@ export function BrowserSettingsCard() {
                 onClick={() => setIsAdding(true)}
               >
                 <Plus className="size-4" />
-                Add profile
+                添加配置
               </Button>
             )}
           </div>
         </SettingsCard>
       </SettingsSection>
 
-      <SettingsSection title="Browsing data" bare>
+      <SettingsSection title="浏览数据" bare>
         <SettingsCard>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <div className="flex min-w-0 flex-1 basis-64 flex-col gap-0.5">
               <div className="text-xs text-foreground-passive">
-                Clear cookies, cached files, and site data from the in-app browser.
+                清除内置浏览器的 Cookie、缓存文件和网站数据。
               </div>
             </div>
             <div className="ml-auto flex shrink-0 items-center gap-1">
@@ -347,9 +347,9 @@ export function BrowserSettingsCard() {
                 size="sm"
                 className="text-foreground-muted"
                 disabled={disabled || isClearingBrowsingData}
-                onClick={() => clearBrowsingData('all', 'All browsing data')}
+                onClick={() => clearBrowsingData('all', '全部浏览数据')}
               >
-                Clear all browsing data
+                清除全部浏览数据
               </Button>
               <Button
                 type="button"
@@ -360,8 +360,8 @@ export function BrowserSettingsCard() {
                 aria-expanded={isBrowsingDataExpanded}
                 aria-label={
                   isBrowsingDataExpanded
-                    ? 'Hide individual browsing data options'
-                    : 'Show individual browsing data options'
+                    ? '隐藏分项浏览数据选项'
+                    : '显示分项浏览数据选项'
                 }
                 onClick={() => setIsBrowsingDataExpanded((expanded) => !expanded)}
               >
@@ -407,12 +407,12 @@ const BROWSING_DATA_CATEGORIES: ReadonlyArray<{
   label: string;
   actionLabel: string;
 }> = [
-  { kind: 'cookies', label: 'Cookies', actionLabel: 'Delete cookies' },
-  { kind: 'siteData', label: 'Site data', actionLabel: 'Delete site data' },
+  { kind: 'cookies', label: 'Cookies', actionLabel: '删除 Cookie' },
+  { kind: 'siteData', label: '网站数据', actionLabel: '删除网站数据' },
   {
     kind: 'cache',
-    label: 'Cached images and files',
-    actionLabel: 'Delete cached images and files',
+    label: '缓存的图片和文件',
+    actionLabel: '删除缓存的图片和文件',
   },
 ];
 
@@ -421,28 +421,28 @@ const BROWSING_DATA_CONFIRMATIONS: Record<
   { title: string; description: string; confirmLabel: string }
 > = {
   all: {
-    title: 'Clear all browsing data?',
+    title: '清除全部浏览数据?',
     description:
-      'This deletes cookies, cached files, and site data for every in-app browser profile. Open browser tabs will be signed out.',
-    confirmLabel: 'Clear all data',
+      '将删除内置浏览器所有配置的 Cookie、缓存文件和网站数据。打开的标签页将退出网站登录。',
+    confirmLabel: '清除全部数据',
   },
   cookies: {
-    title: 'Delete cookies?',
+    title: '删除 Cookie?',
     description:
-      'This deletes cookies for every in-app browser profile. Open browser tabs will be signed out.',
-    confirmLabel: 'Delete cookies',
+      '将删除内置浏览器所有配置的 Cookie。打开的标签页将退出网站登录。',
+    confirmLabel: '删除 Cookie',
   },
   siteData: {
-    title: 'Delete site data?',
+    title: '删除网站数据?',
     description:
-      'This deletes local storage, IndexedDB, service workers, and other site data for every in-app browser profile. Open browser tabs may be signed out.',
-    confirmLabel: 'Delete site data',
+      '将删除内置浏览器所有配置的本地存储、IndexedDB、Service Worker 和其他网站数据。打开的标签页可能会退出网站登录。',
+    confirmLabel: '删除网站数据',
   },
   cache: {
-    title: 'Delete cached images and files?',
+    title: '删除缓存的图片和文件?',
     description:
-      'This deletes cached images and files for every in-app browser profile. Pages may load more slowly the next time you open them.',
-    confirmLabel: 'Delete cached files',
+      '将删除内置浏览器所有配置中缓存的图片和文件。下次打开页面时，加载速度可能降低。',
+    confirmLabel: '删除缓存文件',
   },
 };
 
@@ -456,14 +456,14 @@ async function clearProfileStorageAndReload(profileId: string): Promise<void> {
   try {
     const result = await (await getBrowserClient()).clearProfileStorage({ profileId });
     if (!result.success) {
-      toast.error('Could not clear browser storage', {
-        description: 'The browser profile no longer exists or could not be cleared.',
+      toast.error('无法清除浏览器存储', {
+        description: '浏览器配置已不存在，或无法清除。',
       });
       return;
     }
     reloadBrowserSessionsForProfile(profileId);
   } catch (error) {
-    toast.error('Could not clear browser storage', { description: errorMessage(error) });
+    toast.error('无法清除浏览器存储', { description: errorMessage(error) });
   }
 }
 
@@ -486,8 +486,8 @@ async function deleteProfileAfterStorageClear({
       profileId: deletedProfileId,
     });
     if (!clearResult.success) {
-      toast.error('Could not delete browser profile', {
-        description: 'The profile storage could not be cleared, so the profile was kept.',
+      toast.error('无法删除浏览器配置', {
+        description: '无法清除配置的存储，已保留此配置。',
       });
       return;
     }
@@ -504,7 +504,7 @@ async function deleteProfileAfterStorageClear({
     );
   } catch (error) {
     if (storageCleared) reloadBrowserSessionsForProfile(deletedProfileId);
-    toast.error('Could not delete browser profile', {
+    toast.error('无法删除浏览器配置', {
       description: storageCleared
         ? `Storage was cleared, but the profile is still listed. ${errorMessage(error)}`
         : errorMessage(error),

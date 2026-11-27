@@ -45,12 +45,12 @@ function initializeTray(): Tray {
   tray.setContextMenu(
     Menu.buildFromTemplate([
       {
-        label: `Open ${PRODUCT_NAME}`,
+        label: `打开 ${PRODUCT_NAME}`,
         click: () => showMainWindow(),
       },
       { type: 'separator' },
       {
-        label: `Quit ${PRODUCT_NAME}`,
+        label: `退出 ${PRODUCT_NAME}`,
         click: () => app.quit(),
       },
     ])

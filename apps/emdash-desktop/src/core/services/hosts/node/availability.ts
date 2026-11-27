@@ -1,9 +1,12 @@
-import { sshConnectionIdOf, type HostRef } from '@emdash/core/primitives/host/api';
-import type { RuntimeResolveError } from '@emdash/core/primitives/runtime-resolution/api';
+import { hostRefEquals, LOCAL_HOST_REF, type HostRef } from '@emdash/core/primitives/host/api';
+import {
+  runtimeHostNotConfigured,
+  type RuntimeResolveError,
+} from '@emdash/core/primitives/runtime-resolution/api';
 import type { Result } from '@emdash/shared';
 import type { Scope } from '@emdash/shared/concurrency';
 import type { LeasedLiveModelProvider } from '@emdash/wire/rpc';
-import { expose, peek, type Readable } from '@emdash/wire/state';
+import { cell, expose, peek, type Readable } from '@emdash/wire/state';
 import { hostReadyResult } from '../api/availability';
 import type {
   BrowserHostWakeCause,
@@ -15,24 +18,13 @@ import type {
   RecoveryCause,
 } from '../api/availability';
 import { hostsContract } from '../api/contract';
-import type { HostConnection } from '../api/node/host-connection';
-
-export type RemoteHostAvailability = {
-  connection: HostConnection;
-  waitUntilReady(): Promise<Result<HostReady, RuntimeResolveError>>;
-};
 
 export type CreateHostAvailabilityOptions = {
   scope: Scope;
   local: HostAvailability;
-  remote(connectionId: string): RemoteHostAvailability;
-  remoteState(connectionId: string): Readable<HostAvailabilityState>;
-  remoteLease(connectionId: string, owner: Scope): void;
-  wakeRemote(cause: BrowserHostWakeCause): void;
-  revalidateRemote(connectionId: string, cause: BrowserHostWakeCause): void;
 };
 
-/** Routes availability and exposes its Wire model. Recovery belongs to the selected Host owner. */
+/** Only the local worker host can become ready. Existing remote references stay blocked. */
 export class HostAvailabilityService implements HostAvailability {
   readonly host: LeasedLiveModelProvider<typeof hostsContract.availability>;
 
@@ -42,8 +34,12 @@ export class HostAvailabilityService implements HostAvailability {
   }
 
   state(host: HostRef): Readable<HostAvailabilityState> {
-    const id = sshConnectionIdOf(host);
-    return id ? this.options.remoteState(id) : this.options.local.state(host);
+    if (hostRefEquals(host, LOCAL_HOST_REF)) return this.options.local.state(host);
+    return cell<HostAvailabilityState>({
+      kind: 'unavailable',
+      issue: runtimeHostNotConfigured(host, '此版本仅支持本地开发。'),
+      recovery: 'blocked',
+    });
   }
 
   stateFor(host: HostRef): HostAvailabilityState {
@@ -55,19 +51,14 @@ export class HostAvailabilityService implements HostAvailability {
   }
 
   lease(host: HostRef, owner: Scope): void {
-    const id = sshConnectionIdOf(host);
-    if (id) this.options.remoteLease(id, owner);
-    else this.options.local.lease(host, owner);
+    if (hostRefEquals(host, LOCAL_HOST_REF)) this.options.local.lease(host, owner);
   }
 
   wake(host: HostRef, cause: HostWakeCause): void {
-    const id = sshConnectionIdOf(host);
-    if (id) this.options.revalidateRemote(id, cause === 'ssh-edge' ? 'online' : cause);
-    else this.options.local.wake(host, cause);
+    if (hostRefEquals(host, LOCAL_HOST_REF)) this.options.local.wake(host, cause);
   }
 
   wakeDemanded(cause: BrowserHostWakeCause): void {
-    this.options.wakeRemote(cause);
     this.options.local.wakeDemanded(cause);
   }
 
@@ -75,31 +66,20 @@ export class HostAvailabilityService implements HostAvailability {
     host: HostRef,
     cause: RecoveryCause
   ): Promise<Result<HostReady, RuntimeResolveError>> {
-    const id = sshConnectionIdOf(host);
-    if (!id) return this.options.local.ensureReady(host, cause);
-    // Capture one identity before awaiting intent persistence. This wait must not migrate.
-    const remote = this.options.remote(id);
-    if (cause === 'connect' || cause === 'retry') {
-      const pinned = await remote.connection.pin();
-      if (!pinned.success) return pinned;
-    }
-    return remote.waitUntilReady();
+    if (hostRefEquals(host, LOCAL_HOST_REF)) return this.options.local.ensureReady(host, cause);
+    return this.requireReady(host);
   }
 
   requestReady(host: HostRef, cause: ExplicitRecoveryCause): void {
-    void this.ensureReady(host, cause);
+    if (hostRefEquals(host, LOCAL_HOST_REF)) this.options.local.requestReady(host, cause);
   }
 
   invalidate(host: HostRef, issue?: RuntimeResolveError): void {
-    const id = sshConnectionIdOf(host);
-    if (id) this.options.revalidateRemote(id, 'online');
-    else this.options.local.invalidate(host, issue);
+    if (hostRefEquals(host, LOCAL_HOST_REF)) this.options.local.invalidate(host, issue);
   }
 
   suspend(host: HostRef): void {
-    const id = sshConnectionIdOf(host);
-    if (id) void this.options.remote(id).connection.disconnect();
-    else this.options.local.suspend(host);
+    if (hostRefEquals(host, LOCAL_HOST_REF)) this.options.local.suspend(host);
   }
 }
 

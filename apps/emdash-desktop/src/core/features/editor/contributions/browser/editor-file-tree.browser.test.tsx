@@ -57,7 +57,7 @@ describe('FileTreeHeaderBar layout', () => {
       );
     });
 
-    const input = host.querySelector<HTMLInputElement>('[aria-label="Search"]');
+    const input = host.querySelector<HTMLInputElement>('[aria-label="搜索文件"]');
     const icon = input?.parentElement?.querySelector<SVGSVGElement>('svg');
     const toolbar = host.firstElementChild;
     expect(input).not.toBeNull();
@@ -111,7 +111,7 @@ describe('FileTreeHeaderBar layout', () => {
       );
     });
 
-    const input = host.querySelector<HTMLInputElement>('[aria-label="Search"]');
+    const input = host.querySelector<HTMLInputElement>('[aria-label="搜索文件"]');
     const searchIcon = input?.parentElement?.querySelector<SVGSVGElement>('svg');
     const folderRow = Array.from(host.querySelectorAll<HTMLButtonElement>('button')).find(
       (button) => button.textContent === 'src'
@@ -178,7 +178,7 @@ describe('FileTree Git decorations', () => {
     });
 
     const folderName = host.querySelector<HTMLElement>('[data-tone="success"]');
-    const bubble = host.querySelector<HTMLElement>('[aria-label="Contains emphasized items"]');
+    const bubble = host.querySelector<HTMLElement>('[aria-label="包含重点项目"]');
     expect(folderName).not.toBeNull();
     expect(bubble).not.toBeNull();
     expect(bubble).toHaveStyle({ color: 'var(--em-foreground-success)' });

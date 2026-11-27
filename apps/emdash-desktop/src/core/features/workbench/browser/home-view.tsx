@@ -1,5 +1,5 @@
 import { menuItemBase } from '@emdash/ui/styles/recipes/menu-item';
-import { FolderOpen, Github, Plus, Server, type LucideIcon } from 'lucide-react';
+import { Download, FolderOpen, type LucideIcon } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Fragment } from 'react';
 import { homeViewDef } from '@core/features/workbench/contributions/views';
@@ -13,28 +13,16 @@ import { defineViewRuntime } from '@core/primitives/views/react';
 
 const PROJECT_ACTIONS = [
   {
-    label: 'Open project',
-    description: 'Create a project from an existing local directory',
+    label: '打开项目',
+    description: '从现有本地目录添加项目',
     icon: FolderOpen,
-    modalArgs: { strategy: 'local', mode: 'pick' },
+    modalArgs: { mode: 'pick' },
   },
   {
-    label: 'Create repository',
-    description: 'Create a project and repository on GitHub',
-    icon: Plus,
-    modalArgs: { strategy: 'local', mode: 'create' },
-  },
-  {
-    label: 'Clone from GitHub',
-    description: 'Clone a GitHub repository to work on locally',
-    icon: Github,
-    modalArgs: { strategy: 'local', mode: 'clone' },
-  },
-  {
-    label: 'Add remote project',
-    description: 'Create a project on a remote SSH server',
-    icon: Server,
-    modalArgs: { strategy: 'ssh', mode: 'pick' },
+    label: '克隆仓库',
+    description: '通过 URL 克隆 Git 仓库',
+    icon: Download,
+    modalArgs: { mode: 'clone' },
   },
 ] as const;
 

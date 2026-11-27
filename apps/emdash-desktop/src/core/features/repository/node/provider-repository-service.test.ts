@@ -91,7 +91,7 @@ describe('ProviderRepositoryService', () => {
         host: 'ghe.example.com',
         repositoryUrl: 'https://ghe.example.com/acme/repo',
         nameWithOwner: 'acme/repo',
-        capabilities: { pullRequests: true, issues: true },
+        capabilities: { pullRequests: false, issues: false },
       })
     );
     expect(router.route).toHaveBeenCalledWith('https://ghe.example.com/acme/repo');
@@ -119,7 +119,7 @@ describe('ProviderRepositoryService', () => {
     }).resolveProject('project-1');
     expect(result).toMatchObject({
       success: true,
-      data: { provider: 'gitlab', capabilities: { pullRequests: true, issues: true } },
+      data: { provider: 'gitlab', capabilities: { pullRequests: false, issues: false } },
     });
   });
 

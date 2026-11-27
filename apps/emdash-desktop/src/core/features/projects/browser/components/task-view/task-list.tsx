@@ -59,7 +59,7 @@ const TasksTabs = observer(function TasksTabs({
     <ToggleGroup.Root
       multiple={false}
       value={[taskView.tab]}
-      aria-label="Task status"
+      aria-label="任务状态"
       onValueChange={([value]) => {
         if (!value) return;
         const tab = value as TaskListTab;
@@ -68,8 +68,8 @@ const TasksTabs = observer(function TasksTabs({
         filter.set({ tab });
       }}
     >
-      <ToggleGroup.Item value="active">Active ({activeCount})</ToggleGroup.Item>
-      <ToggleGroup.Item value="archived">Archived ({archivedCount})</ToggleGroup.Item>
+      <ToggleGroup.Item value="active">进行中（{activeCount}）</ToggleGroup.Item>
+      <ToggleGroup.Item value="archived">已归档（{archivedCount}）</ToggleGroup.Item>
     </ToggleGroup.Root>
   );
 });
@@ -115,16 +115,16 @@ const TasksToolbar = observer(function TasksToolbar({
         ref={searchRef}
         value={search.query}
         onValueChange={search.setQuery}
-        placeholder="Search tasks…"
+        placeholder="搜索任务…"
       />
       <Button
         variant="primary"
         disabled={!!createDisabledReason}
         title={createDisabledReason}
-        aria-label={createDisabledReason ? `Create Task. ${createDisabledReason}` : 'Create Task'}
+        aria-label={createDisabledReason ? `创建任务。 ${createDisabledReason}` : '创建任务'}
         onClick={() => void openCreateTaskModal({ projectId })}
       >
-        Create Task <BoundShortcut command="app.newTask" variant="keycaps" />
+        创建任务 <BoundShortcut command="app.newTask" variant="keycaps" />
       </Button>
     </CollectionToolbar.Root>
   );
@@ -148,17 +148,17 @@ const TasksSelectionBar = observer(function TasksSelectionBar({
 
   return (
     <ListPopoverCard className="justify-between">
-      <span className="whitespace-nowrap text-foreground-muted">{taskView.count} selected</span>
+      <span className="whitespace-nowrap text-foreground-muted">已选择 {taskView.count} 项</span>
       <div className="flex items-center gap-2">
         {taskView.tab === 'active' && (
           <Button
             variant="secondary"
             size="sm"
-            aria-label="Archive"
+            aria-label="归档"
             onClick={() => bulkApply((id) => void taskManager.archiveTask(id))}
           >
             <Archive className="size-3.5" />
-            Archive
+            归档
           </Button>
         )}
         {taskView.tab === 'archived' && (
@@ -168,19 +168,19 @@ const TasksSelectionBar = observer(function TasksSelectionBar({
             onClick={() => bulkApply((id) => void taskManager.restoreTask(id))}
           >
             <RotateCcw className="size-3.5" />
-            Restore
+            恢复
           </Button>
         )}
         <Button variant="destructive" size="sm" onClick={() => void deleteSelectedTasks(projectId)}>
           <Trash2 className="size-3.5" />
-          Delete <BoundShortcut command="task.deleteSelected" variant="keycaps" />
+          删除 <BoundShortcut command="task.deleteSelected" variant="keycaps" />
         </Button>
         <Button
           variant="ghost"
           size="xs"
           icon
           onClick={() => taskView.clear()}
-          aria-label="Clear selection"
+          aria-label="清除选择"
         >
           <X className="size-3.5" />
         </Button>
@@ -238,7 +238,7 @@ const TaskListContent = observer(function TaskListContent({
             <TaskListEmptyState projectId={projectId} />
           ) : (
             <div className="flex h-full items-center justify-center p-6 text-sm text-foreground-muted">
-              No archived tasks
+              没有已归档任务
             </div>
           )
         }
@@ -257,7 +257,7 @@ export const TaskList = observer(function TaskList() {
   const implementation = {
     'task.deleteSelected': () => ({
       availability: () =>
-        taskView && taskView.count > 0 ? enabled : disabled('Select one or more tasks'),
+        taskView && taskView.count > 0 ? enabled : disabled('请至少选择一个任务'),
       execute: () => {
         void deleteSelectedTasks(projectId);
       },

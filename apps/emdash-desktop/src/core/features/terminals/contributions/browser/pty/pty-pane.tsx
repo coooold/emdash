@@ -80,7 +80,7 @@ async function prepareAndInject(
   prepare: () => Promise<PreparedTerminalAttachments>
 ): Promise<boolean> {
   if (!target.isCurrent()) return false;
-  const notice = toast('Uploading attachments…', { duration: Infinity });
+  const notice = toast('正在上传附件…', { duration: Infinity });
   const dismiss = () => toast.dismiss(notice);
   target.signal.addEventListener('abort', dismiss, { once: true });
   try {
@@ -113,7 +113,7 @@ function injectFiles(target: AttachmentTarget, files: File[], snapshot = false):
 function reportAttachmentError(target: AttachmentTarget, error: unknown): void {
   if (!target.isCurrent()) return;
   log.warn('Terminal attachment failed', { error });
-  toast.error('Failed to attach files', {
+  toast.error('添加附件失败', {
     description: error instanceof Error ? error.message : String(error),
   });
 }
@@ -142,7 +142,7 @@ async function pasteClipboardImageOrText(args: {
   if (!target.isCurrent()) return false;
   const result = await (await getHostClient()).persistClipboardImage();
   if (!target.isCurrent()) return false;
-  if (!result.success) throw new Error(result.error ?? 'Could not read the clipboard image');
+  if (!result.success) throw new Error(result.error ?? '无法读取剪贴板中的图像');
   if (result.path) {
     if (args.injectImagePaths) return args.injectImagePaths([result.path]);
     return injectTerminalFilePaths(target, [result.path]);

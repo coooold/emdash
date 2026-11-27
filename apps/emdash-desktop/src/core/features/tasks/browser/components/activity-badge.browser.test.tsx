@@ -68,7 +68,7 @@ describe('ActivityBadgeView', () => {
   }
 
   function badge(): HTMLElement | null {
-    return document.body.querySelector<HTMLElement>('[aria-label="Workspace activity"]');
+    return document.body.querySelector<HTMLElement>('[aria-label="工作区活动"]');
   }
 
   async function openPopover(): Promise<void> {
@@ -127,15 +127,13 @@ describe('ActivityBadgeView', () => {
       'copy-artifacts',
       'run',
     ]);
-    expect(visible[0]!.textContent).toContain('Fetch remote base origin/main');
-    expect(visible[0]!.textContent).toContain('5m ago');
-    expect(visible[1]!.textContent).toContain(
-      'Adding worktree at /tmp/wt using newly created branch feature/x'
-    );
-    expect(visible[2]!.textContent).toContain('Copying 3 artifacts defined in preservePatterns');
+    expect(visible[0]!.textContent).toContain('获取远端基准分支 origin/main');
+    expect(visible[0]!.textContent).toContain('5 分钟前');
+    expect(visible[1]!.textContent).toContain('正在使用新建分支 feature/x 在 /tmp/wt 创建工作树');
+    expect(visible[2]!.textContent).toContain('正在复制 preservePatterns 指定的 3 个文件或目录');
     // Run shows its started time — it keeps running.
-    expect(visible[3]!.textContent).toContain('Starting run scripts');
-    expect(visible[3]!.textContent).toContain('1m ago');
+    expect(visible[3]!.textContent).toContain('正在启动运行脚本');
+    expect(visible[3]!.textContent).toContain('1 分钟前');
   });
 
   it('describes an adopted worktree and an existing branch distinctly', async () => {
@@ -143,7 +141,7 @@ describe('ActivityBadgeView', () => {
       step('adopt-worktree', 'succeeded', { params: { branch: 'feature/x', path: '/tmp/wt' } }),
     ]);
     await openPopover();
-    expect(rows()[0]!.textContent).toContain('Worktree with feature/x already exists at /tmp/wt');
+    expect(rows()[0]!.textContent).toContain('分支 feature/x 的工作树已存在于 /tmp/wt');
 
     await render([
       step('create-worktree', 'succeeded', {
@@ -151,9 +149,7 @@ describe('ActivityBadgeView', () => {
       }),
     ]);
     await openPopover();
-    expect(rows()[0]!.textContent).toContain(
-      'Adding worktree at /tmp/wt using existing branch feature/x'
-    );
+    expect(rows()[0]!.textContent).toContain('正在使用现有分支 feature/x 在 /tmp/wt 创建工作树');
   });
 
   it('a failed push-branch row exposes its message and a retry action', async () => {
@@ -170,10 +166,10 @@ describe('ActivityBadgeView', () => {
     await openPopover();
 
     const row = rows()[0]!;
-    expect(row.textContent).toContain('Pushing feature/x to fork');
+    expect(row.textContent).toContain('正在将 feature/x 推送到 fork');
     expect(row.textContent).toContain('remote rejected');
     const retry = Array.from(row.querySelectorAll('button')).find((button) =>
-      button.textContent?.includes('Retry')
+      button.textContent?.includes('重试')
     );
     await act(async () => retry!.click());
     expect(onRetryPush).toHaveBeenCalledTimes(1);
@@ -192,7 +188,7 @@ describe('ActivityBadgeView', () => {
     await openPopover();
 
     const setupRow = rows().find((row) => row.dataset.step === 'setup')!;
-    const open = setupRow.querySelector<HTMLButtonElement>('button[title="Open script output"]')!;
+    const open = setupRow.querySelector<HTMLButtonElement>('button[title="打开脚本输出"]')!;
     await act(async () => open.click());
     expect(onOpenScript).toHaveBeenCalledWith('setup');
   });
@@ -206,11 +202,11 @@ describe('ActivityBadgeView', () => {
 
     // Succeeded script rows stay retry-free; only the failure gets the affordance.
     const prepareRow = rows().find((row) => row.dataset.step === 'prepare')!;
-    expect(prepareRow.textContent).not.toContain('Retry');
+    expect(prepareRow.textContent).not.toContain('重试');
 
     const setupRow = rows().find((row) => row.dataset.step === 'setup')!;
     const retry = Array.from(setupRow.querySelectorAll('button')).find((button) =>
-      button.textContent?.includes('Retry')
+      button.textContent?.includes('重试')
     );
     await act(async () => retry!.click());
     expect(onRetryScript).toHaveBeenCalledWith('setup');

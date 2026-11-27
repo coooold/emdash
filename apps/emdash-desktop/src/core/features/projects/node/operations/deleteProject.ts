@@ -16,6 +16,7 @@ import {
   type WorkspaceRemovalBroker,
 } from '@core/features/workspaces/api/node/operations/workspace-removal';
 import {
+  createWorkspaceRegistry,
   liveWorkspaces,
   workspaceRegistryTable as workspaces,
 } from '@core/features/workspaces/api/node/registry';
@@ -23,7 +24,7 @@ import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry'
 import type { MutationError } from '@core/primitives/wire/api/mutations';
 import type { AppDb } from '@core/services/app-db/node/db';
 import { appDbPokes } from '@core/services/app-db/node/pokes';
-import { projects, tasks, type WorkspaceRow } from '@core/services/app-db/node/schema';
+import { automations, projects, tasks, type WorkspaceRow } from '@core/services/app-db/node/schema';
 import type { MementosRuntimeClient } from '@core/services/runtime-broker/api/clients';
 
 /**
@@ -45,7 +46,6 @@ export type ProjectDeletionDependencies = {
   getMementosRuntimeClient(): Promise<MementosRuntimeClient>;
   logger: Logger;
   projects: Pick<ProjectAttachmentManager, 'invalidate'>;
-  pullRequests: { deleteProjectData(projectId: string): Promise<void> };
   sessionCleanup: TaskSessionCleanup;
   telemetry: Pick<TelemetryService, 'capture'>;
 };
@@ -94,6 +94,7 @@ export async function deleteProject(
     });
   });
 
+  const recordOnly = project.repositoryLocation === 'remote';
   const taskRows = await db.select().from(tasks).where(eq(tasks.projectId, projectId));
   const registryRows = await loadProjectRegistryRows(db, project);
   const registryRowById = new Map(registryRows.map((row) => [row.id, row]));
@@ -106,9 +107,11 @@ export async function deleteProject(
   // Conversation mirror rows keep their project link and die with the project row's
   // FK cascade — same as before; the host records survive and resync as adopted.
   for (const task of taskRows) {
-    const workspace = task.workspaceId ? registryRowById.get(task.workspaceId) : undefined;
-    const host = operationHostRef({ workspace, repository });
-    await killTaskSessions(dependencies, task, host, workspace?.path ?? undefined);
+    if (!recordOnly) {
+      const workspace = task.workspaceId ? registryRowById.get(task.workspaceId) : undefined;
+      const host = operationHostRef({ workspace, repository });
+      await killTaskSessions(dependencies, task, host, workspace?.path ?? undefined);
+    }
     db.transaction((tx) => {
       tx.delete(tasks).where(eq(tasks.id, task.id)).run();
     });
@@ -118,16 +121,23 @@ export async function deleteProject(
 
   // Host-artifact cascade: reachable provenance worktrees remove through the verb,
   // unreachable ones tombstone for the sweep, everything else untracks.
-  for (const row of registryRows) {
-    await removeProjectWorkspace(db, dependencies.runtimes, {
-      workspace: row,
-      host: operationHostRef({ workspace: row, repository }),
-      createdAt,
-    });
+  if (recordOnly) {
+    createWorkspaceRegistry(db).untrack(
+      registryRows.map((row) => row.id),
+      new Date(createdAt).toISOString()
+    );
+  } else {
+    for (const row of registryRows) {
+      await removeProjectWorkspace(db, dependencies.runtimes, {
+        workspace: row,
+        host: operationHostRef({ workspace: row, repository }),
+        createdAt,
+      });
+    }
   }
   appDbPokes.workspaces.poke({ projectId });
 
-  await purgeProjectLocalState(dependencies, projectId);
+  await purgeProjectLocalState(dependencies, projectId, recordOnly);
   appDbPokes.projects.poke({ projectId });
   return ok(undefined);
 }
@@ -154,12 +164,16 @@ async function loadProjectRegistryRows(
 
 async function purgeProjectLocalState(
   dependencies: ProjectDeletionDependencies,
-  projectId: string
+  projectId: string,
+  recordOnly: boolean
 ): Promise<void> {
   const { db } = dependencies;
-  await dependencies.pullRequests.deleteProjectData(projectId);
-  await dependencies.automations.removeProjectDeployments(projectId);
-  await db.delete(projects).where(eq(projects.id, projectId));
+  if (!recordOnly) await dependencies.automations.removeProjectDeployments(projectId);
+  db.transaction((tx) => {
+    // Remote definitions must never become global local automations through the FK.
+    if (recordOnly) tx.delete(automations).where(eq(automations.projectId, projectId)).run();
+    tx.delete(projects).where(eq(projects.id, projectId)).run();
+  });
   const client = await dependencies.getMementosRuntimeClient();
   const taskRows = await db.select({ id: tasks.id }).from(tasks);
   const [projectResult, taskResult] = await Promise.all([

@@ -105,8 +105,8 @@ describe('ProjectContextErrorPanel', () => {
 
     const buttons = Array.from(host.querySelectorAll('button'));
     expect(buttons.map((button) => button.textContent)).toEqual([
-      'Retry',
-      'Remove Project',
+      '重试',
+      '移除项目',
       'Error details',
     ]);
     expect(host.textContent).not.toContain('Connect');
@@ -179,8 +179,8 @@ describe('ProjectMainPanel layout', () => {
   });
 
   it.each([
-    ['hydrating', 'Loading project'],
-    ['context_error', 'Could not load Project'],
+    ['hydrating', '正在加载项目'],
+    ['context_error', '无法加载项目'],
   ])('retains in-page Project identity for the %s state', async (kind, message) => {
     panelState.kind = kind;
     panelState.store.context =

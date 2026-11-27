@@ -5,7 +5,7 @@ const fileTreeKeybindingOptions = { ignoreWhenTextInputFocused: true } as const;
 
 export const fileTreeRenameCommand = defineCommand({
   id: 'editor.fileTree.rename',
-  title: 'Rename File Tree Item',
+  title: '重命名文件树项目',
   description: 'Rename the selected file tree item',
   category: 'Files',
   icon: 'file-pen',
@@ -14,7 +14,7 @@ export const fileTreeRenameCommand = defineCommand({
 
 export const fileTreeCutCommand = defineCommand({
   id: 'editor.fileTree.cut',
-  title: 'Cut File Tree Items',
+  title: '剪切文件树项目',
   description: 'Cut the selected file tree items',
   category: 'Files',
   icon: 'scissors',
@@ -23,7 +23,7 @@ export const fileTreeCutCommand = defineCommand({
 
 export const fileTreeCopyCommand = defineCommand({
   id: 'editor.fileTree.copy',
-  title: 'Copy File Tree Items',
+  title: '复制文件树项目',
   description: 'Copy the selected file tree items',
   category: 'Files',
   icon: 'copy',
@@ -32,7 +32,7 @@ export const fileTreeCopyCommand = defineCommand({
 
 export const fileTreePasteCommand = defineCommand({
   id: 'editor.fileTree.paste',
-  title: 'Paste File Tree Items',
+  title: '粘贴到文件树',
   description: 'Paste cut or copied file tree items',
   category: 'Files',
   icon: 'clipboard-paste',
@@ -41,7 +41,7 @@ export const fileTreePasteCommand = defineCommand({
 
 export const fileTreeDeleteCommand = defineCommand({
   id: 'editor.fileTree.delete',
-  title: 'Delete File Tree Items',
+  title: '删除文件树项目',
   description: 'Delete the selected file tree items',
   category: 'Files',
   icon: 'trash-2',

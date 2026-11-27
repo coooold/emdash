@@ -15,12 +15,8 @@ import { log } from '@main/lib/logger';
 import { appScope } from '../../core/app-scope';
 import { runInBackground } from '../../core/background';
 import type { DatabaseBundle } from './database';
-import type { InfrastructureBundle } from './infrastructure';
 
-export async function bootRuntimes(
-  database: DatabaseBundle,
-  infrastructure: InfrastructureBundle
-): Promise<DesktopRuntimes> {
+export async function bootRuntimes(database: DatabaseBundle): Promise<DesktopRuntimes> {
   const scope = appScope.child('runtimes');
   let workers: DesktopWorkersHandle | undefined;
   try {
@@ -29,12 +25,10 @@ export async function bootRuntimes(
       getFilesSettings: () => database.appSettings.get('files'),
     });
     const runtimeWorkers = workers;
-    const broker = createDesktopRuntimeBroker(runtimeWorkers.clients, infrastructure.hosts);
+    const broker = createDesktopRuntimeBroker(runtimeWorkers.clients);
     scope.add(() => broker.dispose());
     const hostAvailability = createDesktopHostAvailability({
       scope,
-      hosts: infrastructure.hosts,
-      runtimes: broker,
       localReady: () => runtimeWorkers.runtimeReady(),
     });
     runMementosOrphanPruning(database, runtimeWorkers.clients.mementos);

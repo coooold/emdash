@@ -26,7 +26,7 @@ export function SkillsToolbar({
         ref={searchRef}
         value={searchQuery}
         onValueChange={onSearchQueryChange}
-        placeholder="Search skills…"
+        placeholder="搜索技能…"
       />
       <CollectionToolbar.Spacer />
       <CollectionToolbar.Group>
@@ -35,7 +35,7 @@ export function SkillsToolbar({
           icon
           onClick={onRefresh}
           disabled={isRefreshing}
-          aria-label="Refresh catalog"
+          aria-label="刷新技能列表"
         >
           <RefreshCw
             className={`text-muted-foreground h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`}
@@ -43,7 +43,7 @@ export function SkillsToolbar({
         </Button>
         <Button variant="primary" onClick={onCreateSkill}>
           <Plus className="size-4" />
-          New Skill
+          新建技能
         </Button>
       </CollectionToolbar.Group>
     </CollectionToolbar.Root>

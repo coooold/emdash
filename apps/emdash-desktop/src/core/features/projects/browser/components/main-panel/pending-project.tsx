@@ -16,9 +16,9 @@ import { homeViewDef } from '@core/features/workbench/contributions/views';
 import { useNavigate } from '@core/primitives/navigation/browser/navigation-hooks';
 
 const STAGE_LABELS: Record<ProjectCreationStage, string> = {
-  'creating-repo': 'Creating repository',
-  cloning: 'Cloning repository',
-  registering: 'Registering project',
+  'creating-repo': '正在创建仓库',
+  cloning: '正在克隆仓库',
+  registering: '正在登记项目',
 };
 
 const STAGES_BY_MODE: Record<ProjectMode, ProjectCreationStage[]> = {
@@ -48,11 +48,11 @@ export const PendingProjectStatus = observer(function PendingProjectStatus({
 
   const actions = isError ? (
     <Button size="sm" variant="ghost" onClick={handleDismiss}>
-      Dismiss
+      关闭
     </Button>
   ) : project.creation.kind === 'running' && project.creation.stage === 'cloning' ? (
     <Button size="sm" variant="ghost" onClick={handleCancel}>
-      Cancel
+      取消
     </Button>
   ) : undefined;
 
@@ -69,9 +69,7 @@ export const PendingProjectStatus = observer(function PendingProjectStatus({
       </div>
       {isError && (
         <p className="text-destructive max-w-full text-sm wrap-break-word">
-          {project.creation.kind === 'failed'
-            ? project.creation.message
-            : 'Project creation failed'}
+          {project.creation.kind === 'failed' ? project.creation.message : '项目创建失败'}
         </p>
       )}
     </div>

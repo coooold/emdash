@@ -7,7 +7,7 @@ export function AgentsSettingsPage() {
 
   return (
     <AgentsPanel
-      header={{ title: 'Agents', description: 'Manage agents and model configurations.' }}
+      header={{ title: '智能体', description: '管理智能体和模型配置。' }}
       searchQuery={settingsSearchQuery}
       onSearchQueryChange={setSettingsSearchQuery}
     />

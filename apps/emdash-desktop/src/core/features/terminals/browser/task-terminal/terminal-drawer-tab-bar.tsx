@@ -94,7 +94,7 @@ export const TerminalDrawerTabBar = observer(function TerminalDrawerTabBar({
       <div
         className="flex h-full min-w-0 flex-1 items-center overflow-x-auto"
         role="tablist"
-        aria-label={mode === 'terminals' ? 'Terminals' : 'Scripts'}
+        aria-label={mode === 'terminals' ? '终端' : '脚本'}
       >
         {mode === 'terminals' ? (
           <>
@@ -120,7 +120,7 @@ export const TerminalDrawerTabBar = observer(function TerminalDrawerTabBar({
                       render={
                         <button
                           type="button"
-                          aria-label={`Close ${terminal.data.name}`}
+                          aria-label={`关闭 ${terminal.data.name}`}
                           className="mr-1 flex size-4 shrink-0 items-center justify-center rounded text-foreground-muted opacity-0 group-hover:opacity-100 hover:bg-background hover:text-foreground focus-visible:opacity-100"
                           onPointerDown={(event) => event.stopPropagation()}
                           onClick={(event) => {
@@ -132,7 +132,7 @@ export const TerminalDrawerTabBar = observer(function TerminalDrawerTabBar({
                     >
                       <X className="size-3" />
                     </Tooltip.Trigger>
-                    <Tooltip.Content>Close terminal</Tooltip.Content>
+                    <Tooltip.Content>关闭终端</Tooltip.Content>
                   </Tooltip.Root>
                 }
               />
@@ -165,8 +165,8 @@ export const TerminalDrawerTabBar = observer(function TerminalDrawerTabBar({
                         type="button"
                         aria-label={
                           script.isRunning
-                            ? `Stop ${script.data.label} script`
-                            : `Run ${script.data.label} script`
+                            ? `停止 ${script.data.label} 脚本`
+                            : `运行 ${script.data.label} 脚本`
                         }
                         className="flex size-3 items-center justify-center text-foreground-muted hover:text-foreground"
                         onClick={(event) => {
@@ -182,7 +182,7 @@ export const TerminalDrawerTabBar = observer(function TerminalDrawerTabBar({
                   >
                     {script.isRunning ? <Pause className="size-3" /> : <Play className="size-3" />}
                   </Tooltip.Trigger>
-                  <Tooltip.Content>{script.isRunning ? 'Stop' : 'Run'}</Tooltip.Content>
+                  <Tooltip.Content>{script.isRunning ? '停止' : '运行'}</Tooltip.Content>
                 </Tooltip.Root>
               }
             />
@@ -192,8 +192,8 @@ export const TerminalDrawerTabBar = observer(function TerminalDrawerTabBar({
       <div className="mx-1 h-4 w-px shrink-0 bg-border" aria-hidden="true" />
       <Tabs.Root value={mode} onValueChange={(value) => onModeChange(value as typeof mode)}>
         <Tabs.List>
-          <Tabs.Tab value="terminals">Terminals</Tabs.Tab>
-          <Tabs.Tab value="scripts">Scripts</Tabs.Tab>
+          <Tabs.Tab value="terminals">终端</Tabs.Tab>
+          <Tabs.Tab value="scripts">脚本</Tabs.Tab>
         </Tabs.List>
       </Tabs.Root>
     </div>
@@ -224,7 +224,7 @@ export function NewTerminalButton({
               size="xs"
               icon
               className="size-6 rounded-r-none px-0"
-              aria-label="New terminal"
+              aria-label="新建终端"
               onClick={() => onAddTerminal()}
             />
           }
@@ -232,7 +232,7 @@ export function NewTerminalButton({
           <Plus className="size-3" />
         </Tooltip.Trigger>
         <Tooltip.Content>
-          New terminal <BoundShortcut command="task.newTerminal" variant="keycaps" />
+          新建终端 <BoundShortcut command="task.newTerminal" variant="keycaps" />
         </Tooltip.Content>
       </Tooltip.Root>
       <DropdownMenu.Root onOpenChange={(open) => open && onShellMenuOpen()}>
@@ -244,7 +244,7 @@ export function NewTerminalButton({
               size="xs"
               icon
               className="size-6 rounded-l-none px-0"
-              aria-label="New terminal with shell"
+              aria-label="选择 Shell 新建终端"
             />
           }
         >
@@ -254,15 +254,15 @@ export function NewTerminalButton({
           {shellMenuState.kind === 'loading' ? (
             <DropdownMenu.Item disabled>
               <LoaderCircle className="animate-spin" />
-              Loading shells…
+              正在加载 Shell…
             </DropdownMenu.Item>
           ) : shellMenuState.kind === 'error' ? (
             <DropdownMenu.Item title={shellMenuState.message} onClick={onRetryShellAvailability}>
               <RefreshCw />
-              Failed to load shells
+              无法加载 Shell
             </DropdownMenu.Item>
           ) : shellMenuState.availability.length === 0 ? (
-            <DropdownMenu.Item disabled>No shells found</DropdownMenu.Item>
+            <DropdownMenu.Item disabled>未找到 Shell</DropdownMenu.Item>
           ) : (
             shellMenuState.availability.map((entry) => (
               <DropdownMenu.Item

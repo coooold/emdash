@@ -73,22 +73,11 @@ import { childProcessSpawner } from '@emdash/wire/worker/node';
 import { app } from 'electron';
 import { createAutomationCreationAdmissionController } from '@core/features/automations/node/creation-admission';
 import { automationRuntimePaths } from '@core/features/automations/node/runtime-paths';
-import { createGitHubCredentialReader } from '@core/features/github/api/node/services/github-credentials';
 import { createGitCredentialChannelsController } from '@core/features/github/node/services/git-credential-channels-controller';
-import { createIntegrationCredentialReader } from '@core/features/integrations/api/node/integration-credential-reader';
-import { getIntegrationAccountStore } from '@core/features/integrations/node/integration-account-store-instance';
 import { mementoSweepPolicies } from '@core/manifests/shared/memento-catalog';
 import { mementosWireContract, type MementosWireContract } from '@core/primitives/mementos/api';
 import { mementosComponent } from '@core/services/mementos/node';
-import { pullRequestsContract, type PullRequestsContract } from '@core/services/pull-requests/api';
-import { pullRequestsComponent } from '@core/services/pull-requests/node';
-import { createPullRequestsAuthController } from '@core/services/pull-requests/node/pull-requests-auth';
-import {
-  resolvePullRequestIntegration,
-  resolvePullRequestSyncIdentity,
-} from '@core/services/pull-requests/node/sync-identity';
 import { resolveFileSearchDatabasePath } from '@main/core/file-search/database-path';
-import { providerAccountRegistry } from '@main/core/provider-accounts/provider-account-registry-instance';
 import { sessionIntentFilePaths } from '@main/core/runtime/session-intent-stores';
 import { getGitExecutable } from '@main/core/utils/exec';
 import { getAppDb } from '@main/db/instance';
@@ -111,7 +100,6 @@ export type ResourceUsageRuntimeClient = ContractClient<ResourceUsageContract>;
 export type ScriptsRuntimeClient = ContractClient<ScriptsContract>;
 export type HostDependenciesClient = ContractClient<HostDependenciesContract>;
 export type MementosRuntimeClient = ContractClient<MementosWireContract>;
-export type PullRequestsRuntimeClient = ContractClient<PullRequestsContract>;
 export type TerminalsRuntimeClient = ContractClient<TerminalsContract>;
 export type TuiAgentsRuntimeClient = ContractClient<TuiAgentsContract>;
 export type WorkspaceRegistryRuntimeClient = ContractClient<WorkspaceRegistryContract>;
@@ -129,7 +117,6 @@ export type DesktopRuntimeClients = {
   readonly hostDependencies: HostDependenciesClient;
   readonly hostSettings: HostSettingsRuntimeClient;
   readonly mementos: MementosRuntimeClient;
-  readonly pullRequests: PullRequestsRuntimeClient;
   readonly resourceUsage: ResourceUsageRuntimeClient;
   readonly scripts: ScriptsRuntimeClient;
   readonly terminals: TerminalsRuntimeClient;
@@ -149,7 +136,6 @@ export type WorkerStatusSource = {
 
 export type DesktopRuntimeWorkers = {
   readonly acp: WorkerStatusSource;
-  readonly pullRequests: WorkerStatusSource;
   readonly tuiAgents: WorkerStatusSource;
 };
 
@@ -312,33 +298,6 @@ function startDesktopWorkersWithHost(
       sweepPolicies: mementoSweepPolicies,
     },
   });
-  const pullRequestsWorker = host.create(pullRequestsComponent, {
-    name: 'pull-requests',
-    executable: desktopWorkerPath('pull-requests'),
-    env: process.env,
-    dependencies: {
-      // Identity is resolved per request through the seam bound during services
-      // boot (spec: github-git-settings §8); until then requests fail closed.
-      githubAuth: createPullRequestsAuthController({
-        resolveIntegration: resolvePullRequestIntegration,
-        resolveSyncIdentity: resolvePullRequestSyncIdentity,
-        readCredentials: (() => {
-          const accounts = {
-            getAccount: (providerId: string, accountId?: string) =>
-              getIntegrationAccountStore().getAccount(providerId, accountId),
-          };
-          const readGitHub = createGitHubCredentialReader(accounts, providerAccountRegistry);
-          return createIntegrationCredentialReader(accounts, providerAccountRegistry, {
-            github: async (_integrationId, accountId, host) => await readGitHub(accountId, host),
-          });
-        })(),
-      }),
-    },
-    config: {
-      databasePath: join(app.getPath('userData'), 'pull-requests.db'),
-      incrementalIntervalMs: 60_000,
-    },
-  });
   const terminalsWorker = host.create(
     ...terminalsWorkerSpec({
       executable: desktopWorkerPath('terminals'),
@@ -387,7 +346,6 @@ function startDesktopWorkersWithHost(
   );
   const agentConfigReady = timedReady('agent-config', agentConfigWorker.ready());
   const mementosReady = timedReady('mementos', mementosWorker.ready());
-  const pullRequestsReady = timedReady('pull-requests', pullRequestsWorker.ready());
   const resourceUsageReady = timedReady('resource-usage', resourceUsageWorker.ready());
   const terminalsReady = timedReady('terminals', terminalsWorker.ready());
   const filesReady = timedReady(
@@ -531,7 +489,6 @@ function startDesktopWorkersWithHost(
     gitReady,
     hostSettingsReady,
     mementosReady,
-    pullRequestsReady,
     resourceUsageReady,
     scriptsReady,
     terminalsReady,
@@ -562,7 +519,6 @@ function startDesktopWorkersWithHost(
       hostDependencies: hostDependencies.client,
       hostSettings: queuedClient(hostSettingsContract, () => hostSettingsReady),
       mementos: queuedClient(mementosWireContract, () => mementosReady),
-      pullRequests: queuedClient(pullRequestsContract, () => pullRequestsReady),
       resourceUsage: queuedClient(resourceUsageContract, () => resourceUsageReady),
       scripts: queuedClient(scriptsContract, () => scriptsReady),
       terminals: queuedClient(terminalsContract, () => terminalsReady),
@@ -573,7 +529,6 @@ function startDesktopWorkersWithHost(
     },
     workers: {
       acp: deferredWorkerStatus(acpStart.then((result) => result.worker)),
-      pullRequests: pullRequestsWorker,
       tuiAgents: deferredWorkerStatus(tuiAgentsReady.then((result) => result.worker)),
     },
     runtimeReady: () => runtimeReady,

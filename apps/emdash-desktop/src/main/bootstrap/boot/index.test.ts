@@ -3,12 +3,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const bundles = {
   controllers: {},
   database: { editorBuffer: { dispose: vi.fn() } },
-  infrastructure: {},
   runtimes: { clients: {} },
   services: {
     automations: {},
     projects: {},
-    pullRequestsRegistration: {},
   },
 };
 const mocks = vi.hoisted(() => ({
@@ -20,7 +18,6 @@ const mocks = vi.hoisted(() => ({
   controllers: vi.fn(),
   database: vi.fn(),
   gateway: vi.fn(),
-  infrastructure: vi.fn(),
   logError: vi.fn(),
   logInfo: vi.fn(),
   logWarn: vi.fn(),
@@ -55,7 +52,6 @@ vi.mock('./phases/background', () => ({ bootBackground: mocks.background }));
 vi.mock('./phases/controllers', () => ({ bootControllers: mocks.controllers }));
 vi.mock('./phases/database', () => ({ bootDatabase: mocks.database }));
 vi.mock('./phases/gateway', () => ({ installGateway: mocks.gateway }));
-vi.mock('./phases/infrastructure', () => ({ bootInfrastructure: mocks.infrastructure }));
 vi.mock('./phases/runtimes', () => ({ bootRuntimes: mocks.runtimes }));
 vi.mock('./phases/services', () => ({ bootServices: mocks.services }));
 
@@ -66,7 +62,6 @@ describe('finishBoot', () => {
     for (const mock of Object.values(mocks)) mock.mockReset();
     bundles.database.editorBuffer.dispose.mockReset();
     mocks.database.mockResolvedValue(bundles.database);
-    mocks.infrastructure.mockResolvedValue(bundles.infrastructure);
     mocks.runtimes.mockResolvedValue(bundles.runtimes);
     mocks.services.mockResolvedValue(bundles.services);
     mocks.controllers.mockResolvedValue(bundles.controllers);
@@ -103,7 +98,6 @@ describe('finishBoot', () => {
 
     await expect(finishBoot({} as never)).rejects.toBe(error);
 
-    expect(mocks.infrastructure).not.toHaveBeenCalled();
     expect(mocks.services).not.toHaveBeenCalled();
     expect(mocks.appScopeDispose).toHaveBeenCalledWith(error);
     // bootDatabase cleans up its own partial resources; there is nothing for

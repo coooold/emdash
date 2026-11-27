@@ -6,16 +6,16 @@ import type { WorkspaceLifecycleStepInfo } from '@core/primitives/tasks/api';
  * ("what is happening"), so the two surfaces cannot drift apart.
  */
 export const LIFECYCLE_STEP_TITLES: Record<WorkspaceLifecycleStepInfo['id'], string> = {
-  'adopt-worktree': 'Adopt worktree',
-  'fetch-branch': 'Fetch branch',
-  'fetch-remote-base': 'Fetch remote base',
-  'create-worktree': 'Create worktree',
-  'configure-branch': 'Configure branch',
-  'copy-artifacts': 'Copy artifacts',
-  'push-branch': 'Push branch',
-  'fetch-refs': 'Fetch refs',
-  prepare: 'Prepare',
-  setup: 'Setup',
-  run: 'Run',
-  teardown: 'Teardown',
+  'adopt-worktree': '复用工作树',
+  'fetch-branch': '获取分支',
+  'fetch-remote-base': '获取远端基准分支',
+  'create-worktree': '创建工作树',
+  'configure-branch': '配置分支',
+  'copy-artifacts': '复制保留文件',
+  'push-branch': '推送分支',
+  'fetch-refs': '获取引用',
+  prepare: '准备',
+  setup: '设置',
+  run: '运行',
+  teardown: '清理',
 };

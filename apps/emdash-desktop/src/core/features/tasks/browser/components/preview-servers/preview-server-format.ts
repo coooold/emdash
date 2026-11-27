@@ -1,6 +1,6 @@
 import {
   formatDirectPreviewServerHost,
-  type PreviewServer,
+  type DirectPreviewServer,
 } from '@core/primitives/preview-servers/api';
 
 export function formatPreviewUrl(url: string): string {
@@ -12,32 +12,27 @@ export function formatPreviewUrl(url: string): string {
   }
 }
 
-export function formatPreviewServerLabel(server: PreviewServer): string {
-  if (server.kind === 'forwarded') {
-    return server.localPort === undefined
-      ? `remote ${server.remotePort}`
-      : `${server.remotePort} -> ${server.localPort}`;
-  }
+export function formatPreviewServerLabel(server: DirectPreviewServer): string {
   const host = formatDirectPreviewServerHost(server.host);
   return formatPreviewUrl(`${server.protocol}//${host}:${server.port}${server.urlPath}`);
 }
 
-export function previewServerStatusLabel(server: PreviewServer): string {
+export function previewServerStatusLabel(server: DirectPreviewServer): string {
   switch (server.status.kind) {
     case 'ready':
-      return server.kind === 'forwarded' ? 'Forwarded' : 'Ready';
+      return '已就绪';
     case 'starting':
-      return 'Starting';
+      return '正在启动';
     case 'not-listening':
-      return 'Remote port not listening yet';
+      return '端口尚未监听';
     case 'reconnecting':
-      return 'Reconnecting';
+      return '正在重新连接';
     case 'failed':
-      return 'Failed';
+      return '失败';
   }
 }
 
-export function previewServerStatusClasses(server: PreviewServer): string {
+export function previewServerStatusClasses(server: DirectPreviewServer): string {
   switch (server.status.kind) {
     case 'ready':
       return 'bg-background-info text-foreground-info hover:bg-background-info-hover';

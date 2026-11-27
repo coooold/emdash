@@ -44,22 +44,8 @@ vi.mock('@core/features/source-control/api/browser/stores/source-control-selecto
 }));
 
 vi.mock('@core/features/settings/contributions/browser/open-in-menu', () => ({
-  OpenInMenu: ({
-    path,
-    isRemote,
-    sshConnectionId,
-  }: {
-    path: string;
-    isRemote: boolean;
-    sshConnectionId?: string;
-  }) => (
-    <button
-      type="button"
-      aria-label="Open In"
-      data-path={path}
-      data-remote={String(isRemote)}
-      data-connection={sshConnectionId}
-    />
+  OpenInMenu: ({ path }: { path: string }) => (
+    <button type="button" aria-label="Open In" data-path={path} />
   ),
 }));
 
@@ -110,12 +96,11 @@ describe('ProjectHeader', () => {
 
     const openIn = host.querySelector<HTMLButtonElement>('[aria-label="Open In"]');
     expect(openIn?.dataset.path).toBe('/repos/emdash');
-    expect(openIn?.dataset.remote).toBe('false');
 
-    const actions = host.querySelector<HTMLButtonElement>('[aria-label="Project actions"]');
+    const actions = host.querySelector<HTMLButtonElement>('[aria-label="项目操作"]');
     await act(async () => actions?.click());
     const remove = [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].find(
-      (item) => item.textContent === 'Remove Project'
+      (item) => item.textContent === '移除项目'
     );
     await act(async () => remove?.click());
     expect(mocks.confirmDeleteProject).toHaveBeenCalledWith({
@@ -127,10 +112,10 @@ describe('ProjectHeader', () => {
   it('opens the rename modal with the current name from the actions menu', async () => {
     await act(async () => root.render(<ProjectHeader projectId="project-1" />));
 
-    const actions = host.querySelector<HTMLButtonElement>('[aria-label="Project actions"]');
+    const actions = host.querySelector<HTMLButtonElement>('[aria-label="项目操作"]');
     await act(async () => actions?.click());
     const rename = [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].find(
-      (item) => item.textContent === 'Rename Project'
+      (item) => item.textContent === '重命名项目'
     );
     expect(rename).not.toBeUndefined();
     await act(async () => rename?.click());
@@ -141,7 +126,7 @@ describe('ProjectHeader', () => {
     expect(mocks.confirmDeleteProject).not.toHaveBeenCalled();
   });
 
-  it('uses the remote Project icon and SSH Open In target', async () => {
+  it('shows the legacy SSH project name without host actions', async () => {
     state.project.type = 'ssh';
     state.project.connectionId = 'machine-1';
 
@@ -150,8 +135,8 @@ describe('ProjectHeader', () => {
     const identityIcon = host.querySelector('[data-severity="neutral"]');
     expect(identityIcon?.querySelector('.lucide-folder-input')).not.toBeNull();
     expect(host.querySelector('.lucide-folder-open')).toBeNull();
-    const openIn = host.querySelector<HTMLButtonElement>('[aria-label="Open In"]');
-    expect(openIn?.dataset.remote).toBe('true');
-    expect(openIn?.dataset.connection).toBe('machine-1');
+    expect(host.querySelector('h1')?.textContent).toBe('Emdash');
+    expect(host.querySelector('[aria-label="Open In"]')).toBeNull();
+    expect(host.querySelector('[aria-label="项目操作"]')).toBeNull();
   });
 });

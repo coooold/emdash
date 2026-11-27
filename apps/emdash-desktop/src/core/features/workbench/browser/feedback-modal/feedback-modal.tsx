@@ -8,9 +8,8 @@ import {
   Tooltip,
 } from '@emdash/ui/react/primitives';
 import { useQuery } from '@tanstack/react-query';
-import { ExternalLink, ImageIcon, Info, Paperclip, XIcon } from 'lucide-react';
+import { ImageIcon, Info, Paperclip, XIcon } from 'lucide-react';
 import React, { useCallback, useState } from 'react';
-import { useAccounts } from '@core/features/integrations/api/browser/use-provider-accounts';
 import { getUpdateStore } from '@core/features/updates/contributions/app-stores';
 import { useModalController } from '@core/manifests/browser/modal-api';
 import { getHostClient } from '@core/primitives/desktop-host/browser/host-client';
@@ -18,7 +17,6 @@ import { ConfirmButton } from '@core/primitives/keybindings/browser/confirm-butt
 import { defineModal } from '@core/primitives/modals/react';
 import { useAttachments } from '@core/primitives/react-hooks/browser/use-attachments';
 import { cn } from '@core/primitives/styling/browser/cn';
-import { EMDASH_ISSUES_NEW_URL } from '@core/primitives/urls/api/urls';
 import { useFeedbackSubmit } from './use-feedback-submit';
 
 type FeedbackModalArgs = {
@@ -42,7 +40,7 @@ function AttachmentThumbnail({
       <button
         type="button"
         onClick={onRemove}
-        aria-label={`Remove ${name}`}
+        aria-label={`移除 ${name}`}
         disabled={disabled}
         className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:enabled:opacity-100 disabled:cursor-not-allowed"
       >
@@ -55,8 +53,6 @@ function AttachmentThumbnail({
 export function FeedbackModal({ blurb }: FeedbackModalArgs) {
   const controller = useModalController('feedbackModal');
   const [includeDiagnosticLogs, setIncludeDiagnosticLogs] = useState(false);
-  const { data: githubAccounts } = useAccounts('github');
-  const githubLogin = githubAccounts?.find((account) => account.isDefault)?.login;
   const appVersion = getUpdateStore().currentVersion;
   const { data: platformDisplayName } = useQuery({
     queryKey: ['app', 'platformDisplayName'],
@@ -91,7 +87,6 @@ export function FeedbackModal({ blurb }: FeedbackModalArgs) {
     handleSubmit,
     canSubmit,
   } = useFeedbackSubmit({
-    githubLogin,
     appVersion,
     platformDisplayName,
     onSuccess: () => {
@@ -132,13 +127,13 @@ export function FeedbackModal({ blurb }: FeedbackModalArgs) {
         <div className="border-primary bg-primary/5 absolute inset-0 z-10 flex items-center justify-center rounded-xl border-2 border-dashed">
           <div className="text-primary flex flex-col items-center gap-1">
             <ImageIcon className="size-6" />
-            <span className="text-xs font-medium">Drop image here</span>
+            <span className="text-xs font-medium">将图片拖放到此处</span>
           </div>
         </div>
       )}
       <Dialog.Header>
         <div className="flex flex-col gap-1">
-          <Dialog.Title>Feedback</Dialog.Title>
+          <Dialog.Title>反馈</Dialog.Title>
           {blurb ? <Dialog.Description className="text-xs">{blurb}</Dialog.Description> : null}
         </div>
       </Dialog.Header>
@@ -146,13 +141,13 @@ export function FeedbackModal({ blurb }: FeedbackModalArgs) {
         <form id="feedback-form" className="space-y-4 pt-0.5" onSubmit={handleFormSubmit}>
           <div className="space-y-1.5">
             <label htmlFor="feedback-details" className="sr-only">
-              Feedback details
+              反馈内容
             </label>
             <Textarea
               id="feedback-details"
               autoFocus
               rows={5}
-              placeholder="What do you like? How can we improve?"
+              placeholder="你喜欢哪些功能？我们还能如何改进？"
               className="resize-none"
               value={feedbackDetails}
               onChange={(event) => {
@@ -165,12 +160,12 @@ export function FeedbackModal({ blurb }: FeedbackModalArgs) {
 
           <div className="space-y-1.5">
             <label htmlFor="feedback-contact" className="sr-only">
-              Contact email
+              联系邮箱
             </label>
             <Input
               id="feedback-contact"
               type="text"
-              placeholder="productive@example.com (optional)"
+              placeholder="name@example.com（选填）"
               value={contactEmail}
               aria-invalid={contactEmailError ? 'true' : undefined}
               aria-describedby={contactEmailError ? 'feedback-contact-error' : undefined}
@@ -199,7 +194,7 @@ export function FeedbackModal({ blurb }: FeedbackModalArgs) {
                   onCheckedChange={(checked) => setIncludeDiagnosticLogs(Boolean(checked))}
                   disabled={submitting}
                 />
-                <span className="min-w-0">Include diagnostic logs</span>
+                <span className="min-w-0">附上诊断日志</span>
               </label>
               <Tooltip.Provider delay={150}>
                 <Tooltip.Root>
@@ -207,27 +202,17 @@ export function FeedbackModal({ blurb }: FeedbackModalArgs) {
                     <button
                       type="button"
                       className="text-muted-foreground mt-1 inline-flex size-4 items-center justify-center hover:text-foreground"
-                      aria-label="More information about diagnostic logs"
+                      aria-label="查看诊断日志说明"
                     >
                       <Info className="size-3.5" aria-hidden="true" />
                     </button>
                   </Tooltip.Trigger>
                   <Tooltip.Content side="top" className="max-w-xs text-xs">
-                    Attaches recent app logs with sensitive details redacted.
+                    附上近期应用日志，其中的敏感信息已隐去。
                   </Tooltip.Content>
                 </Tooltip.Root>
               </Tooltip.Provider>
             </div>
-
-            <a
-              href={EMDASH_ISSUES_NEW_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-muted-foreground inline-flex items-center gap-1 text-xs hover:text-foreground"
-            >
-              <span>Open Github Issue instead</span>
-              <ExternalLink className="size-3" aria-hidden="true" />
-            </a>
 
             <input
               ref={fileInputRef}
@@ -274,7 +259,7 @@ export function FeedbackModal({ blurb }: FeedbackModalArgs) {
           disabled={submitting}
         >
           <Paperclip className="h-4 w-4" aria-hidden="true" />
-          <span>Attach image</span>
+          <span>附加图片</span>
         </Button>
         <ConfirmButton
           variant="primary"
@@ -287,10 +272,10 @@ export function FeedbackModal({ blurb }: FeedbackModalArgs) {
           {submitting ? (
             <>
               <Spinner size="sm" />
-              <span>Sending...</span>
+              <span>正在发送…</span>
             </>
           ) : (
-            <span>Send Feedback</span>
+            <span>发送反馈</span>
           )}
         </ConfirmButton>
       </Dialog.Footer>

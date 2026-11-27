@@ -70,17 +70,17 @@ afterEach(async () => {
 
 it('shows uncertainty separately from absence and allows a retry in settings', async () => {
   await act(async () => root.render(<HiddenToolsSettingsCard />));
-  await expect.element(page.getByText('Couldn’t check', { exact: true })).toBeVisible();
-  await expect.element(page.getByRole('switch', { name: 'Show Zed in open menu' })).toBeDisabled();
+  await expect.element(page.getByText('无法检查', { exact: true })).toBeVisible();
+  await expect.element(page.getByRole('switch', { name: '在打开方式菜单中显示 Zed' })).toBeDisabled();
   await expect
-    .element(page.getByRole('switch', { name: 'Hide Finder in open menu' }))
+    .element(page.getByRole('switch', { name: '在打开方式菜单中隐藏 Finder' }))
     .toBeEnabled();
-  await page.getByRole('button', { name: 'Retry', exact: true }).click();
+  await page.getByRole('button', { name: '重试', exact: true }).click();
   expect(mocks.refresh).toHaveBeenCalledOnce();
   mocks.apps.refreshing = true;
   await act(async () => root.render(<HiddenToolsSettingsCard />));
-  await expect.element(page.getByRole('button', { name: 'Retry', exact: true })).toBeDisabled();
-  expect(host.textContent).not.toContain('Checking');
+  await expect.element(page.getByRole('button', { name: '重试', exact: true })).toBeDisabled();
+  expect(host.textContent).not.toContain('正在检查');
 });
 
 it('shows one loading status while checking apps in settings', async () => {
@@ -88,20 +88,21 @@ it('shows one loading status while checking apps in settings', async () => {
   mocks.apps.hasDetectionProblem = false;
   mocks.apps.refreshing = true;
   await act(async () => root.render(<HiddenToolsSettingsCard />));
-  await expect.element(page.getByRole('status')).toHaveTextContent('Checking applications…');
-  expect(host.textContent?.match(/Checking/g)).toHaveLength(1);
-  expect(page.getByRole('button', { name: 'Retry', exact: true }).elements()).toHaveLength(0);
-  await expect.element(page.getByRole('switch', { name: 'Show Zed in open menu' })).toBeDisabled();
+  await expect.element(page.getByRole('status')).toHaveTextContent('正在检查应用…');
+  expect(host.textContent?.match(/正在检查/g)).toHaveLength(1);
+  expect(page.getByRole('button', { name: '重试', exact: true }).elements()).toHaveLength(0);
+  await expect.element(page.getByRole('switch', { name: '在打开方式菜单中显示 Zed' })).toBeDisabled();
 });
 
 it('keeps Finder usable and omits unknown or pending apps from the real dropdown', async () => {
   mocks.apps.labels = { finder: 'Finder', zed: 'Zed', vscode: 'VS Code' };
   await act(async () => root.render(<OpenInMenu path="/test/project" />));
-  await page.getByRole('button', { name: 'Open in Finder', exact: true }).click();
+  await page.getByRole('button', { name: '在 Finder 中打开', exact: true }).click();
   expect(mocks.openIn).toHaveBeenCalledWith(
-    expect.objectContaining({ app: 'finder', path: '/test/project' })
+    { app: 'finder', path: '/test/project' },
+    { timeoutMs: 75_000 }
   );
-  await page.getByRole('button', { name: 'Open in options', exact: true }).click();
+  await page.getByRole('button', { name: '打开方式选项', exact: true }).click();
   await expect
     .element(page.getByRole('menuitemradio', { name: 'Finder', exact: true }))
     .toBeEnabled();

@@ -3,8 +3,8 @@ import { keybinding } from '@core/primitives/keybindings/api';
 
 export const newConversationCommand = defineCommand({
   id: 'task.newConversation',
-  title: 'New Conversation',
-  description: 'Create a new conversation in the current task',
+  title: '新建对话',
+  description: '在当前任务中新建对话',
   category: 'Conversations',
   icon: 'message-square-plus',
   keybinding: keybinding.settings('newConversation', 'Mod+T'),
@@ -12,8 +12,8 @@ export const newConversationCommand = defineCommand({
 
 export const newConversationSplitRightCommand = defineCommand({
   id: 'task.newConversationSplitRight',
-  title: 'New Conversation in Right Split',
-  description: 'Create a new conversation in a split pane to the right',
+  title: '在右侧分栏新建对话',
+  description: '在右侧分栏中创建对话',
   category: 'Conversations',
   icon: 'columns-2',
   keybinding: keybinding.settings('newConversationSplitRight', 'Mod+D'),
@@ -21,8 +21,8 @@ export const newConversationSplitRightCommand = defineCommand({
 
 export const sidebarChangesCommand = defineCommand({
   id: 'task.sidebarChanges',
-  title: 'View Changes',
-  description: 'Open the Changes panel in the right sidebar',
+  title: '查看更改',
+  description: '打开右侧边栏的更改面板',
   category: 'View',
   icon: 'file-diff',
   keybinding: keybinding.settings('sidebarChanges', 'Mod+Shift+1'),
@@ -30,8 +30,8 @@ export const sidebarChangesCommand = defineCommand({
 
 export const sidebarConversationsCommand = defineCommand({
   id: 'task.sidebarConversations',
-  title: 'View Conversations',
-  description: 'Open the Conversations panel in the right sidebar',
+  title: '查看对话',
+  description: '打开右侧边栏的对话面板',
   category: 'View',
   icon: 'message-square',
   keybinding: keybinding.settings('sidebarConversations', 'Mod+Shift+3'),
@@ -39,8 +39,8 @@ export const sidebarConversationsCommand = defineCommand({
 
 export const sidebarFilesCommand = defineCommand({
   id: 'task.sidebarFiles',
-  title: 'View Files',
-  description: 'Open the Files panel in the right sidebar',
+  title: '查看文件',
+  description: '打开右侧边栏的文件面板',
   category: 'View',
   icon: 'folder-open',
   keybinding: keybinding.settings('sidebarFiles', 'Mod+Shift+2'),
@@ -48,8 +48,8 @@ export const sidebarFilesCommand = defineCommand({
 
 export const fileContentSearchCommand = defineCommand({
   id: 'task.fileContentSearch',
-  title: 'Search File Contents',
-  description: 'Focus file content search in the right sidebar',
+  title: '搜索文件内容',
+  description: '将焦点移到右侧边栏的文件内容搜索框',
   category: 'Search',
   icon: 'search',
   keybinding: keybinding.settings('fileContentSearch', 'Mod+Shift+F', {
@@ -59,16 +59,16 @@ export const fileContentSearchCommand = defineCommand({
 
 export const viewTerminalsCommand = defineCommand({
   id: 'task.viewTerminals',
-  title: 'View Terminals',
-  description: 'Open the terminal drawer',
+  title: '查看终端',
+  description: '打开终端面板',
   category: 'View',
   icon: 'terminal',
 });
 
 export const toggleTerminalDrawerCommand = defineCommand({
   id: 'task.toggleTerminalDrawer',
-  title: 'Toggle Terminal Drawer',
-  description: 'Show or hide the terminal drawer',
+  title: '切换终端面板',
+  description: '显示或隐藏终端面板',
   category: 'Panel',
   icon: 'terminal',
   keybinding: keybinding.settings('toggleTerminalDrawer', 'Mod+J'),
@@ -76,8 +76,8 @@ export const toggleTerminalDrawerCommand = defineCommand({
 
 export const toggleRightSidebarCommand = defineCommand({
   id: 'task.toggleRightSidebar',
-  title: 'Toggle Right Sidebar',
-  description: 'Show or hide the right sidebar',
+  title: '切换右侧边栏',
+  description: '显示或隐藏右侧边栏',
   category: 'Panel',
   icon: 'panel-right',
   keybinding: keybinding.settings('toggleRightSidebar', 'Mod+.'),
@@ -85,8 +85,8 @@ export const toggleRightSidebarCommand = defineCommand({
 
 export const newTerminalCommand = defineCommand({
   id: 'task.newTerminal',
-  title: 'New Terminal',
-  description: 'Create a new terminal session',
+  title: '新建终端',
+  description: '新建终端会话',
   category: 'Terminals',
   icon: 'square-terminal',
   keybinding: keybinding.settings('newTerminal', 'Mod+Shift+`'),
@@ -94,8 +94,8 @@ export const newTerminalCommand = defineCommand({
 
 export const openBrowserCommand = defineCommand({
   id: 'task.openBrowser',
-  title: 'Open Browser',
-  description: 'Open an in-app browser for this task',
+  title: '打开浏览器',
+  description: '为此任务打开内置浏览器',
   category: 'Browser',
   icon: 'globe',
   keybinding: keybinding.settings('openBrowser', 'Mod+Shift+B'),
@@ -103,48 +103,48 @@ export const openBrowserCommand = defineCommand({
 
 export const browserGoBackCommand = defineCommand({
   id: 'task.browserGoBack',
-  title: 'Browser Back',
-  description: 'Go back in the active browser tab',
+  title: '浏览器后退',
+  description: '在当前浏览器标签页中后退',
   category: 'Browser',
   icon: 'arrow-left',
 });
 
 export const browserGoForwardCommand = defineCommand({
   id: 'task.browserGoForward',
-  title: 'Browser Forward',
-  description: 'Go forward in the active browser tab',
+  title: '浏览器前进',
+  description: '在当前浏览器标签页中前进',
   category: 'Browser',
   icon: 'arrow-right',
 });
 
 export const browserReloadCommand = defineCommand({
   id: 'task.browserReload',
-  title: 'Reload Browser',
-  description: 'Reload the active browser tab',
+  title: '刷新浏览器',
+  description: '刷新当前浏览器标签页',
   category: 'Browser',
   icon: 'refresh-cw',
 });
 
 export const browserFocusUrlCommand = defineCommand({
   id: 'task.browserFocusUrl',
-  title: 'Focus Browser URL',
-  description: 'Focus the URL field in the active browser tab',
+  title: '聚焦浏览器地址栏',
+  description: '将焦点移到当前浏览器标签页的地址栏',
   category: 'Browser',
   icon: 'text-cursor-input',
 });
 
 export const browserOpenExternalCommand = defineCommand({
   id: 'task.browserOpenExternal',
-  title: 'Open Browser URL Externally',
-  description: 'Open the active browser URL in the system browser',
+  title: '在系统浏览器中打开',
+  description: '在系统浏览器中打开当前页面地址',
   category: 'Browser',
   icon: 'external-link',
 });
 
 export const browserCopyUrlCommand = defineCommand({
   id: 'task.browserCopyUrl',
-  title: 'Copy Browser URL',
-  description: 'Copy the active browser URL',
+  title: '复制网页地址',
+  description: '复制当前页面地址',
   category: 'Browser',
   icon: 'copy',
   keybinding: keybinding.settings('browserCopyUrl', 'Mod+Shift+C'),
@@ -152,40 +152,40 @@ export const browserCopyUrlCommand = defineCommand({
 
 export const gitFetchCommand = defineCommand({
   id: 'task.gitFetch',
-  title: 'Git Fetch',
-  description: 'Fetch latest changes from remote',
+  title: 'Git 获取',
+  description: '获取远端的最新更改',
   category: 'Git',
   icon: 'git-pull-request',
 });
 
 export const gitPullCommand = defineCommand({
   id: 'task.gitPull',
-  title: 'Git Pull',
-  description: 'Pull latest changes from remote',
+  title: 'Git 拉取',
+  description: '拉取远端的最新更改',
   category: 'Git',
   icon: 'arrow-down-to-line',
 });
 
 export const gitPushCommand = defineCommand({
   id: 'task.gitPush',
-  title: 'Git Push',
-  description: 'Push commits to remote',
+  title: 'Git 推送',
+  description: '将提交推送到远端',
   category: 'Git',
   icon: 'arrow-up-to-line',
 });
 
 export const pinTaskCommand = defineCommand({
   id: 'task.pin',
-  title: 'Pin Task',
-  description: 'Pin this task to keep it at the top',
+  title: '置顶任务',
+  description: '将此任务固定在列表顶部',
   category: 'Task',
   icon: 'pin',
 });
 
 export const archiveTaskCommand = defineCommand({
   id: 'task.archive',
-  title: 'Archive Task',
-  description: 'Archive the current task',
+  title: '归档任务',
+  description: '归档当前任务',
   category: 'Task',
   icon: 'archive',
   keybinding: keybinding.settings('archiveTask', 'Mod+Shift+E', {
@@ -195,16 +195,16 @@ export const archiveTaskCommand = defineCommand({
 
 export const convertAutomationCommand = defineCommand({
   id: 'task.convertAutomation',
-  title: 'Convert to Regular Task',
-  description: 'Detach this task from its automation run',
+  title: '转为普通任务',
+  description: '解除此任务与自动化运行的关联',
   category: 'Task',
   icon: 'message-square',
 });
 
 export const nextTaskCommand = defineCommand({
   id: 'task.nextTask',
-  title: 'Next Task',
-  description: 'Switch to the next task',
+  title: '下一个任务',
+  description: '切换到下一个任务',
   category: 'Navigation',
   icon: 'chevron-down',
   keybinding: keybinding.settings('taskNext', 'Mod+Alt+ArrowDown', {
@@ -214,8 +214,8 @@ export const nextTaskCommand = defineCommand({
 
 export const previousTaskCommand = defineCommand({
   id: 'task.prevTask',
-  title: 'Previous Task',
-  description: 'Switch to the previous task',
+  title: '上一个任务',
+  description: '切换到上一个任务',
   category: 'Navigation',
   icon: 'chevron-up',
   keybinding: keybinding.settings('taskPrev', 'Mod+Alt+ArrowUp', {
@@ -225,8 +225,8 @@ export const previousTaskCommand = defineCommand({
 
 export const deleteSelectedTasksCommand = defineCommand({
   id: 'task.deleteSelected',
-  title: 'Delete Selected Tasks',
-  description: 'Delete the selected tasks',
+  title: '删除所选任务',
+  description: '删除当前选中的任务',
   category: 'Task',
   keybinding: keybinding.settings('deleteSelectedTasks', 'Mod+Backspace', {
     ignoreWhenTextInputFocused: true,

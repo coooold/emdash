@@ -20,7 +20,6 @@ const mocks = vi.hoisted(() => ({
   editorBuffersDispose: vi.fn(),
   projectsDispose: vi.fn(),
   projectsRelease: vi.fn(),
-  pullRequestsDispose: vi.fn(),
   runtimesDispose: vi.fn(),
   telemetryDispose: vi.fn(),
   updateService: {
@@ -92,7 +91,6 @@ describe('quit cleanup phases', () => {
         dispose: mocks.projectsDispose,
         release: mocks.projectsRelease,
       },
-      pullRequests: { dispose: mocks.pullRequestsDispose },
       runtimes: { dispose: mocks.runtimesDispose },
     });
 

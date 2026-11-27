@@ -10,7 +10,7 @@ export const ProjectsGroupLabel = observer(function ProjectsGroupLabel() {
 
   return (
     <div className="flex h-[40px] items-center justify-between pr-2.5 pl-5">
-      <MicroLabel className="font-medium text-foreground-tertiary-passive">Projects</MicroLabel>
+      <MicroLabel className="font-medium text-foreground-tertiary-passive">项目</MicroLabel>
       <div className="flex items-center gap-1">
         <DropdownMenu.Root>
           <Tooltip.Root>
@@ -18,30 +18,30 @@ export const ProjectsGroupLabel = observer(function ProjectsGroupLabel() {
               render={
                 <Tooltip.Trigger
                   render={
-                    <Button type="button" variant="ghost" size="xs" icon aria-label="Sort projects">
+                    <Button type="button" variant="ghost" size="xs" icon aria-label="排列项目">
                       <ListFilter />
                     </Button>
                   }
                 />
               }
             />
-            <Tooltip.Content>Sort by</Tooltip.Content>
+            <Tooltip.Content>排序方式</Tooltip.Content>
           </Tooltip.Root>
           <DropdownMenu.Content className="min-w-48">
             <DropdownMenu.Group>
-              <DropdownMenu.Label>Sort by</DropdownMenu.Label>
+              <DropdownMenu.Label>排序方式</DropdownMenu.Label>
               <DropdownMenu.RadioGroup value={getSidebarStore().taskSortBy}>
                 <DropdownMenu.RadioItem
                   value="created-at"
                   onClick={() => getSidebarStore().applySort('created-at')}
                 >
-                  Created at
+                  创建时间
                 </DropdownMenu.RadioItem>
                 <DropdownMenu.RadioItem
                   value="updated-at"
                   onClick={() => getSidebarStore().applySort('updated-at')}
                 >
-                  Last used
+                  最近使用
                 </DropdownMenu.RadioItem>
               </DropdownMenu.RadioGroup>
             </DropdownMenu.Group>
@@ -56,14 +56,14 @@ export const ProjectsGroupLabel = observer(function ProjectsGroupLabel() {
                 size="xs"
                 icon
                 onClick={() => void openAddProjectModal({})}
-                aria-label="Add Project"
+                aria-label="添加项目"
               >
                 <FolderPlus />
               </Button>
             }
           />
           <Tooltip.Content>
-            Add Project
+            添加项目
             <BoundShortcut command="app.newProject" variant="keycaps" />
           </Tooltip.Content>
         </Tooltip.Root>

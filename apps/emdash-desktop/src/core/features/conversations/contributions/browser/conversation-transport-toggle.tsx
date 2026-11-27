@@ -17,7 +17,7 @@ export function ConversationTransportToggle({
       <Tooltip.Trigger
         render={
           <Toggle
-            aria-label="Use chat UI"
+            aria-label="使用聊天界面"
             pressed={useChatUi}
             onPressedChange={(pressed) => onValueChange(pressed ? 'acp' : 'pty')}
             disabled={disabled}
@@ -29,7 +29,7 @@ export function ConversationTransportToggle({
       >
         {useChatUi ? <MessageSquare aria-hidden /> : <SquareTerminal aria-hidden />}
       </Tooltip.Trigger>
-      <Tooltip.Content>{useChatUi ? 'Chat UI' : 'TUI'}</Tooltip.Content>
+      <Tooltip.Content>{useChatUi ? '聊天界面' : '终端界面'}</Tooltip.Content>
     </Tooltip.Root>
   );
 }

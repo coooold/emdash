@@ -20,7 +20,7 @@ type HostAttachmentRegistryLogger = {
 
 export type HostAttachmentRegistryOptions = {
   scope?: Scope;
-  hosts: Pick<Hosts, 'onInvalidate' | 'onReady'>;
+  hosts?: Pick<Hosts, 'onInvalidate' | 'onReady'>;
   logger?: HostAttachmentRegistryLogger;
 };
 
@@ -35,13 +35,13 @@ export class HostAttachmentRegistry {
   ]);
   private readonly participants: HostAttachmentParticipant[] = [];
   private readonly chains = new Map<SerializedHostRef, Promise<void>>();
-  private readonly unsubscribeInvalidation: () => void;
-  private readonly unsubscribeReady: () => void;
+  private readonly unsubscribeInvalidation?: () => void;
+  private readonly unsubscribeReady?: () => void;
   private disposed = false;
 
   constructor(private readonly options: HostAttachmentRegistryOptions) {
-    this.unsubscribeReady = options.hosts.onReady((id) => this.attachHost(hostRef('remote', id)));
-    this.unsubscribeInvalidation = options.hosts.onInvalidate(({ connectionId }) => {
+    this.unsubscribeReady = options.hosts?.onReady((id) => this.attachHost(hostRef('remote', id)));
+    this.unsubscribeInvalidation = options.hosts?.onInvalidate(({ connectionId }) => {
       this.detachHost(hostRef('remote', connectionId));
     });
     options.scope?.add(() => this.dispose());
@@ -70,8 +70,8 @@ export class HostAttachmentRegistry {
   async dispose(): Promise<void> {
     if (this.disposed) return;
     this.disposed = true;
-    this.unsubscribeInvalidation();
-    this.unsubscribeReady();
+    this.unsubscribeInvalidation?.();
+    this.unsubscribeReady?.();
     const hosts = [...this.hosts.values()];
     this.hosts.clear();
     for (const host of hosts) {

@@ -1,12 +1,7 @@
-import { githubIntegrationAuth } from '@core/features/github/contributions/integration-auth';
 import type { IntegrationAuthUiContribution } from '@core/features/integrations/api/browser/integration-auth-ui';
 import type { IntegrationProviderDescriptor } from '@core/features/integrations/api/contract';
-import { gitlabIntegrationAuth } from '@core/features/integrations/contributions/integration-auth';
 
-const integrationAuthContributions: IntegrationAuthUiContribution[] = [
-  githubIntegrationAuth,
-  gitlabIntegrationAuth,
-];
+const integrationAuthContributions: IntegrationAuthUiContribution[] = [];
 
 export function getIntegrationAuthUi(metadata: Pick<IntegrationProviderDescriptor, 'id' | 'auth'>) {
   return integrationAuthContributions.find(

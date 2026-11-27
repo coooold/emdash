@@ -45,7 +45,7 @@ describe('BranchSelector degraded actions', () => {
     });
 
     const refresh = document.querySelector<HTMLButtonElement>(
-      'button[aria-label="Refresh branches"]'
+      'button[aria-label="刷新分支"]'
     );
     expect(refresh?.disabled).toBe(false);
     expect(refresh?.getAttribute('aria-disabled')).toBe('true');

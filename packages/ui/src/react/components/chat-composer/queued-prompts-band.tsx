@@ -10,6 +10,7 @@ export type ComposerQueuedPrompt = {
 };
 
 export interface QueuedPromptsBandProps {
+  chinese?: boolean;
   prompts: ComposerQueuedPrompt[];
   onEdit: (id: string, text: string) => void;
   onDelete: (id: string) => void;
@@ -20,6 +21,7 @@ export interface QueuedPromptsBandProps {
 }
 
 export function QueuedPromptsBand({
+  chinese = false,
   prompts,
   onEdit,
   onDelete,
@@ -110,7 +112,7 @@ export function QueuedPromptsBand({
     <div className={cx(styles.band, connectToBandBelow && styles.bandConnectedBelow, className)}>
       <div className={styles.header}>
         <span>
-          <span className={styles.headerStrong}>Queued prompts</span> ({prompts.length})
+          <span className={styles.headerStrong}>{chinese ? '排队消息' : 'Queued prompts'}</span> ({prompts.length})
         </span>
       </div>
 
@@ -136,8 +138,8 @@ export function QueuedPromptsBand({
                     type="button"
                     className={styles.dragHandle}
                     draggable
-                    aria-label={`Reorder queued prompt ${index + 1}`}
-                    title="Drag to reorder"
+                    aria-label={chinese ? `调整第 ${index + 1} 条消息的顺序` : `Reorder queued prompt ${index + 1}`}
+                    title={chinese ? '拖动调整顺序' : 'Drag to reorder'}
                     onClick={(event) => event.stopPropagation()}
                     onDragStart={(event) => handleDragStart(event, prompt.id)}
                     onDragEnd={handleDragEnd}
@@ -154,7 +156,7 @@ export function QueuedPromptsBand({
                     className={styles.editInput}
                     value={draft}
                     rows={2}
-                    aria-label={`Edit queued prompt ${index + 1}`}
+                    aria-label={chinese ? `编辑第 ${index + 1} 条消息` : `Edit queued prompt ${index + 1}`}
                     onChange={(event) => setDraft(event.currentTarget.value)}
                     onKeyDown={(event) => {
                       if (event.key === 'Escape') {
@@ -172,8 +174,8 @@ export function QueuedPromptsBand({
                     variant="ghost"
                     size="xs"
                     icon
-                    aria-label="Save queued prompt"
-                    title="Save queued prompt"
+                    aria-label={chinese ? '保存排队消息' : 'Save queued prompt'}
+                    title={chinese ? '保存排队消息' : 'Save queued prompt'}
                     disabled={!draft.trim()}
                     onClick={() => saveEdit(prompt.id)}
                   >
@@ -184,8 +186,8 @@ export function QueuedPromptsBand({
                     variant="ghost"
                     size="xs"
                     icon
-                    aria-label="Cancel edit"
-                    title="Cancel edit"
+                    aria-label={chinese ? '取消编辑' : 'Cancel edit'}
+                    title={chinese ? '取消编辑' : 'Cancel edit'}
                     onClick={cancelEdit}
                   >
                     <X />
@@ -196,8 +198,8 @@ export function QueuedPromptsBand({
                   type="button"
                   className={cx(styles.promptText, !prompt.text.trim() && styles.emptyText)}
                   onClick={() => beginEdit(prompt)}
-                  aria-label={`Edit queued prompt ${index + 1}`}
-                  title="Edit queued prompt"
+                  aria-label={chinese ? `编辑第 ${index + 1} 条消息` : `Edit queued prompt ${index + 1}`}
+                  title={chinese ? '编辑排队消息' : 'Edit queued prompt'}
                 >
                   {prompt.text.trim() || 'Image-only prompt'}
                 </button>
@@ -210,8 +212,8 @@ export function QueuedPromptsBand({
                     variant="ghost"
                     size="xs"
                     icon
-                    aria-label="Send queued prompt now"
-                    title="Send now - cancels the active turn"
+                    aria-label={chinese ? '立即发送排队消息' : 'Send queued prompt now'}
+                    title={chinese ? '立即发送并停止当前回复' : 'Send now - cancels the active turn'}
                     onClick={(event) => {
                       event.stopPropagation();
                       onSendNow(prompt.id);
@@ -225,8 +227,8 @@ export function QueuedPromptsBand({
                     tone="destructive"
                     size="xs"
                     icon
-                    aria-label="Delete queued prompt"
-                    title="Delete queued prompt"
+                    aria-label={chinese ? '删除排队消息' : 'Delete queued prompt'}
+                    title={chinese ? '删除排队消息' : 'Delete queued prompt'}
                     onClick={(event) => {
                       event.stopPropagation();
                       onDelete(prompt.id);

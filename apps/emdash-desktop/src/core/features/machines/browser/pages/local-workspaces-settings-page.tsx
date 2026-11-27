@@ -7,10 +7,10 @@ export function LocalWorkspacesSettingsPage({ openDetail }: SettingsPageProps) {
     <div className="space-y-8 pb-4">
       <PageLayout.Header
         sticky
-        title="Workspaces"
-        description="Review local project workspaces and remove stale task worktrees."
+        title="工作区"
+        description="查看本地项目的工作区并清理闲置任务工作树。"
       />
-      <WorkspacesListView scope={{ kind: 'local' }} openDetail={openDetail} />
+      <WorkspacesListView openDetail={openDetail} />
     </div>
   );
 }

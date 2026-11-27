@@ -110,33 +110,9 @@ export function createAgentsWireController(options: CreateAgentsWireControllerOp
       withHostRuntime(options.runtimes, host, (runtime) =>
         runtime.agentConfig.hooksStatus({ providerId }, callOptions(meta))
       ),
-    startLogin: (input, meta) =>
-      withAgentConfigResult(options.runtimes, input.host, (client) =>
-        client.startLogin(withoutHost(input), callOptions(meta))
-      ),
-    cancelLogin: (input, meta) =>
-      withAgentConfigResult(options.runtimes, input.host, (client) =>
-        client.cancelLogin(withoutHost(input), callOptions(meta))
-      ),
-    sendLoginInput: (input, meta) =>
-      withAgentConfigResult(options.runtimes, input.host, (client) =>
-        client.sendLoginInput(withoutHost(input), callOptions(meta))
-      ),
-    resizeLogin: (input, meta) =>
-      withAgentConfigResult(options.runtimes, input.host, (client) =>
-        client.resizeLogin(withoutHost(input), callOptions(meta))
-      ),
-    markUrlHandled: (input, meta) =>
-      withAgentConfigResult(options.runtimes, input.host, (client) =>
-        client.markUrlHandled(withoutHost(input), callOptions(meta))
-      ),
     refreshAuthStatus: (input, meta) =>
       withAgentConfigResult(options.runtimes, input.host, (client) =>
         client.refreshAuthStatus(withoutHost(input), callOptions(meta))
-      ),
-    loginOutput: async ({ host, providerId }) =>
-      resolveRuntimeSource(options.runtimes, host, (runtime) =>
-        runtime.agentConfig.loginOutput.handle({ providerId }).asLiveSource()
       ),
   });
 }

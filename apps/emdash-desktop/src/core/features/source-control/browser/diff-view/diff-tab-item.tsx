@@ -15,9 +15,9 @@ import type { DiffTabResource } from './stores/diff-tab-resource';
 export function diffGroupSuffix(diffGroup: DiffTabResource['diffGroup']): string {
   switch (diffGroup) {
     case 'disk':
-      return '(Working Tree)';
+      return '（工作树）';
     case 'staged':
-      return '(Index)';
+      return '（暂存区）';
     case 'pr':
       return '(PR)';
     case 'git':
@@ -31,7 +31,7 @@ export const DiffTabBarItem = observer(function DiffTabBarItem({
   ctx,
 }: TabBarItemProps<DiffTabResource>) {
   const resource = tab.resource;
-  const fileName = resource.path.split('/').pop() ?? 'Untitled';
+  const fileName = resource.path.split('/').pop() ?? '未命名';
   const suffix = diffGroupSuffix(resource.diffGroup);
 
   return (
@@ -65,7 +65,7 @@ export const DiffTabBarItem = observer(function DiffTabBarItem({
 
 export function DiffTabBarItemDragPreview({ tab }: { tab: ResolvedTab<DiffTabResource> }) {
   const resource = tab.resource;
-  const fileName = resource.path.split('/').pop() ?? 'Untitled';
+  const fileName = resource.path.split('/').pop() ?? '未命名';
   const suffix = diffGroupSuffix(resource.diffGroup);
   return (
     <GenericTabDragPreview

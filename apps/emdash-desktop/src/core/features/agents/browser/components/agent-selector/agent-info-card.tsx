@@ -51,7 +51,7 @@ export const AgentInfoCard: React.FC<Props> = ({ id, connectionId }) => {
             className="p-0 text-foreground-muted"
             onClick={() => window.open(docUrl, '_blank', 'noreferrer')}
           >
-            View Website
+            查看网站
             <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
           </Button>
         )}
@@ -66,7 +66,7 @@ export const AgentInfoCard: React.FC<Props> = ({ id, connectionId }) => {
           htmlFor={`set-default-agent-${id}`}
           className="min-w-0 flex-1 text-xs text-foreground"
         >
-          Set as the default agent
+          设为默认代理
         </label>
         <Switch
           id={`set-default-agent-${id}`}

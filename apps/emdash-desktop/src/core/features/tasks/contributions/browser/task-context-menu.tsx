@@ -41,10 +41,10 @@ export function TaskContextMenu({
 
     try {
       await navigator.clipboard.writeText(branchName);
-      toast('Branch name copied');
+      toast('已复制分支名称');
     } catch {
-      toast.error('Copy failed', {
-        description: 'The branch name could not be copied to the clipboard.',
+      toast.error('复制失败', {
+        description: '无法将分支名称复制到剪贴板。',
       });
     }
   };
@@ -57,28 +57,28 @@ export function TaskContextMenu({
           (isPinned ? (
             <ContextMenu.Item onClick={onUnpin}>
               <PinOff className="size-4" />
-              Unpin task
+              取消置顶
             </ContextMenu.Item>
           ) : (
             <ContextMenu.Item onClick={onPin}>
               <Pin className="size-4" />
-              Pin task
+              置顶任务
             </ContextMenu.Item>
           ))}
         <ContextMenu.Item onClick={onRename}>
           <Pencil className="size-4" />
-          Rename
+          重命名
         </ContextMenu.Item>
         {onReconnect && (
           <ContextMenu.Item onClick={onReconnect}>
             <RotateCcw className="size-4" />
-            Reconnect
+            重新连接
           </ContextMenu.Item>
         )}
         {onConvertAutomation && (
           <ContextMenu.Item onClick={onConvertAutomation}>
             <MessageSquare className="size-4" />
-            Convert to regular task
+            转为普通任务
           </ContextMenu.Item>
         )}
         {!isArchived && (
@@ -88,7 +88,7 @@ export function TaskContextMenu({
             onClick={onArchive}
           >
             <Archive className="size-4" />
-            Archive
+            归档
           </ContextMenu.Item>
         )}
         {archiveDisabledReason && (
@@ -99,19 +99,19 @@ export function TaskContextMenu({
         {isArchived && onRestore && (
           <ContextMenu.Item onClick={onRestore}>
             <RotateCcw className="size-4" />
-            Restore
+            恢复
           </ContextMenu.Item>
         )}
         {branchName && (
           <ContextMenu.Item onClick={() => void handleCopyBranchName()}>
             <Copy className="size-4" />
-            Copy branch name
+            复制分支名称
           </ContextMenu.Item>
         )}
         <ContextMenu.Separator />
         <ContextMenu.Item variant="destructive" onClick={onDelete}>
           <Trash2 className="size-4" />
-          Delete
+          删除
         </ContextMenu.Item>
       </ContextMenu.Content>
     </ContextMenu.Root>

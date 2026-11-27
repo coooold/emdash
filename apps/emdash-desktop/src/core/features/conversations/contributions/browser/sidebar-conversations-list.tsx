@@ -151,9 +151,9 @@ const ConversationRow = observer(function ConversationRow({
   const handleKillSession = () => {
     if (liveActionDisabledReason) return;
     void openConfirm({
-      title: 'Kill session',
-      description: `"${displayTitle}" will be stopped. The conversation will remain available as inactive/resumable.`,
-      confirmLabel: 'Kill session',
+      title: '停止会话',
+      description: `「${displayTitle}」的会话将停止，对话仍可恢复。`,
+      confirmLabel: '停止会话',
       variant: 'destructive',
     }).then((outcome) => {
       if (outcome.success) {
@@ -162,7 +162,7 @@ const ConversationRow = observer(function ConversationRow({
             await conversations.killSession(conversationId);
             closeConversationTab();
           } catch (error) {
-            toast.error('Failed to kill session', {
+            toast.error('无法停止会话', {
               description: error instanceof Error ? error.message : String(error),
             });
           }
@@ -174,8 +174,8 @@ const ConversationRow = observer(function ConversationRow({
   const handleExport = (kind: 'parsed' | 'raw') => {
     const store = getAcpChatResourceManager(taskId, projectId).get(conversationId);
     if (!store) {
-      toast.error('Failed to export transcript', {
-        description: 'Open the chat before exporting it.',
+      toast.error('无法导出对话记录', {
+        description: '请先打开对话再导出。',
       });
       return;
     }
@@ -229,7 +229,7 @@ const ConversationRow = observer(function ConversationRow({
             <span className="min-w-0 flex-1 truncate">{displayTitle}</span>
           )}
           <ConversationSelectionControl
-            label={`Select ${displayTitle}`}
+            label={`选择 ${displayTitle}`}
             selected={isSelected}
             disabled={deleting}
             onToggle={(shiftKey) =>
@@ -256,18 +256,18 @@ const ConversationRow = observer(function ConversationRow({
       <ContextMenu.Content finalFocus={false}>
         <ContextMenu.Item onClick={handleRename}>
           <Pencil className="size-4" />
-          Rename
+          重命名
         </ContextMenu.Item>
         {conversation.data.type === 'acp' && (
           <>
             <ContextMenu.Separator />
             <ContextMenu.Item onClick={() => handleExport('parsed')}>
               <Download className="size-4" />
-              Export transcript
+              导出对话记录
             </ContextMenu.Item>
             <ContextMenu.Item onClick={() => handleExport('raw')}>
               <Download className="size-4" />
-              Export raw ACP log
+              导出 ACP 原始日志
             </ContextMenu.Item>
           </>
         )}
@@ -281,14 +281,14 @@ const ConversationRow = observer(function ConversationRow({
               onClick={handleKillSession}
             >
               <Square className="size-4" />
-              Kill session
+              停止会话
             </ContextMenu.Item>
           </>
         )}
         <ContextMenu.Separator />
         <ContextMenu.Item variant="destructive" disabled={deleting} onClick={handleDelete}>
           <Trash2 className="size-4" />
-          Delete
+          删除
         </ContextMenu.Item>
       </ContextMenu.Content>
     </ContextMenu.Root>
@@ -303,6 +303,7 @@ const ConversationSectionHeader = observer(function ConversationSectionHeader({
   deleting: boolean;
 }) {
   const section = view.useSection();
+  const sectionLabel = section.key === 'Active' ? '进行中' : '未运行';
   const selection = view.useSelection();
   const selectedCount = section.items.filter((conversation) =>
     selection.isSelected(conversation.data.id)
@@ -322,7 +323,7 @@ const ConversationSectionHeader = observer(function ConversationSectionHeader({
 
   return (
     <div className="group/section flex h-8 items-end justify-between pb-1 pl-2">
-      <MicroLabel className="text-foreground-passive">{section.key}</MicroLabel>
+      <MicroLabel className="text-foreground-passive">{sectionLabel}</MicroLabel>
       <span
         className={cn(
           'flex h-7 w-7 items-center justify-center transition-opacity',
@@ -335,7 +336,7 @@ const ConversationSectionHeader = observer(function ConversationSectionHeader({
           indeterminate={partiallySelected}
           disabled={deleting}
           onCheckedChange={toggleSection}
-          aria-label={`Select all ${section.key.toLowerCase()} conversations`}
+          aria-label={`选择所有${sectionLabel}的对话`}
         />
       </span>
     </div>
@@ -357,7 +358,7 @@ const ConversationSelectionBar = observer(function ConversationSelectionBar({
   return (
     <ListPopoverCard className="justify-between">
       <span className="text-xs whitespace-nowrap text-foreground-muted">
-        {selection.count} selected
+        已选择 {selection.count} 项
       </span>
       <div className="flex items-center gap-1.5">
         <Button
@@ -367,7 +368,7 @@ const ConversationSelectionBar = observer(function ConversationSelectionBar({
           onClick={() => onDelete([...selection.selectedIds])}
         >
           {deleting ? <Spinner size="sm" /> : <Trash2 className="size-3.5" />}
-          Delete
+          删除
         </Button>
         <Button
           variant="ghost"
@@ -375,7 +376,7 @@ const ConversationSelectionBar = observer(function ConversationSelectionBar({
           icon
           disabled={deleting}
           onClick={selection.clear}
-          aria-label="Clear conversation selection"
+          aria-label="清除对话选择"
         >
           <X className="size-3.5" />
         </Button>
@@ -464,14 +465,14 @@ const SidebarConversationsListContent = observer(function SidebarConversationsLi
         : null;
       const activeDescription =
         activeCount > 0
-          ? ` ${activeCount} active ${activeCount === 1 ? 'conversation is' : 'conversations are'} included.`
+          ? `其中 ${activeCount} 个会话仍在运行。`
           : '';
       const outcome = await openConfirm({
-        title: singleTarget ? 'Delete conversation' : `Delete ${targets.length} conversations?`,
+        title: singleTarget ? '删除对话' : `删除 ${targets.length} 个对话？`,
         description: singleTarget
-          ? `"${singleTitle}" will be permanently deleted. This action cannot be undone.${activeDescription}`
-          : `${targets.length} conversations will be permanently deleted. This action cannot be undone.${activeDescription}`,
-        confirmLabel: 'Delete',
+          ? `「${singleTitle}」将被永久删除，无法撤销。${activeDescription}`
+          : `将永久删除 ${targets.length} 个对话，无法撤销。${activeDescription}`,
+        confirmLabel: '删除',
         variant: 'destructive',
       });
       if (!outcome.success) return;
@@ -489,11 +490,11 @@ const SidebarConversationsListContent = observer(function SidebarConversationsLi
 
         if (result.failures.length > 0) {
           const firstError = result.failures[0]!.error;
-          toast.error(`${result.succeededIds.length} deleted, ${result.failures.length} failed`, {
+          toast.error(`已删除 ${result.succeededIds.length} 项，${result.failures.length} 项失败`, {
             description: firstError instanceof Error ? firstError.message : String(firstError),
           });
         } else if (result.succeededIds.length > 1) {
-          toast(`${result.succeededIds.length} conversations deleted`);
+          toast(`已删除 ${result.succeededIds.length} 个对话`);
         }
       } finally {
         setDeleting(false);
@@ -505,12 +506,13 @@ const SidebarConversationsListContent = observer(function SidebarConversationsLi
   return (
     <div ref={listRootRef} className="relative flex h-full w-full flex-col">
       <div className="flex shrink-0 items-center justify-between pt-2 pr-2 pb-1 pl-4">
-        <MicroLabel className="font-medium">Conversations</MicroLabel>
+        <MicroLabel className="font-medium">对话</MicroLabel>
         <projectAvailabilityUi.LiveActionGuard projectId={projectId}>
           <Button
             size="sm"
             icon
             variant="ghost"
+            aria-label="创建对话"
             disabled={Boolean(liveActionDisabledReason)}
             onClick={handleCreate}
           >

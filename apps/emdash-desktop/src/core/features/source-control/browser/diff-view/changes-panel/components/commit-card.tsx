@@ -3,18 +3,13 @@ import { card } from '@emdash/ui/styles/recipes/card';
 import { CheckCircle, Loader2 } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import { useState } from 'react';
-import { getGitRepositoryStore } from '@core/features/source-control/api/browser/stores/source-control-selectors';
-import { getTaskGitCheckoutStore } from '@core/features/source-control/api/browser/stores/task-source-control-selectors';
 import { formatPushErrorDetail } from '@core/features/source-control/api/git-error-messages';
 import { gitCheckoutStoreToken } from '@core/features/source-control/contributions/browser/workspace-store-tokens';
 import { formatErrorType } from '@core/features/tasks/api/browser/utils';
-import { useTaskViewContext } from '@core/features/tasks/contributions/browser/task-view-context';
 import {
   useTaskComposition,
   useWorkspace,
-  useWorkspaceId,
 } from '@core/features/workbench/api/browser/task-composition-context';
-import { useOpenModal } from '@core/manifests/browser/modal-api';
 import { cn } from '@core/primitives/styling/browser/cn';
 
 type CommitPhase =
@@ -23,16 +18,13 @@ type CommitPhase =
   | 'commit-only-done'
   | 'committed'
   | 'pushing'
-  | 'pushed'
-  | 'opening-pr';
+  | 'pushed';
 
 interface CommitCardProps {
   autoStage?: boolean;
 }
 
 export const CommitCard = observer(function CommitCard({ autoStage = false }: CommitCardProps) {
-  const { projectId, taskId } = useTaskViewContext();
-  const workspaceId = useWorkspaceId();
   const taskView = useTaskComposition();
   const workspace = useWorkspace();
   const git = workspace.get(gitCheckoutStoreToken);
@@ -45,26 +37,14 @@ export const CommitCard = observer(function CommitCard({ autoStage = false }: Co
   const fullMessage = description ? `${commitMessage}\n\n${description}` : commitMessage;
   const isInFlight = phase !== 'idle';
 
-  const openCreatePrModal = useOpenModal('createPrModal');
-  const repository = getGitRepositoryStore(projectId);
-  const repositoryUrl = repository?.pullRequestRepositoryUrl ?? null;
-
   if (!diffView || !changesView) return null;
-
-  const branchName = getTaskGitCheckoutStore(projectId, taskId)?.branchName;
-  const hasOpenPr = taskView.prStore?.pullRequests.some((p) => p.status === 'open') ?? false;
-  const canCreatePr =
-    repository?.providerRepository?.capabilities.pullRequests &&
-    Boolean(repositoryUrl) &&
-    Boolean(branchName) &&
-    !hasOpenPr;
 
   const stageAllIfNeeded = async (): Promise<boolean> => {
     if (!autoStage) return true;
     changesView.suppressNextAutoExpand('staged');
     const result = await git.stageAllFiles();
     if (!result.success) {
-      toast.error(`Failed to stage changes: ${formatErrorType(result.error)} `);
+      toast.error(`暂存变更失败：${formatErrorType(result.error)} `);
       setPhase('idle');
       return false;
     }
@@ -76,7 +56,7 @@ export const CommitCard = observer(function CommitCard({ autoStage = false }: Co
     if (!(await stageAllIfNeeded())) return;
     const result = await git.commit(fullMessage);
     if (!result.success) {
-      toast.error(`Failed to commit changes: ${formatErrorType(result.error)} `);
+      toast.error(`提交变更失败：${formatErrorType(result.error)} `);
       setPhase('idle');
       return;
     }
@@ -94,7 +74,7 @@ export const CommitCard = observer(function CommitCard({ autoStage = false }: Co
     if (!(await stageAllIfNeeded())) return;
     const commitResult = await git.commit(fullMessage);
     if (!commitResult.success) {
-      toast.error(`Failed to commit changes: ${formatErrorType(commitResult.error)} `);
+      toast.error(`提交变更失败：${formatErrorType(commitResult.error)} `);
       setPhase('idle');
       return;
     }
@@ -108,7 +88,7 @@ export const CommitCard = observer(function CommitCard({ autoStage = false }: Co
     setPhase('pushing');
     const pushResult = await git.push();
     if (!pushResult.success) {
-      toast.error(`Failed to push: ${formatPushErrorDetail(pushResult.error)}`);
+      toast.error(`推送失败：${formatPushErrorDetail(pushResult.error)}`);
       setPhase('idle');
       return;
     }
@@ -116,52 +96,13 @@ export const CommitCard = observer(function CommitCard({ autoStage = false }: Co
     setTimeout(() => setPhase('idle'), 3000);
   };
 
-  const doCommitAndCreatePr = async () => {
-    setPhase('committing');
-    if (!(await stageAllIfNeeded())) return;
-    const commitResult = await git.commit(fullMessage);
-    if (!commitResult.success) {
-      toast.error(`Failed to commit changes: ${formatErrorType(commitResult.error)} `);
-      setPhase('idle');
-      return;
-    }
-    setCommitMessage('');
-    setDescription('');
-    if (!autoStage) {
-      changesView.setExpanded({ unstaged: true, staged: false, pullRequests: hasPRs });
-    }
-    setPhase('opening-pr');
-    await new Promise((r) => setTimeout(r, 500));
-    setPhase('idle');
-    void openCreatePrModal({
-      projectId,
-      taskId,
-      repositoryUrl: repositoryUrl ?? '',
-      branchName: branchName ?? '',
-      draft: false,
-      workspaceId,
-    });
-  };
-
   const actions = [
-    { id: 'commit', label: 'Commit', action: () => void doCommit() },
-    { id: 'commit-push', label: 'Commit & Push', action: () => void doCommitAndPush() },
-    ...(canCreatePr
-      ? [
-          {
-            id: 'commit-pr',
-            label:
-              repository?.providerRepository?.provider === 'gitlab'
-                ? 'Commit & Create MR'
-                : 'Commit & Create PR',
-            action: () => void doCommitAndCreatePr(),
-          },
-        ]
-      : []),
+    { id: 'commit', label: '提交', action: () => void doCommit() },
+    { id: 'commit-push', label: '提交并推送', action: () => void doCommitAndPush() },
   ];
 
   const effectiveAction =
-    diffView.effectiveCommitAction === 'commit-pr' && !canCreatePr
+    diffView.effectiveCommitAction === 'commit-pr'
       ? 'commit-push'
       : diffView.effectiveCommitAction;
 
@@ -173,14 +114,14 @@ export const CommitCard = observer(function CommitCard({ autoStage = false }: Co
       )}
     >
       <Input
-        placeholder="Commit message"
+        placeholder="提交信息"
         className="w-full bg-background"
         value={commitMessage}
         onChange={(e) => setCommitMessage(e.target.value)}
         disabled={isInFlight}
       />
       <Textarea
-        placeholder="Description"
+        placeholder="详细说明"
         className="w-full bg-background"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
@@ -194,36 +135,28 @@ export const CommitCard = observer(function CommitCard({ autoStage = false }: Co
           disabled={!commitMessage.trim()}
           selectedId={effectiveAction}
           onSelectedChange={(id) =>
-            diffView.setCommitAction(id as 'commit' | 'commit-push' | 'commit-pr')
+            diffView.setCommitAction(id as 'commit' | 'commit-push')
           }
           commitOnSelect={false}
           onAction={(id) => actions.find((a) => a.id === id)?.action()}
         />
       )}
       {phase === 'committing' && (
-        <StatusRow icon={<Loader2 className="size-4 animate-spin" />} label="Committing…" />
-      )}
-      {phase === 'opening-pr' && (
-        <StatusRow
-          icon={<Loader2 className="size-4 animate-spin" />}
-          label={
-            repository?.providerRepository?.provider === 'gitlab' ? 'Opening MR…' : 'Opening PR…'
-          }
-        />
+        <StatusRow icon={<Loader2 className="size-4 animate-spin" />} label="正在提交…" />
       )}
       {(phase === 'commit-only-done' || phase === 'committed') && (
         <StatusRow
           icon={<CheckCircle className="size-4 text-foreground-success" />}
-          label="Committed"
+          label="已提交"
         />
       )}
       {phase === 'pushing' && (
-        <StatusRow icon={<Loader2 className="size-4 animate-spin" />} label="Pushing…" />
+        <StatusRow icon={<Loader2 className="size-4 animate-spin" />} label="正在推送…" />
       )}
       {phase === 'pushed' && (
         <StatusRow
           icon={<CheckCircle className="size-4 text-foreground-success" />}
-          label="Pushed"
+          label="已推送"
         />
       )}
     </div>

@@ -47,13 +47,13 @@ export function ProjectSettingsFooter({
                   if (!hostActionReason) onShare();
                 }}
               >
-                Share with team
+                与团队共享
               </Button>
             }
           />
           <Tooltip.Content side="bottom" align="end">
             {hostActionReason ??
-              'Writes selected settings to .emdash.json. Commit that file to share these defaults with your team.'}
+              '将选中的设置写入 .emdash.json。提交该文件即可与团队共享这些默认值。'}
           </Tooltip.Content>
         </Tooltip.Root>
       </Tooltip.Provider>
@@ -62,7 +62,7 @@ export function ProjectSettingsFooter({
         <Button
           variant="secondary"
           icon
-          aria-label="Reset changes"
+          aria-label="撤销更改"
           onClick={onUndo}
           disabled={!dirty || saving}
         >
@@ -72,7 +72,7 @@ export function ProjectSettingsFooter({
           <span className="inline-flex min-w-22 items-center justify-center gap-1.5">
             {saving && <Loader2 className="size-4 animate-spin" aria-hidden="true" />}
             {!saving && saved && <Check className="size-4" aria-hidden="true" />}
-            {saving ? 'Saving…' : saved ? 'Saved' : 'Save settings'}
+            {saving ? '正在保存…' : saved ? '已保存' : '保存设置'}
           </span>
         </ConfirmButton>
       </div>

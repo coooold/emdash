@@ -46,9 +46,9 @@ export const RenameTaskModal = observer(function RenameTaskModal({
   const isValid = !isEmpty && !isDuplicate && !isUnchanged;
 
   const validationMessage = isDuplicate
-    ? 'A task with this name already exists in this project.'
+    ? '此项目中已有同名任务。'
     : isEmpty
-      ? 'Task name cannot be empty.'
+      ? '任务名称不能为空。'
       : undefined;
 
   const handleNameChange = useCallback(
@@ -72,13 +72,13 @@ export const RenameTaskModal = observer(function RenameTaskModal({
     try {
       const result = await task.rename(normalizedName);
       if (!result.success) {
-        setError('Task not found.');
+        setError('未找到任务。');
         setIsSubmitting(false);
         return;
       }
       complete();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to rename task');
+      setError(e instanceof Error ? e.message : '无法重命名任务');
       setIsSubmitting(false);
     }
   }, [isValid, taskManager, taskId, normalizedName, complete]);
@@ -86,12 +86,12 @@ export const RenameTaskModal = observer(function RenameTaskModal({
   return (
     <>
       <Dialog.Header showCloseButton={false}>
-        <Dialog.Title>Rename task</Dialog.Title>
+        <Dialog.Title>重命名任务</Dialog.Title>
       </Dialog.Header>
       <Dialog.Body className="pt-0">
         <Field.Group>
           <Field.Root>
-            <Field.Label>Task name</Field.Label>
+            <Field.Label>任务名称</Field.Label>
             <Input
               value={name}
               onChange={(e) => handleNameChange(e.target.value)}
@@ -110,14 +110,14 @@ export const RenameTaskModal = observer(function RenameTaskModal({
       </Dialog.Body>
       <Dialog.Footer>
         <Button variant="secondary" onClick={dismiss}>
-          Cancel
+          取消
         </Button>
         <ConfirmButton
           variant="primary"
           onClick={() => void handleSubmit()}
           disabled={!isValid || isSubmitting}
         >
-          {isSubmitting ? 'Renaming...' : 'Rename'}
+          {isSubmitting ? '正在重命名…' : '重命名'}
         </ConfirmButton>
       </Dialog.Footer>
     </>

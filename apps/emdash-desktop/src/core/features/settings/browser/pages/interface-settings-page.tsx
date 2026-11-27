@@ -13,31 +13,31 @@ export function InterfaceSettingsPage() {
     <div className="space-y-8 pb-4">
       <PageLayout.Header
         sticky
-        title="Interface"
-        description="Customize the appearance and behavior of the app."
+        title="界面"
+        description="自定义应用的外观和交互。"
       />
-      <SettingsSection title="Color mode" bare>
+      <SettingsSection title="配色模式" bare>
         <ThemeCard />
       </SettingsSection>
-      <SettingsSection title="Application icon">
+      <SettingsSection title="应用图标">
         <TrayIconSettingsRow />
       </SettingsSection>
-      <SettingsSection title="Terminal" bare>
+      <SettingsSection title="终端" bare>
         <TerminalSettingsCard />
       </SettingsSection>
-      <SettingsSection title="Files" bare>
+      <SettingsSection title="文件" bare>
         <FilesSettingsCard />
       </SettingsSection>
-      <SettingsSection title="Sidebar" bare>
+      <SettingsSection title="侧边栏" bare>
         <SidebarMetadataSettingsCard />
       </SettingsSection>
       <SettingsSection bare>
         <InterfaceSettingsCard />
       </SettingsSection>
-      <SettingsSection title="Keyboard shortcuts" bare>
+      <SettingsSection title="键盘快捷键" bare>
         <KeyboardSettingsCard />
       </SettingsSection>
-      <SettingsSection title="Tools" bare>
+      <SettingsSection title="工具" bare>
         <HiddenToolsSettingsCard />
       </SettingsSection>
     </div>

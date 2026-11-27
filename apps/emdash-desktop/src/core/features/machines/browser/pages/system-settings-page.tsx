@@ -7,15 +7,15 @@ import { createSystemDependenciesStore } from '../machines-store';
 import { useMachineMetrics } from '../use-machine-metrics';
 
 export function SystemSettingsPage() {
-  const metrics = useMachineMetrics(undefined, true);
+  const metrics = useMachineMetrics();
   const systemDependenciesStore = useMemo(() => createSystemDependenciesStore(), []);
 
   return (
     <div className="space-y-8 pb-4">
       <PageLayout.Header
         sticky
-        title="System"
-        description="Monitor local host resources and required system dependencies."
+        title="系统"
+        description="查看本机资源用量和必需的系统依赖。"
       />
       <SettingsCard>
         <ResourceUtilizationRow metrics={metrics} />

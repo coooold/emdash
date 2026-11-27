@@ -25,6 +25,29 @@ const PRESET_ICONS: Record<WorkspacePresetId, React.ReactNode> = {
   'pr-new-branch': <GitPullRequestArrow className="size-3.5 shrink-0" />,
 };
 
+const PRESET_TEXT: Record<WorkspacePresetId, Pick<WorkspacePresetMeta, 'label' | 'description'>> = {
+  'new-worktree': {
+    label: '新建工作树',
+    description: '在指定分支上创建独立的工作树',
+  },
+  'repo-root': {
+    label: '使用仓库目录',
+    description: '直接在项目目录中工作',
+  },
+  'use-existing': {
+    label: '复用现有工作区',
+    description: '复用已有工作树或仓库工作区',
+  },
+  'checkout-pr': {
+    label: '在工作树中检出 PR',
+    description: '在专用工作树中获取并检查 PR',
+  },
+  'pr-new-branch': {
+    label: '从 PR 新建分支',
+    description: '在工作树中基于 PR 的最新提交创建分支',
+  },
+};
+
 // ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
@@ -59,12 +82,11 @@ export function WorkspacePresetPicker({
     (preset) => showPrPresets || !preset.requiresPR
   ).map((preset) => ({
     ...preset,
+    ...PRESET_TEXT[preset.id],
     ...(requestProvider === 'gitlab' && preset.requiresPR
       ? {
-          label: preset.label.replace(/\bPR\b/g, 'MR'),
-          description: preset.description
-            .replace(/pull request/g, 'merge request')
-            .replace(/\bPR\b/g, 'MR'),
+          label: PRESET_TEXT[preset.id].label.replace('PR', 'MR'),
+          description: PRESET_TEXT[preset.id].description.replace('PR', 'MR'),
         }
       : {}),
     disabledReason:
@@ -96,7 +118,7 @@ export function WorkspacePresetPicker({
         <span className="flex min-w-0 flex-col gap-1.5">
           <div className="flex items-center gap-2">
             <span className="text-foreground-muted">{PRESET_ICONS[value]}</span>
-            <span className="truncate">{selected?.label ?? 'Select workspace…'}</span>
+            <span className="truncate">{selected?.label ?? '选择工作区…'}</span>
           </div>
           <span className="text-xs text-foreground-muted">
             {selected?.disabledReason ?? selected?.description}

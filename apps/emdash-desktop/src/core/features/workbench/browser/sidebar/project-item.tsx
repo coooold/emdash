@@ -2,7 +2,6 @@ import { ContextMenu, Tooltip } from '@emdash/ui/react/primitives';
 import {
   ChevronRight,
   FolderClosed,
-  FolderInput,
   FolderOpen,
   Loader2,
   Pencil,
@@ -12,13 +11,11 @@ import {
 } from 'lucide-react';
 import { observer } from 'mobx-react-lite';
 import React, { useCallback, useEffect } from 'react';
-import { ConnectionStatusDot } from '@core/features/machines/contributions/browser/connection-status-dot';
 import {
   isUnregisteredProject,
   type ProjectCreationStage,
 } from '@core/features/projects/api/browser/stores/project';
 import {
-  getProjectHostAccess,
   getProjectStore,
   projectViewKind,
 } from '@core/features/projects/api/browser/stores/project-selectors';
@@ -45,9 +42,9 @@ import {
 } from './sidebar-primitives';
 
 const UNREGISTERED_STAGE_LABEL: Record<ProjectCreationStage, string> = {
-  'creating-repo': 'Creating repository…',
-  cloning: 'Cloning…',
-  registering: 'Registering…',
+  'creating-repo': '正在创建仓库…',
+  cloning: '正在克隆…',
+  registering: '正在添加项目…',
 };
 
 export const SidebarProjectItem = observer(function SidebarProjectItem({
@@ -89,21 +86,9 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
 
   if (!project) return null;
 
-  const sshConnectionId = project.data?.type === 'ssh' ? project.data.connectionId : null;
-  const isSshProject = sshConnectionId !== null;
-  const hostAccess = getProjectHostAccess(projectId);
-  const hostAccessState = hostAccess?.state;
-  const displayedSshConnectionState =
-    !hostAccessState || hostAccessState.kind !== 'ready'
-      ? hostAccessState &&
-        ['connecting', 'provisioning', 'handshaking', 'attaching', 'recovering'].includes(
-          hostAccessState.situation
-        )
-        ? 'connecting'
-        : 'disconnected'
-      : 'connected';
-  const ProjectIcon = isSshProject ? FolderInput : isExpanded ? FolderOpen : FolderClosed;
-  const projectLabel = project.name ?? 'project';
+  const isLegacySshProject = project.data?.type === 'ssh';
+  const ProjectIcon = isExpanded ? FolderOpen : FolderClosed;
+  const projectLabel = project.name ?? '项目';
   const createAvailability = taskHostActionAvailability(projectId);
   const createDisabledReason =
     createAvailability.kind === 'disabled'
@@ -116,12 +101,12 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
     if (!isUnregisteredProject(project)) return null;
     const label =
       project.creation.kind === 'failed'
-        ? 'Failed'
+        ? '操作失败'
         : UNREGISTERED_STAGE_LABEL[project.creation.stage];
     return (
       <Tooltip.Root>
         <Tooltip.Trigger>
-          <SidebarItemMiniButton type="button" disabled aria-label="Loading">
+          <SidebarItemMiniButton type="button" disabled aria-label="正在加载">
             <Loader2 className="h-4 w-4 animate-spin text-foreground/60" />
           </SidebarItemMiniButton>
         </Tooltip.Trigger>
@@ -146,7 +131,7 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
             ) : (
               <SidebarItemMiniButton
                 type="button"
-                aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${projectLabel}`}
+                aria-label={`${isExpanded ? '折叠' : '展开'} ${projectLabel}`}
                 className="relative"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -163,31 +148,26 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
               </SidebarItemMiniButton>
             )}
             <SidebarMenuAction
-              aria-label={`Open project ${projectLabel}`}
+              aria-label={`打开项目 ${projectLabel}`}
               className={cn(
                 'truncate transition-colors select-none',
                 projectViewKind(getProjectStore(projectId)) === 'hydrating' &&
                   'text-foreground-tertiary-passive'
               )}
             >
-              {isSshProject ? (
-                <span className="flex min-w-0 items-center gap-2">
-                  <span className="truncate">{project.name}</span>
-                  <ConnectionStatusDot state={displayedSshConnectionState} />
-                </span>
-              ) : (
-                <span className="flex min-w-0 items-center gap-1.5">
-                  <span className="truncate">{project.name}</span>
-                  {projectViewKind(project) === 'context_error' && (
-                    <Tooltip.Root>
-                      <Tooltip.Trigger>
-                        <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-foreground-destructive" />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content>Project context unavailable</Tooltip.Content>
-                    </Tooltip.Root>
-                  )}
-                </span>
-              )}
+              <span className="flex min-w-0 items-center gap-1.5">
+                <span className="truncate">{project.name}</span>
+                {(isLegacySshProject || projectViewKind(project) === 'context_error') && (
+                  <Tooltip.Root>
+                    <Tooltip.Trigger>
+                      <TriangleAlert className="h-3.5 w-3.5 shrink-0 text-foreground-destructive" />
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>
+                      {isLegacySshProject ? '旧版 SSH 项目不可用' : '暂时无法访问项目'}
+                    </Tooltip.Content>
+                  </Tooltip.Root>
+                )}
+              </span>
             </SidebarMenuAction>
           </div>
           <Tooltip.Root>
@@ -198,8 +178,8 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
                   type="button"
                   aria-label={
                     createDisabledReason
-                      ? `New task for ${projectLabel}. ${createDisabledReason}`
-                      : `New task for ${projectLabel}`
+                      ? `为 ${projectLabel} 新建任务。 ${createDisabledReason}`
+                      : `为 ${projectLabel} 新建任务`
                   }
                   className={
                     'opacity-0 transition-opacity duration-150 group-hover/row:opacity-100'
@@ -218,7 +198,7 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
             <Tooltip.Content>
               {createDisabledReason ?? (
                 <>
-                  New Task
+                  新建任务
                   <BoundShortcut command="app.newTask" variant="keycaps" />
                 </>
               )}
@@ -234,7 +214,7 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
           }}
         >
           <Pencil className="size-4" />
-          Rename Project
+          重命名项目
         </ContextMenu.Item>
         <ContextMenu.Separator />
         <ContextMenu.Item
@@ -242,12 +222,12 @@ export const SidebarProjectItem = observer(function SidebarProjectItem({
           onClick={() => {
             void confirmDeleteProject({
               projectId,
-              projectLabel: project.name ?? 'this project',
+              projectLabel: project.name ?? '此项目',
             });
           }}
         >
           <Trash2 className="size-4" />
-          Remove Project
+          移除项目
         </ContextMenu.Item>
       </ContextMenu.Content>
     </ContextMenu.Root>

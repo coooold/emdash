@@ -6,7 +6,7 @@ import type { ProjectWorkspaceOption } from '@core/features/tasks/api/browser/cr
 import { cn } from '@core/primitives/styling/browser/cn';
 
 function workspaceLabel(ws: ProjectWorkspaceOption): string {
-  if (ws.kind === 'repository') return 'Repository root';
+  if (ws.kind === 'repository') return '仓库根目录';
   if (ws.path) {
     const lastSegment = ws.path.split('/').at(-1);
     return lastSegment || (ws.branchName ?? ws.workspaceId ?? ws.path);
@@ -41,11 +41,7 @@ function WorkspaceItemContent({ ws }: { ws: ProjectWorkspaceOption }) {
                 <Link className="size-3" />
                 {ws.linkedTaskCount}
               </Tooltip.Trigger>
-              <Tooltip.Content>
-                {ws.linkedTaskCount === 1
-                  ? '1 associated task'
-                  : `${ws.linkedTaskCount} associated tasks`}
-              </Tooltip.Content>
+              <Tooltip.Content>{ws.linkedTaskCount} 项关联任务</Tooltip.Content>
             </Tooltip.Root>
           </Tooltip.Provider>
         )}
@@ -83,17 +79,13 @@ export function ExistingWorkspacePicker({
   if (isLoading) {
     return (
       <div className="flex h-9 items-center justify-center text-xs text-foreground-muted">
-        Loading workspaces…
+        正在加载工作区…
       </div>
     );
   }
 
   if (workspaces.length === 0) {
-    return (
-      <p className="text-xs text-foreground-muted">
-        No existing workspaces found for this project.
-      </p>
-    );
+    return <p className="text-xs text-foreground-muted">此项目暂无可复用的工作区。</p>;
   }
 
   return (
@@ -111,7 +103,7 @@ export function ExistingWorkspacePicker({
         {selected ? (
           <WorkspaceItemContent ws={selected} />
         ) : (
-          <span className="text-foreground-muted">Select a workspace…</span>
+          <span className="text-foreground-muted">选择工作区…</span>
         )}
         <ChevronsUpDown className="size-4 shrink-0 text-foreground-passive" />
       </Combobox.Trigger>
@@ -119,7 +111,7 @@ export function ExistingWorkspacePicker({
         <Combobox.Input
           value={query}
           onChange={(e) => setQuery((e.target as HTMLInputElement).value)}
-          placeholder="Search workspaces…"
+          placeholder="搜索工作区…"
           showTrigger={false}
         />
         <Combobox.List className="max-h-52 overflow-y-auto p-1!">
@@ -135,7 +127,7 @@ export function ExistingWorkspacePicker({
             </Combobox.Item>
           ))}
           {filtered.length === 0 && (
-            <EmptyState label="No workspaces found" className="border-none bg-transparent" />
+            <EmptyState label="没有找到工作区" className="border-none bg-transparent" />
           )}
         </Combobox.List>
       </Combobox.Content>

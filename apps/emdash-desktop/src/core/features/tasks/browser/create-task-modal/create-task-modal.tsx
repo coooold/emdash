@@ -2,18 +2,7 @@ import type { PullRequest } from '@emdash/plugins/pull-requests/schemas';
 import { Dialog } from '@emdash/ui/react/primitives';
 import { observer } from 'mobx-react-lite';
 import { useMemo } from 'react';
-import {
-  issueTerms,
-  preferredIssueProvider,
-} from '@core/features/integrations/api/browser/integration-display';
-import { useConnectedIssueProviders } from '@core/features/integrations/api/browser/use-connected-issue-providers';
-import {
-  firstAvailableProjectId,
-  getProjectStore,
-  getProjectViewStore,
-  projectData as selectProjectData,
-} from '@core/features/projects/api/browser/stores/project-selectors';
-import { getGitRepositoryStore } from '@core/features/source-control/api/browser/stores/source-control-selectors';
+import { firstAvailableProjectId } from '@core/features/projects/api/browser/stores/project-selectors';
 import { useProjectGitContext } from '@core/features/tasks/api/browser/create-task-modal/use-project-git-context';
 import { MISSING_BRANCH_REASON } from '@core/features/tasks/api/browser/create-task-modal/use-workspace-config';
 import { useTaskSettings } from '@core/features/tasks/api/browser/hooks/useTaskSettings';
@@ -30,7 +19,6 @@ import { defineModal } from '@core/primitives/modals/react';
 import { useNavigate } from '@core/primitives/navigation/browser/navigation-hooks';
 import { getNavigation } from '@core/primitives/navigation/browser/navigation-selectors';
 import { createTaskModalDefaults, type CreateTaskStrategy } from './create-task-modal-defaults';
-import { LinkedEntitySection } from './linked-entity-section';
 import { TaskNameField } from './task-name-field';
 import { useCreateTaskCallback } from './use-create-task-callback';
 import { useCreateTaskState } from './use-create-task-state';
@@ -52,7 +40,6 @@ function useDefaultProjectId(propProjectId?: string): string | undefined {
 export const CreateTaskModal = observer(function CreateTaskModal({
   projectId,
   strategy: initialStrategy,
-  initialPR,
   initialWorkspaceId,
 }: {
   projectId?: string;
@@ -63,42 +50,13 @@ export const CreateTaskModal = observer(function CreateTaskModal({
   const { complete } = useModalController('taskModal');
   const selectedProjectId = useDefaultProjectId(projectId);
 
-  const projectData = selectedProjectId
-    ? selectProjectData(getProjectStore(selectedProjectId))
-    : null;
-
   const { defaultBranch, isUnborn, hasRepository, currentBranch, repositoryWorkspaceId } =
     useProjectGitContext(selectedProjectId);
 
-  const repositoryStore = selectedProjectId ? getGitRepositoryStore(selectedProjectId) : undefined;
-  const pullRequestRepositoryUrl = repositoryStore?.pullRequestRepositoryUrl ?? undefined;
-  const repositoryUrl = repositoryStore?.canonicalRepositoryUrl ?? pullRequestRepositoryUrl;
-
-  const projectPath = projectData?.path;
-
-  const repositoryProvider = repositoryStore?.providerRepository?.provider;
-  const { connectedProviders, hasAnyIssueIntegration } = useConnectedIssueProviders({
-    projectId: selectedProjectId,
-    repositoryUrl,
-    projectPath,
-    repositoryProvider,
-  });
-  const issueProvider = preferredIssueProvider(
-    selectedProjectId
-      ? (getProjectViewStore(selectedProjectId)?.selectedIssueProvider ?? null)
-      : null,
-    connectedProviders,
-    repositoryProvider
-  );
-  const hasPrSupport =
-    !!pullRequestRepositoryUrl && !!repositoryStore?.providerRepository?.capabilities.pullRequests;
-
   const defaults = createTaskModalDefaults(initialStrategy, {
-    hasIssues: hasAnyIssueIntegration,
-    hasPullRequests: hasPrSupport,
+    hasIssues: false,
+    hasPullRequests: false,
   });
-
-  const resolvedInitialPR = initialStrategy === 'from-pull-request' ? initialPR : undefined;
   const state = useCreateTaskState(
     selectedProjectId,
     defaultBranch,
@@ -106,8 +64,8 @@ export const CreateTaskModal = observer(function CreateTaskModal({
     hasRepository,
     currentBranch,
     repositoryWorkspaceId,
-    resolvedInitialPR,
-    defaults.linkedType,
+    undefined,
+    null,
     initialWorkspaceId
   );
 
@@ -126,7 +84,7 @@ export const CreateTaskModal = observer(function CreateTaskModal({
     ? taskHostActionAvailability(selectedProjectId)
     : ({ kind: 'disabled' } as const);
   const createDisabledReason = !selectedProjectId
-    ? 'Select a Project.'
+    ? '请选择项目。'
     : createAvailability.kind === 'disabled'
       ? (projectAvailabilityUi.getLiveActionDisabledReason(selectedProjectId) ??
         projectAvailabilityUi.defaultLiveActionDisabledReason)
@@ -137,21 +95,11 @@ export const CreateTaskModal = observer(function CreateTaskModal({
   return (
     <>
       <Dialog.Header className="flex items-center gap-2">
-        <Dialog.Title>Create Task</Dialog.Title>
+        <Dialog.Title>创建任务</Dialog.Title>
       </Dialog.Header>
       <Dialog.Body>
         <div className="flex w-full flex-col gap-5">
           <TaskNameField state={state.taskName} />
-          <LinkedEntitySection
-            state={state}
-            hasAnyIssueIntegration={hasAnyIssueIntegration}
-            hasPrSupport={hasPrSupport}
-            requestProvider={repositoryProvider}
-            issueLabel={issueTerms(issueProvider ?? repositoryProvider).title}
-            projectId={selectedProjectId}
-            repositoryUrl={repositoryUrl}
-            projectPath={projectPath}
-          />
           <TaskStateProvider
             workspaceConfig={state.workspaceConfig}
             initialConversation={initialConversation}
@@ -159,7 +107,6 @@ export const CreateTaskModal = observer(function CreateTaskModal({
             isUnborn={isUnborn}
             hasRepository={hasRepository}
             hasPR={state.linkedType === 'pr' && state.linkedPR !== null}
-            requestProvider={repositoryProvider}
             linkedIssue={
               state.linkedType === 'issue' ? (state.linkedIssue ?? undefined) : undefined
             }
@@ -170,12 +117,12 @@ export const CreateTaskModal = observer(function CreateTaskModal({
               tabs={[
                 {
                   value: 'conversation',
-                  label: 'Initial Conversation',
+                  label: '初始对话',
                   content: <ConversationField />,
                 },
                 {
                   value: 'workspace',
-                  label: 'Workspace Settings',
+                  label: '工作区设置',
                   content: (
                     <WorkspaceSettingsSection
                       defaultOpen={defaults.tab === 'workspace' || !!initialWorkspaceId}
@@ -196,9 +143,9 @@ export const CreateTaskModal = observer(function CreateTaskModal({
             !canCreate || initialConversation.issueContextEditorOpen || !!createDisabledReason
           }
           title={createDisabledReason}
-          aria-label={createDisabledReason ? `Create. ${createDisabledReason}` : 'Create'}
+          aria-label={createDisabledReason ? `创建。${createDisabledReason}` : '创建'}
         >
-          Create
+          创建
         </ConfirmButton>
       </Dialog.Footer>
     </>

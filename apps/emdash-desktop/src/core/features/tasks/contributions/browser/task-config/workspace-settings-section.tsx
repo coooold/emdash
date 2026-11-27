@@ -36,9 +36,9 @@ export function WorkspaceSettingsSection({ defaultOpen = true }: WorkspaceSettin
   const { createBranchAndWorktree, setCreateBranchAndWorktree } = branchSelection;
 
   const worktreesDisabledReason = !hasRepository
-    ? 'Folder is not a Git repository'
+    ? '此文件夹不是 Git 仓库'
     : isUnborn
-      ? 'Repository has no commits yet'
+      ? '仓库尚无提交'
       : undefined;
   const hasSettings = !PRESETS_WITHOUT_SETTINGS.has(presetId);
   const Panel = PRESET_PANELS[presetId as Exclude<WorkspacePresetId, 'repo-root'>];
@@ -70,7 +70,7 @@ export function WorkspaceSettingsSection({ defaultOpen = true }: WorkspaceSettin
             )}
           >
             <span className="flex items-center gap-2">
-              <span className="text-foreground-muted">Settings</span>
+              <span className="text-foreground-muted">设置</span>
               <ChevronRight className="ml-auto size-3.5 shrink-0 text-foreground-passive transition-transform duration-150 group-data-open:rotate-90" />
             </span>
           </Collapsible.Trigger>
@@ -80,8 +80,8 @@ export function WorkspaceSettingsSection({ defaultOpen = true }: WorkspaceSettin
               onValueChange={(v) => setCreateBranchAndWorktree(v === 'create')}
             >
               <Tabs.List>
-                <Tabs.Tab value="checkout">Checkout branch</Tabs.Tab>
-                <Tabs.Tab value="create">Create new branch</Tabs.Tab>
+                <Tabs.Tab value="checkout">检出分支</Tabs.Tab>
+                <Tabs.Tab value="create">新建分支</Tabs.Tab>
               </Tabs.List>
             </Tabs.Root>
           )}

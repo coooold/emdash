@@ -149,19 +149,19 @@ export function FileContentSearchResults({
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="text-muted-foreground flex h-8 shrink-0 items-center gap-1.5 px-3 text-xs">
-        {state.isSearching && <Loader2 className="size-3 animate-spin" aria-label="Searching" />}
+        {state.isSearching && <Loader2 className="size-3 animate-spin" aria-label="正在搜索" />}
         <span>{resultSummary}</span>
       </div>
 
       {state.error ? (
         <div className="text-destructive px-3 py-6 text-center text-xs">{state.error}</div>
       ) : !state.isSearching && state.files.length === 0 ? (
-        <div className="text-muted-foreground px-3 py-6 text-center text-xs">No results found</div>
+        <div className="text-muted-foreground px-3 py-6 text-center text-xs">未找到结果</div>
       ) : (
         <SearchResultsTree
           files={searchFiles}
           className="min-h-0 flex-1"
-          ariaLabel="File content search results"
+          ariaLabel="文件内容搜索结果"
           renderFileIcon={(file) => <FileIcon filename={file.name} size={12} />}
           onOpenMatch={(file, match, { preview }) => {
             const coreMatch = matchByKey.get(matchKey(file.path, match));
@@ -172,7 +172,7 @@ export function FileContentSearchResults({
 
       {!state.isSearching && !state.complete && (
         <div className="text-muted-foreground shrink-0 border-t border-border px-3 py-2 text-xs">
-          Results were limited. Refine your search to see more.
+          结果数量已达上限，请缩小搜索范围。
         </div>
       )}
     </div>
@@ -215,5 +215,5 @@ function contentSearchErrorMessage(error: unknown): string {
     const message = payload.message;
     if (typeof message === 'string') return message;
   }
-  return error instanceof Error ? error.message : 'Search failed';
+  return error instanceof Error ? error.message : '搜索失败';
 }

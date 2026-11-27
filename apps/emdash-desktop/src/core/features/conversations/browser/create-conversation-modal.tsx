@@ -1,8 +1,7 @@
-import { formatHostRef } from '@emdash/core/primitives/host/api';
+import { formatHostRef, LOCAL_HOST_REF } from '@emdash/core/primitives/host/api';
 import { Dialog, Field, Switch } from '@emdash/ui/react/primitives';
 import { observer } from 'mobx-react-lite';
 import { useCallback, useState } from 'react';
-import { hostRefFromConnectionId } from '@core/features/agents/api/browser/client';
 import { useAgents } from '@core/features/agents/api/browser/use-agents';
 import { AgentSelector } from '@core/features/agents/contributions/browser/agent-selector';
 import { nextDefaultConversationTitle } from '@core/features/conversations/api/browser/conversation-title-utils';
@@ -11,7 +10,6 @@ import { conversationRegistry } from '@core/features/conversations/api/browser/s
 import { useConversationLaunchSettings } from '@core/features/conversations/api/browser/use-conversation-launch-settings';
 import { useEffectiveProvider } from '@core/features/conversations/api/browser/use-effective-provider';
 import { ConversationTransportToggle } from '@core/features/conversations/contributions/browser/conversation-transport-toggle';
-import { getProjectSshConnectionId } from '@core/features/projects/api/browser/stores/project-selectors';
 import { useModalController } from '@core/manifests/browser/modal-api';
 import { projectAvailabilityUi } from '@core/manifests/browser/project-availability-ui';
 import { agentSupportsAcp, agentSupportsAutoApprove } from '@core/primitives/agents/api';
@@ -28,17 +26,16 @@ export const CreateConversationModal = observer(function CreateConversationModal
   taskId: string;
 }) {
   const { complete } = useModalController('createConversationModal');
-  const connectionId = getProjectSshConnectionId(projectId);
-  const { providerId, setProviderOverride, createDisabled } = useEffectiveProvider(connectionId);
+  const { providerId, setProviderOverride, createDisabled } = useEffectiveProvider();
   const conversationMgr = conversationRegistry.get(taskId);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const liveActionDisabledReason = projectAvailabilityUi.getLiveActionDisabledReason(projectId);
   useCloseGuard(isSubmitting);
 
-  const { data: agents } = useAgents(hostRefFromConnectionId(connectionId));
+  const { data: agents } = useAgents(LOCAL_HOST_REF);
   const selectedAgent = agents?.find((a) => a.id === providerId);
-  const host = formatHostRef(hostRefFromConnectionId(connectionId));
+  const host = formatHostRef(LOCAL_HOST_REF);
   const launchSettings = useConversationLaunchSettings(
     host,
     providerId,
@@ -96,7 +93,7 @@ export const CreateConversationModal = observer(function CreateConversationModal
       setIsSubmitting(false);
       complete({ conversationId: id, type: conversationType });
     } catch {
-      setError('Failed to create conversation');
+      setError('无法创建对话');
       setIsSubmitting(false);
     }
   }, [
@@ -118,7 +115,7 @@ export const CreateConversationModal = observer(function CreateConversationModal
   return (
     <>
       <Dialog.Header>
-        <Dialog.Title>Create Conversation</Dialog.Title>
+        <Dialog.Title>创建对话</Dialog.Title>
       </Dialog.Header>
       <Dialog.Body>
         <Field.Group>
@@ -127,7 +124,6 @@ export const CreateConversationModal = observer(function CreateConversationModal
               autoFocus
               value={providerId}
               onChange={handleProviderChange}
-              connectionId={connectionId}
               trailingControl={
                 showAcpToggle ? (
                   <ConversationTransportToggle
@@ -147,7 +143,7 @@ export const CreateConversationModal = observer(function CreateConversationModal
                   disabled={!providerId || !launchSettings.ready || isSubmitting}
                   onCheckedChange={launchSettings.setAutoApprove}
                 />
-                <Field.Label>Auto-approve permissions</Field.Label>
+                <Field.Label>自动批准权限</Field.Label>
               </div>
             </Field.Root>
           ) : null}
@@ -170,7 +166,7 @@ export const CreateConversationModal = observer(function CreateConversationModal
             isSubmitting
           }
         >
-          {isSubmitting ? 'Creating...' : 'Create'}
+          {isSubmitting ? '正在创建…' : '创建'}
         </ConfirmButton>
       </Dialog.Footer>
     </>

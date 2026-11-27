@@ -119,7 +119,7 @@ export function WelcomeScreen({ onGetStarted }: WelcomeScreenProps) {
           className="text-lg font-semibold tracking-tight text-foreground"
           variants={itemVariants}
         >
-          Welcome.
+          欢迎使用 Emdash
         </motion.h1>
 
         <motion.div
@@ -142,7 +142,7 @@ export function WelcomeScreen({ onGetStarted }: WelcomeScreenProps) {
               }
             >
               <span className="flex items-center gap-2">
-                Start shipping
+                开始使用
                 <BoundShortcut command="app.confirm" variant="keycaps" />
               </span>
             </Button>

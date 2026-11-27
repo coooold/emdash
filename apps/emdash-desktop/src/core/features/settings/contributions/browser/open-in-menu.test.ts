@@ -180,7 +180,7 @@ describe('OpenInMenu', () => {
     expect(mocks.updateOpenIn).toHaveBeenCalledWith({ default: 'cursor' });
     expect(mocks.updateOpenIn).toHaveBeenCalledTimes(1);
     expect(mocks.openIn).toHaveBeenCalledWith(
-      { app: 'cursor', isRemote: false, path: 'C:/repo', sshConnectionId: undefined },
+      { app: 'cursor', path: 'C:/repo' },
       { timeoutMs: 75_000 }
     );
     expect(mocks.openIn).toHaveBeenCalledTimes(1);
@@ -203,7 +203,7 @@ describe('OpenInMenu', () => {
     });
 
     expect(mocks.updateOpenIn).toHaveBeenCalledWith({ default: 'cursor' });
-    expect(mocks.toast.error).toHaveBeenCalledWith('Open in Cursor failed', {
+    expect(mocks.toast.error).toHaveBeenCalledWith('无法在 Cursor 中打开', {
       description: 'Cursor is unavailable',
     });
   });
@@ -218,7 +218,7 @@ describe('OpenInMenu', () => {
     await act(async () => {
       root.render(React.createElement(OpenInMenu, { path: 'C:/repo' }));
     });
-    const button = container.querySelector<HTMLButtonElement>('[aria-label="Open in Explorer"]');
+    const button = container.querySelector<HTMLButtonElement>('[aria-label="在 Explorer 中打开"]');
     expect(button?.disabled).toBe(false);
     await act(async () => {
       button?.click();

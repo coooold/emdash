@@ -14,19 +14,19 @@ export function UnsavedChangesDialog({ fileName }: UnsavedChangesDialogArgs) {
   return (
     <>
       <Dialog.Header showCloseButton={false}>
-        <Dialog.Title>Unsaved Changes</Dialog.Title>
+        <Dialog.Title>未保存的更改</Dialog.Title>
       </Dialog.Header>
       <Dialog.Body className="pt-0">
         <p>
-          Do you want to save the changes to <strong>{fileName}</strong>?
+          要保存对<strong>{fileName}</strong>的更改吗？
         </p>
       </Dialog.Body>
       <Dialog.Footer>
         <Button variant="secondary" onClick={() => controller.complete('discard')}>
-          Discard
+          放弃更改
         </Button>
         <Button variant="primary" onClick={() => controller.complete('save')}>
-          Save
+          保存
         </Button>
       </Dialog.Footer>
     </>

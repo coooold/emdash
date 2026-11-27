@@ -45,7 +45,7 @@ export function WindowScope({ children }: { readonly children: ReactNode }) {
     }),
     'app.newProject': () => ({
       execute: () => {
-        void openModal('addProjectModal', { strategy: 'local', mode: 'pick' });
+        void openModal('addProjectModal', { mode: 'pick' });
       },
     }),
     'app.newTask': () => ({

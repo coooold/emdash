@@ -82,7 +82,7 @@ export function RemoteSelector({
           ) : null}
         </span>
       )}
-      searchPlaceholder="Search remotes…"
+      searchPlaceholder="搜索远端仓库…"
       appearance={appearance}
       className={className}
       contentClassName={contentClassName}

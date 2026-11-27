@@ -66,28 +66,18 @@ describe('UntrustedRepositoryNotice', () => {
     const onTrusted = vi.fn(async () => {});
     const confirm = confirmWith(Promise.resolve(true));
     const all = { trust, onTrusted, confirm, ...props };
-    act(() =>
-      root.render(
-        <UntrustedRepositoryNotice
-          dubiousOwnership={wslRepository}
-          hostLabel="this computer"
-          {...all}
-        />
-      )
-    );
+    act(() => root.render(<UntrustedRepositoryNotice dubiousOwnership={wslRepository} {...all} />));
     return all;
   }
 
   it('explains the refusal and shows the exact command Git suggests', async () => {
     render();
 
-    await expect.element(page.getByText("Git doesn't trust this repository")).toBeVisible();
+    await expect.element(page.getByText('Git 不信任此仓库')).toBeVisible();
     await expect
       .element(page.getByText(wslRepository.repositoryPath, { exact: true }))
       .toBeVisible();
-    await expect
-      .element(page.getByText(/WSL, on network shares, or on external drives/))
-      .toBeVisible();
+    await expect.element(page.getByText(/WSL、网络共享或外接存储/)).toBeVisible();
     await expect.element(page.getByText(wslCommand, { exact: true })).toBeVisible();
   });
 
@@ -99,7 +89,7 @@ describe('UntrustedRepositoryNotice', () => {
       },
     });
 
-    await expect.element(page.getByText(/To trust it, run this in PowerShell:/)).toBeVisible();
+    await expect.element(page.getByText(/请在 PowerShell 中运行/)).toBeVisible();
     await expect
       .element(
         page.getByText("git config --global --add safe.directory 'C:/Users/me/$work'", {
@@ -113,16 +103,16 @@ describe('UntrustedRepositoryNotice', () => {
     const confirm = confirmWith(Promise.resolve(true));
     const { trust, onTrusted } = render({ confirm });
 
-    await clickButton('Trust repository...');
+    await clickButton('信任仓库…');
 
     expect(confirm).toHaveBeenCalledOnce();
     expect(confirm.mock.calls[0][0]).toMatchObject({
-      title: 'Trust this repository?',
-      confirmLabel: 'Trust repository',
+      title: '信任此仓库？',
+      confirmLabel: '信任仓库',
     });
-    const confirmation = page.getByRole('region', { name: 'Trust this repository?' });
-    await expect.element(confirmation.getByText(/this computer/)).toBeVisible();
-    await expect.element(confirmation.getByText(/changes your global Git config/)).toBeVisible();
+    const confirmation = page.getByRole('region', { name: '信任此仓库？' });
+    await expect.element(confirmation.getByText(/本机/)).toBeVisible();
+    await expect.element(confirmation.getByText(/修改全局 Git 配置/)).toBeVisible();
     await expect.element(confirmation.getByText(wslCommand, { exact: true })).toBeVisible();
     await vi.waitFor(() => expect(trust).toHaveBeenCalledOnce());
     await vi.waitFor(() => expect(onTrusted).toHaveBeenCalledOnce());
@@ -131,14 +121,12 @@ describe('UntrustedRepositoryNotice', () => {
   it('writes nothing when the user cancels', async () => {
     const { trust, onTrusted } = render({ confirm: confirmWith(Promise.resolve(false)) });
 
-    await clickButton('Trust repository...');
+    await clickButton('信任仓库…');
 
-    await expect
-      .element(page.getByRole('region', { name: 'Trust this repository?' }))
-      .toBeVisible();
+    await expect.element(page.getByRole('region', { name: '信任此仓库？' })).toBeVisible();
     expect(trust).not.toHaveBeenCalled();
     expect(onTrusted).not.toHaveBeenCalled();
-    await expect.element(page.getByRole('button', { name: 'Trust repository...' })).toBeEnabled();
+    await expect.element(page.getByRole('button', { name: '信任仓库…' })).toBeEnabled();
   });
 
   it('shows why trusting failed and lets the user try again', async () => {
@@ -148,15 +136,15 @@ describe('UntrustedRepositoryNotice', () => {
         err({ message: 'The Emdash workspace server on this machine is too old.' })
       )
       .mockResolvedValueOnce(ok({ added: true }));
-    const { onTrusted } = render({ trust, hostLabel: 'build-box' });
+    const { onTrusted } = render({ trust });
 
-    await clickButton('Trust repository...');
+    await clickButton('信任仓库…');
     await expect
       .element(page.getByText('The Emdash workspace server on this machine is too old.'))
       .toBeVisible();
     expect(onTrusted).not.toHaveBeenCalled();
 
-    await clickButton('Trust repository...');
+    await clickButton('信任仓库…');
     await vi.waitFor(() => expect(onTrusted).toHaveBeenCalledOnce());
     expect(trust).toHaveBeenCalledTimes(2);
   });
@@ -171,9 +159,9 @@ describe('UntrustedRepositoryNotice', () => {
     );
     render({ trust });
 
-    await clickButton('Trust repository...');
-    await expect.element(page.getByRole('button', { name: 'Trusting...' })).toBeDisabled();
+    await clickButton('信任仓库…');
+    await expect.element(page.getByRole('button', { name: '正在信任…' })).toBeDisabled();
     await act(async () => finish());
-    await expect.element(page.getByRole('button', { name: 'Trust repository...' })).toBeEnabled();
+    await expect.element(page.getByRole('button', { name: '信任仓库…' })).toBeEnabled();
   });
 });

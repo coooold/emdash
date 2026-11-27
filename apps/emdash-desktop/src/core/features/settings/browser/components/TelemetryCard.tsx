@@ -13,12 +13,12 @@ const TelemetryCard: React.FC = () => {
 
   return (
     <SettingRow
-      title="Privacy & Telemetry"
+      title="隐私和遥测"
       description={
         <div>
-          <p>Help improve {PRODUCT_NAME} by sending anonymous usage data.</p>
+          <p>发送匿名使用数据，帮助改进 {PRODUCT_NAME}。</p>
           <p>
-            <span>See </span>
+            <span>查看</span>
             <Button
               type="button"
               variant="link"
@@ -27,7 +27,7 @@ const TelemetryCard: React.FC = () => {
               onClick={() => openExternal('https://docs.emdash.sh/telemetry')}
             >
               <span className="transition-colors group-hover:text-foreground">
-                Telemetry information
+                遥测说明
               </span>
               <ArrowUpRight className="text-muted-foreground size-3.5 transition-colors transition-transform duration-200 group-hover:translate-x-px group-hover:-translate-y-px group-hover:text-foreground" />
             </Button>
@@ -44,11 +44,11 @@ const TelemetryCard: React.FC = () => {
               void setTelemetryEnabled(checked);
             }}
             disabled={loading || envDisabled}
-            aria-label="Enable anonymous telemetry"
+            aria-label="启用匿名遥测"
           />
           {!hasKeyAndHost && (
             <span className="text-muted-foreground text-[10px]">
-              Inactive in this build (no PostHog keys)
+              此构建未配置 PostHog，遥测未启用
             </span>
           )}
         </div>

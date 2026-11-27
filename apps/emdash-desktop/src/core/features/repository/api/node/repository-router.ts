@@ -12,7 +12,6 @@ import {
 import { err, ok, type Result } from '@emdash/shared';
 import { log } from '@emdash/shared/logger';
 import type { ProviderAccountSummary } from '@core/primitives/provider-accounts/api';
-import { getProviderAccountService } from '@core/services/provider-accounts/node/provider-account-service';
 
 const PROBE_POSITIVE_TTL_MS = 15 * 60 * 1000;
 const PROBE_NEGATIVE_TTL_MS = 2 * 60 * 1000;
@@ -164,5 +163,5 @@ export class RepositoryRouter {
 
 export const repositoryRouter = new RepositoryRouter({
   plugins: () => repositoryPluginRegistry.getAll(),
-  listAccounts: (integrationId) => getProviderAccountService().listAccounts(integrationId),
+  listAccounts: async () => [],
 });

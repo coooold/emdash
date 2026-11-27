@@ -1,4 +1,3 @@
-import type { EmdashAccountService } from '@core/features/account/node/services/emdash-account-service';
 import { provisionWorkspaceErrorToWorkspaceError } from '@core/features/workspaces/node/wire-controller';
 import type { DesktopControllerContext } from '@core/manifests/node/controllers';
 import { appOperations } from '@main/core/app/controller';
@@ -25,19 +24,7 @@ import { telemetryService } from '@main/lib/telemetry';
 import type { DatabaseBundle } from './phases/database';
 import type { ServicesBundle } from './phases/services';
 
-export function wireAccountTelemetry(accountService: EmdashAccountService): void {
-  accountService.on('accountChanged', (username, userId, email) => {
-    void telemetryService.identify(username, userId, email);
-  });
-  accountService.on('accountCleared', () => {
-    telemetryService.clearIdentity();
-  });
-}
-
-export type DesktopControllerOptions = Omit<
-  DesktopControllerContext,
-  'hosts' | 'runtimes' | 'scope' | 'ssh'
->;
+export type DesktopControllerOptions = Omit<DesktopControllerContext, 'runtimes' | 'scope'>;
 
 export function createDesktopWireOptions(
   database: DatabaseBundle,
@@ -45,11 +32,9 @@ export function createDesktopWireOptions(
   runtimes: DesktopRuntimes
 ): DesktopControllerOptions {
   const taskService = services.taskService;
-  const github = services.github;
   const getDependencyManager = createDependencyManagerResolver(runtimes.clients.hostDependencies);
   return {
     terminalFileSources,
-    accountService: services.account,
     agentDependencies: {
       ensureAgentDependenciesProbed,
       getDependencyManager,
@@ -61,11 +46,6 @@ export function createDesktopWireOptions(
     db: database.db,
     devPerfOperations: createDevPerfOperations(runtimes),
     editorBuffer: database.editorBuffer,
-    github: {
-      cliAccountImporter: github.cliImport,
-      repositoryService: github.repositories,
-    },
-    gitlabRepositories: services.gitlabRepositories,
     gitCredentials: services.gitCredentials,
     hostAvailability: runtimes.hostAvailability,
     hostOperations: {
@@ -100,7 +80,6 @@ export function createDesktopWireOptions(
       submitFeedback: (input) => appOperations.submitFeedback(input),
     },
     hostIsReachable: services.hostIsReachable,
-    issueProviders: services.issueProviders,
     legacyPortOperations,
     logger: log,
     loggingOperations: {
@@ -118,7 +97,6 @@ export function createDesktopWireOptions(
     sessionLaunchContexts: services.sessionLaunchContexts,
     runtimeClients: {
       getMementosRuntimeClient: async () => runtimes.clients.mementos,
-      getPullRequestsRuntimeClient: async () => runtimes.clients.pullRequests,
     },
     settingsRuntime: {
       setKeyboardSettings: (settings) => browserWebContentsRegistry.setKeyboardSettings(settings),
@@ -133,7 +111,6 @@ export function createDesktopWireOptions(
       getColorEnv: getTerminalColorEnv,
     },
     updateOperations,
-    usage: services.usage,
     waitlistOperations,
     workspaceIdentity: database.workspaceIdentity,
     workspacePlacement: services.workspacePlacement,

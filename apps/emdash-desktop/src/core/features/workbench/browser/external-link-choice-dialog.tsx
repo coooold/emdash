@@ -41,10 +41,10 @@ export function ExternalLinkChoiceDialog({
   return (
     <>
       <Dialog.Header showCloseButton={false}>
-        <Dialog.Title>Open link?</Dialog.Title>
+        <Dialog.Title>打开链接？</Dialog.Title>
       </Dialog.Header>
       <Dialog.Body className="space-y-4 pt-0 text-sm leading-relaxed">
-        <p>Choose where to open this link.</p>
+        <p>选择打开此链接的方式。</p>
         <div className="bg-muted/50 relative rounded-md border border-border">
           <div className="max-h-32 overflow-y-auto px-3 py-2.5 pr-10 font-mono text-[13px] leading-relaxed break-all text-foreground">
             {url}
@@ -59,7 +59,7 @@ export function ExternalLinkChoiceDialog({
                     size="sm"
                     icon
                     className="absolute top-1.5 right-1.5"
-                    aria-label={copied ? 'Link copied' : 'Copy link'}
+                    aria-label={copied ? '链接已复制' : '复制链接'}
                     onClick={() => void handleCopy()}
                   />
                 }
@@ -70,7 +70,7 @@ export function ExternalLinkChoiceDialog({
                   <Copy className="size-4" />
                 )}
               </Tooltip.Trigger>
-              <Tooltip.Content>{copied ? 'Copied' : 'Copy link'}</Tooltip.Content>
+              <Tooltip.Content>{copied ? '已复制' : '复制链接'}</Tooltip.Content>
             </Tooltip.Root>
           </Tooltip.Provider>
         </div>
@@ -78,7 +78,7 @@ export function ExternalLinkChoiceDialog({
       <Dialog.Footer>
         <div className="flex w-full flex-col-reverse gap-2">
           <Button className="w-full" variant="secondary" onClick={controller.dismiss}>
-            Cancel
+            取消
           </Button>
           <Button
             className="w-full"
@@ -87,7 +87,7 @@ export function ExternalLinkChoiceDialog({
             onClick={() => controller.complete('emdash-browser')}
           >
             <Globe className="size-4" />
-            Open in Emdash
+            在 Emdash 中打开
           </Button>
           <Button
             className="w-full"
@@ -95,7 +95,7 @@ export function ExternalLinkChoiceDialog({
             onClick={() => controller.complete('external-browser')}
           >
             <ExternalLink className="size-4" />
-            Open in Browser
+            在浏览器中打开
           </Button>
         </div>
       </Dialog.Footer>

@@ -6,8 +6,8 @@ export function ConversationsSettingsPage() {
     <div className="space-y-8 pb-4">
       <PageLayout.Header
         sticky
-        title="Conversations"
-        description="Every conversation record on this machine, including ones no longer linked to a task."
+        title="对话"
+        description="查看本机的全部对话记录，包括已解除任务关联的对话。"
       />
       <MachineConversationsList scope={{ kind: 'local' }} hostReachable />
     </div>

@@ -7,11 +7,11 @@ describe('git status tooltips', () => {
   });
 
   it('shows detached HEAD message with short hash', () => {
-    expect(getBranchTooltipText('abc1234', 'detached')).toBe('Detached HEAD at abc1234');
+    expect(getBranchTooltipText('abc1234', 'detached')).toBe('HEAD 已分离，当前指向 abc1234');
   });
 
   it('shows initial-commit guidance for unborn branch tooltip', () => {
-    expect(getBranchTooltipText('main', 'unborn')).toBe('Create an initial commit first');
+    expect(getBranchTooltipText('main', 'unborn')).toBe('请先创建初始提交');
   });
 
   it('shows cannot-publish message when HEAD is detached', () => {
@@ -22,7 +22,7 @@ describe('git status tooltips', () => {
         headKind: 'detached',
         shouldOfferAddRemote: false,
       })
-    ).toBe('Cannot publish: HEAD is detached');
+    ).toBe('HEAD 处于分离状态，无法发布');
   });
 
   it('shows initial-commit guidance for disabled publish button when branch is unborn', () => {
@@ -33,7 +33,7 @@ describe('git status tooltips', () => {
         headKind: 'unborn',
         shouldOfferAddRemote: true,
       })
-    ).toBe('Create an initial commit first');
+    ).toBe('请先创建初始提交');
   });
 
   it('preserves existing publish tooltip behavior when branch exists', () => {
@@ -44,7 +44,7 @@ describe('git status tooltips', () => {
         headKind: 'branch',
         shouldOfferAddRemote: true,
       })
-    ).toBe('Create or link a remote, then publish this branch');
+    ).toBe('添加远端仓库后发布此分支');
 
     expect(
       getPublishTooltipText({
@@ -53,6 +53,6 @@ describe('git status tooltips', () => {
         headKind: 'branch',
         shouldOfferAddRemote: false,
       })
-    ).toBe('Publish branch');
+    ).toBe('发布分支');
   });
 });

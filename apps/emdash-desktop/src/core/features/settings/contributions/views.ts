@@ -4,19 +4,16 @@ import { defineView } from '@core/primitives/views/api';
 
 export const settingsPageTabSchema = z.enum([
   'general',
-  'integrations',
   'interface',
   'browser',
   'repository',
   'prompts',
-  'usage',
   'system',
   'workspaces-local',
   'conversations',
   'clis-models',
   'mcp',
   'skills',
-  'connections',
   'docs',
 ]);
 
@@ -35,7 +32,11 @@ export const settingsDetailPathSchema = z.union([
 export const settingsViewDef = defineView({
   id: 'settings',
   params: z.object({
-    tab: settingsPageTabSchema.optional(),
+    tab: z.preprocess(
+      (value) =>
+        value === 'integrations' || value === 'usage' || value === 'connections' ? 'general' : value,
+      settingsPageTabSchema.optional()
+    ),
     detail: settingsDetailPathSchema.optional(),
   }),
   layout: workbenchLayout,

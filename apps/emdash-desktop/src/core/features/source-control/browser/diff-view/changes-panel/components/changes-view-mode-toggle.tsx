@@ -12,7 +12,7 @@ interface ChangesViewModeToggleProps {
 export function ChangesViewModeToggle({ value, onChange, label }: ChangesViewModeToggleProps) {
   const nextMode: ChangesListViewMode = value === 'flat' ? 'tree' : 'flat';
   const Icon = value === 'flat' ? AlignJustify : ListTree;
-  const tooltip = value === 'flat' ? 'Switch to tree view' : 'Switch to flat list';
+  const tooltip = value === 'flat' ? '切换为树视图' : '切换为列表视图';
   const [open, setOpen] = useState(false);
 
   return (
@@ -31,7 +31,7 @@ export function ChangesViewModeToggle({ value, onChange, label }: ChangesViewMod
           size="xs"
           icon
           onClick={() => onChange(nextMode)}
-          aria-label={`${tooltip} (${label})`}
+          aria-label={`${tooltip}（${label}）`}
         >
           <Icon className="size-3" />
         </Button>

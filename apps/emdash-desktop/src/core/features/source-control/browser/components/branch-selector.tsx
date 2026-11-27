@@ -135,7 +135,7 @@ export function BranchSelector({
         <Combobox.Trigger className="hover:bg-muted/30 flex h-9 items-center justify-between rounded-md border border-border px-2.5 py-1 text-left text-sm outline-none">
           <div className="text-muted-foreground flex items-center gap-2">
             <GitBranch />
-            <Combobox.Value placeholder="Select a branch" />
+            <Combobox.Value placeholder="选择分支" />
           </div>
         </Combobox.Trigger>
       )}
@@ -181,7 +181,7 @@ export function BranchSelector({
         )}
         <Combobox.Input
           showTrigger={false}
-          placeholder="Search branches"
+          placeholder="搜索分支"
           inputRef={inputRef}
           rightAddon={
             onRefresh && (
@@ -196,13 +196,13 @@ export function BranchSelector({
                       disabled={isRefreshing}
                       aria-disabled={!!refreshDisabledReason}
                       aria-description={refreshDisabledReason ?? undefined}
-                      aria-label="Refresh branches"
+                      aria-label="刷新分支"
                     >
                       <RefreshCw className={cn('size-3', isRefreshing && 'animate-spin')} />
                     </InputGroup.Button>
                   }
                 />
-                <Tooltip.Content>{refreshDisabledReason ?? 'Refresh branches'}</Tooltip.Content>
+                <Tooltip.Content>{refreshDisabledReason ?? '刷新分支'}</Tooltip.Content>
               </Tooltip.Root>
             )
           }
