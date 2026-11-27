@@ -114,6 +114,17 @@ export function useCollapsiblePanelBinding(
   // is a (re)registration; the size tells a growing group from a shrinking one.
   const lastLayoutRef = useRef<{ panelKey: string; groupSize: number } | null>(null);
 
+  const clampRecoveryFrame = useRef<number | null>(null);
+  useEffect(
+    () => () => {
+      if (clampRecoveryFrame.current !== null) {
+        cancelAnimationFrame(clampRecoveryFrame.current);
+        clampRecoveryFrame.current = null;
+      }
+    },
+    [open, orientation, storage, storageKey]
+  );
+
   // USER-INPUT GUARD: the library reports a user resize synchronously while
   // it dispatches the input event behind it (a drag ends on pointerup, or on
   // a pointermove with no button pressed; keyboard resizes on keydown; a
@@ -173,12 +184,29 @@ export function useCollapsiblePanelBinding(
       // generation: the re-registered panel is laid out from `defaultSize`
       // again, i.e. the persisted size clamped to the new group.
       if (storedSize !== undefined && groupSize > previous.groupSize && px < storedSize - 1) {
-        setGeneration((g) => g + 1);
+        // Re-registering synchronously from the library's ResizeObserver
+        // changes the observed layout during delivery, producing an undelivered
+        // notification loop. Recover on the next frame instead, coalescing
+        // observations and abandoning recovery if the group shrinks meanwhile.
+        if (clampRecoveryFrame.current === null) {
+          const group = groupRef.current;
+          clampRecoveryFrame.current = requestAnimationFrame(() => {
+            clampRecoveryFrame.current = null;
+            if (groupRef.current === group && measureGroupSize(group, orientation) >= groupSize) {
+              setGeneration((g) => g + 1);
+            }
+          });
+        }
       }
       return;
     }
 
     // A user resize: pointer drag, keyboard, or separator double-click.
+    // A pending window-resize recovery must not override this newer user action.
+    if (clampRecoveryFrame.current !== null) {
+      cancelAnimationFrame(clampRecoveryFrame.current);
+      clampRecoveryFrame.current = null;
+    }
     if (size < closeThreshold) {
       // THE one semantic/pixel crossing point: a user drag settled below the
       // close threshold. Issue the semantic command (unmounts the panel) and

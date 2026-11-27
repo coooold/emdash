@@ -65,11 +65,6 @@ export function WindowScope({ children }: { readonly children: ReactNode }) {
         }
       },
     }),
-    'app.giveFeedback': () => ({
-      execute: () => {
-        void openModal('feedbackModal', {});
-      },
-    }),
     'app.toggleTheme': () => ({
       execute: () => {
         void toggleAppTheme().then((result) => {

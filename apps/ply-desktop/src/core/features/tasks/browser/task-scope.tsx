@@ -102,9 +102,7 @@ const taskScopeImplementation = {
   'task.sidebarFiles': (params) => ({
     availability: () => taskAvailability(params),
     execute: () => {
-      getTaskComposition(params.projectId, params.taskId)?.chrome.commands.toggleSidebarTab(
-        'files'
-      );
+      getTaskComposition(params.projectId, params.taskId)?.editorView.requestFileSearchFocus();
     },
   }),
   'task.fileContentSearch': (params) => ({
@@ -112,7 +110,6 @@ const taskScopeImplementation = {
     execute: () => {
       const taskView = getTaskComposition(params.projectId, params.taskId);
       if (!taskView) return;
-      taskView.chrome.commands.openSidebarTab('files');
       taskView.editorView.requestFileSearchFocus();
     },
   }),

@@ -177,11 +177,6 @@ export function setupApplicationMenu(
             void shell.openExternal(PLY_RELEASES_URL);
           },
         },
-        { type: 'separator' as const },
-        {
-          label: '提供反馈',
-          click: () => emitCommand('app.giveFeedback'),
-        },
       ],
     },
   ];

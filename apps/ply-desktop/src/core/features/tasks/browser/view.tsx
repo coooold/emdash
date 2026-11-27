@@ -3,6 +3,7 @@ import { type ReactNode } from 'react';
 import { getProjectManagerStore } from '@core/features/projects/api/browser/stores/project-selectors';
 import { projectViewDef } from '@core/features/projects/contributions/views';
 import { getTaskManagerStore } from '@core/features/tasks/api/browser/task-state/task-selectors';
+import { TaskFilesSidebar } from '@core/features/tasks/contributions/browser/task-files-sidebar';
 import { TaskViewWrapper } from '@core/features/tasks/contributions/browser/task-view-context';
 import { taskViewDef } from '@core/features/tasks/contributions/views';
 import { getTaskComposition } from '@core/features/workbench/api/browser/task-composition-selectors';
@@ -46,6 +47,7 @@ export const taskViewRuntime = defineViewRuntime(taskViewDef, {
   slots: {
     wrap: TaskViewWrapperWithProviders,
     titlebar: TaskTitlebar,
+    sidebar: TaskFilesSidebar,
     main: TaskMainPanel,
   },
   resolve: ({ projectId, taskId }) => {

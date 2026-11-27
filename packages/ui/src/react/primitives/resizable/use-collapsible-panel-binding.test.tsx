@@ -24,7 +24,7 @@
  * is covered by the app's `workspace-layout-resize` browser test.
  */
 import { act, renderHook } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useCollapsiblePanelBinding, type LayoutStorage } from './use-collapsible-panel-binding';
 
 class MemoryStorage implements LayoutStorage {
@@ -318,14 +318,76 @@ describe('useCollapsiblePanelBinding', () => {
   });
 
   describe('clamp guard', () => {
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['requestAnimationFrame', 'cancelAnimationFrame'] });
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    const nextFrame = () => act(() => vi.advanceTimersToNextFrame());
+
     it('re-derives the panel when the group grows while it is short of its persisted size', () => {
       const { view, report } = setup({ stored: '400px' });
 
       report(1000, 30); // opened clamped at 300px
       report(1200, 25); // grew; the library kept the clamped 300px
 
+      // ResizeObserver delivery must finish before re-registering the panel.
+      expect(view.result.current.collapsiblePanelProps.id).toBe('side');
+      nextFrame();
+
       expect(view.result.current.collapsiblePanelProps.id).not.toBe('side');
       expect(view.result.current.collapsiblePanelProps.defaultSize).toBe('400px');
+    });
+
+    it('coalesces growth observations into one recovery frame', () => {
+      const { view, report } = setup({ stored: '400px' });
+      report(1000, 30);
+      report(1100, (300 / 1100) * 100);
+      report(1200, 25);
+      expect(vi.getTimerCount()).toBe(1);
+      nextFrame();
+      expect(view.result.current.collapsiblePanelProps.id).toBe('side@1');
+    });
+
+    it('does not recover a clamp after the group shrinks again', () => {
+      const { view, report } = setup({ stored: '400px' });
+      report(1000, 30);
+      report(1200, 25);
+      report(900, 30);
+      nextFrame();
+      expect(view.result.current.collapsiblePanelProps.id).toBe('side');
+    });
+
+    it('cancels recovery when the user resizes before the next frame', () => {
+      const { view, storage, report, resize } = setup({ stored: '400px' });
+      report(1000, 30);
+      report(1200, 25);
+      resize(1200, 28);
+      expect(vi.getTimerCount()).toBe(0);
+      nextFrame();
+      expect(view.result.current.collapsiblePanelProps.id).toBe('side');
+      expect(storage.getItem(SIZE_KEY)).toBe('336px');
+    });
+
+    it('cancels recovery when the panel closes or unmounts', () => {
+      const { view, report } = setup({ stored: '400px' });
+      report(1000, 30);
+      report(1200, 25);
+      view.rerender({ open: false });
+      expect(vi.getTimerCount()).toBe(0);
+      nextFrame();
+      // Only the semantic close changes the generation.
+      expect(view.result.current.collapsiblePanelProps.id).toBe('side@1');
+
+      view.rerender({ open: true });
+      report(1000, 30);
+      report(1200, 25);
+      expect(vi.getTimerCount()).toBe(1);
+      view.unmount();
+      expect(vi.getTimerCount()).toBe(0);
     });
 
     it('does not re-derive on a shrink, or once the panel is back at its persisted size', () => {

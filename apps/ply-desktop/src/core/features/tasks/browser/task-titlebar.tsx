@@ -14,7 +14,6 @@ import {
   ChevronDown,
   Clock,
   FileDiff,
-  FolderOpen,
   GitBranch,
   Pin,
   RefreshCcw,
@@ -368,18 +367,6 @@ const ActiveTaskTitlebar = observer(function ActiveTaskTitlebar({
               />
               <Tooltip.Content>
                 更改 <BoundShortcut command="task.sidebarChanges" variant="keycaps" />
-              </Tooltip.Content>
-            </Tooltip.Root>
-            <Tooltip.Root>
-              <Tooltip.Trigger
-                render={
-                  <ToggleGroup.Item size="sm" icon value="files" aria-label="文件">
-                    <FolderOpen className="size-3.5" />
-                  </ToggleGroup.Item>
-                }
-              />
-              <Tooltip.Content>
-                文件 <BoundShortcut command="task.sidebarFiles" variant="keycaps" />
               </Tooltip.Content>
             </Tooltip.Root>
             <Tooltip.Root>

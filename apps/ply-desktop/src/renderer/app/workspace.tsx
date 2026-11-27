@@ -11,21 +11,21 @@ import { WorkspaceContentLayout, WorkspaceLayout } from '@renderer/lib/layout/wo
 
 export function Workspace() {
   useTheme();
-  const { WrapView, TitlebarSlot, MainPanel } = useWorkspaceSlots();
+  const { WrapView, TitlebarSlot, SidebarSlot, MainPanel } = useWorkspaceSlots();
   const { params } = useWorkspaceViewParams();
 
   return (
     <WindowScope>
       <BrowserShortcutForwarding />
       <KeybindingDispatcherMount />
-      <WorkspaceLayout
-        leftSidebar={<LeftSidebar />}
-        mainContent={
-          <WrapView {...params}>
+      <WrapView {...params}>
+        <WorkspaceLayout
+          leftSidebar={<LeftSidebar files={<SidebarSlot />} />}
+          mainContent={
             <WorkspaceContentLayout titlebarSlot={<TitlebarSlot />} mainPanel={<MainPanel />} />
-          </WrapView>
-        }
-      />
+          }
+        />
+      </WrapView>
       <Toaster />
     </WindowScope>
   );

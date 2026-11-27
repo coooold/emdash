@@ -24,13 +24,19 @@ function createTaskCompositionHarness() {
 }
 
 describe('TaskComposition workspace file navigation', () => {
-  it('reveals an already-open file without opening another tab', () => {
+  it('maps a persisted files tab to conversations now that files are on the left', () => {
+    const taskView = Object.create(TaskComposition.prototype) as TaskComposition;
+    Object.defineProperty(taskView, 'chrome', { value: { state: { sidebarTab: 'files' } } });
+    expect(taskView.sidebarTab).toBe('conversations');
+  });
+
+  it('reveals an already-open file without opening another tab or the right sidebar', () => {
     const harness = createTaskCompositionHarness();
 
     harness.taskView.revealWorkspaceFile('/repo/src/already-open.ts');
 
     expect(harness.open).not.toHaveBeenCalled();
-    expect(harness.openSidebarTab).toHaveBeenCalledWith('files');
+    expect(harness.openSidebarTab).not.toHaveBeenCalled();
     expect(harness.revealFile).toHaveBeenCalledWith('/repo/src/already-open.ts');
   });
 });

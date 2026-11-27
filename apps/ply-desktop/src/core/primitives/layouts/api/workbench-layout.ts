@@ -7,6 +7,7 @@ export const workbenchLayout = defineLayout({
   slots: {
     wrap: slot.wrapper(),
     titlebar: slot.optional(),
+    sidebar: slot.optional(),
     main: slot.main(),
   },
 });

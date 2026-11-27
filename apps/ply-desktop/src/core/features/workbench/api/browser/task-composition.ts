@@ -232,7 +232,10 @@ export class TaskComposition {
   }
 
   get sidebarTab(): SidebarTab {
-    return this.chrome.state.sidebarTab;
+    // Legacy file-tab state now falls back to the conversations panel.
+    return this.chrome.state.sidebarTab === 'files'
+      ? 'conversations'
+      : this.chrome.state.sidebarTab;
   }
 
   get isSidebarCollapsed(): boolean {
@@ -467,7 +470,6 @@ export class TaskComposition {
   }
 
   revealWorkspaceFile(path: string): void {
-    this.chrome.commands.openSidebarTab('files');
     void this.editorView.revealFile(path);
   }
 

@@ -18,6 +18,7 @@ export interface NavigationViewDefinition {
 export type SlotsContextValue = {
   WrapView: ComponentType<{ children: ReactNode } & Record<string, unknown>>;
   TitlebarSlot: ComponentType;
+  SidebarSlot: ComponentType;
   MainPanel: ComponentType;
   currentView: string;
 };
@@ -43,11 +44,13 @@ export function useWorkspaceSlots(): SlotsContextValue {
     const slots = contribution.runtime.slots as unknown as {
       wrap?: ComponentType<{ children: ReactNode } & Record<string, unknown>>;
       titlebar?: ComponentType;
+      sidebar?: ComponentType;
       main: ComponentType;
     };
     return {
       WrapView: slots.wrap ?? Fragment,
       TitlebarSlot: slots.titlebar ?? EmptyTitlebar,
+      SidebarSlot: slots.sidebar ?? EmptyTitlebar,
       MainPanel: slots.main,
       currentView: contribution.def.id,
     };

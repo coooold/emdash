@@ -32,8 +32,7 @@ export function SkillsInfoBox() {
         >
           Agent Skills
         </a>{' '}
-        standard. If you want to use skills from another library, feel free to let us know through
-        the feedback modal.
+        standard.
       </Alert.Description>
     </Alert.Root>
   );

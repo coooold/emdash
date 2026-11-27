@@ -8,7 +8,7 @@ function ConfirmModal(_props: { title: string }) {
   return null;
 }
 
-function FeedbackModal(_props: { category?: string }) {
+function OptionalModal(_props: { category?: string }) {
   return null;
 }
 
@@ -16,11 +16,11 @@ const confirmModal = defineModal<boolean>()({
   id: 'confirmModal',
   component: ConfirmModal,
 });
-const feedbackModal = defineModal()({
-  id: 'feedbackModal',
-  component: FeedbackModal,
+const optionalModal = defineModal()({
+  id: 'optionalModal',
+  component: OptionalModal,
 });
-const catalog = defineModalCatalog([confirmModal, feedbackModal] as const);
+const catalog = defineModalCatalog([confirmModal, optionalModal] as const);
 
 describe('createModalApi', () => {
   it('passes ids and props through the untyped transport', async () => {
@@ -45,18 +45,18 @@ describe('createModalApi', () => {
       .mockResolvedValue(err<ModalDismissed>({ type: 'modal_dismissed', reason: 'explicit' }));
     const api = createModalApi<typeof catalog>({ open });
 
-    const outcome = api.openModal('feedbackModal');
+    const outcome = api.openModal('optionalModal');
 
     expectTypeOf(outcome).toEqualTypeOf<Promise<Result<void, ModalDismissed>>>();
     await outcome;
-    expect(open).toHaveBeenCalledWith('feedbackModal', {});
+    expect(open).toHaveBeenCalledWith('optionalModal', {});
   });
 
   it('fails clearly before the engine supplies a transport', () => {
     const api = createModalApi<typeof catalog>();
 
-    expect(() => api.openModal('feedbackModal')).toThrow(
-      "Modal API is not connected; cannot open 'feedbackModal'"
+    expect(() => api.openModal('optionalModal')).toThrow(
+      "Modal API is not connected; cannot open 'optionalModal'"
     );
   });
 });

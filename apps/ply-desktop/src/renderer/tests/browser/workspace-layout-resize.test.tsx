@@ -45,6 +45,10 @@ describe('WorkspaceLayout window resize', () => {
   let host: HTMLDivElement;
   let root: Root;
   let storage: MemoryStorage;
+  let resizeObserverErrors: string[];
+  const recordResizeObserverError = (event: ErrorEvent) => {
+    if (event.message.startsWith('ResizeObserver loop')) resizeObserverErrors.push(event.message);
+  };
   let toggleLeftSidebar: Mock<() => void>;
 
   function render(): void {
@@ -141,6 +145,8 @@ describe('WorkspaceLayout window resize', () => {
   }
 
   beforeEach(() => {
+    resizeObserverErrors = [];
+    window.addEventListener('error', recordResizeObserverError);
     host = document.createElement('div');
     host.style.position = 'absolute';
     host.style.height = '600px';
@@ -166,6 +172,8 @@ describe('WorkspaceLayout window resize', () => {
   afterEach(async () => {
     await unmount();
     host.remove();
+    window.removeEventListener('error', recordResizeObserverError);
+    expect(resizeObserverErrors).toEqual([]);
   });
 
   it('keeps the dragged pixel width when the window gets wider or narrower', async () => {

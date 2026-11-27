@@ -18,7 +18,6 @@ const expectedModalIds = [
   'createSkillModal',
   'deleteTaskModal',
   'devProcessPanelModal',
-  'feedbackModal',
   'integrationSetupModal',
   'languageServicesDialog',
   'linkConversationModal',

@@ -39,8 +39,8 @@ export const sidebarConversationsCommand = defineCommand({
 
 export const sidebarFilesCommand = defineCommand({
   id: 'task.sidebarFiles',
-  title: '查看文件',
-  description: '打开右侧边栏的文件面板',
+  title: '聚焦文件列表',
+  description: '将焦点移到左侧文件列表的搜索框',
   category: 'View',
   icon: 'folder-open',
   keybinding: keybinding.settings('sidebarFiles', 'Mod+Shift+2'),
@@ -49,7 +49,7 @@ export const sidebarFilesCommand = defineCommand({
 export const fileContentSearchCommand = defineCommand({
   id: 'task.fileContentSearch',
   title: '搜索文件内容',
-  description: '将焦点移到右侧边栏的文件内容搜索框',
+  description: '将焦点移到左侧文件列表的文件内容搜索框',
   category: 'Search',
   icon: 'search',
   keybinding: keybinding.settings('fileContentSearch', 'Mod+Shift+F', {

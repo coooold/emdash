@@ -10,11 +10,11 @@ afterEach(async () => {
 
 describe('modal engine', () => {
   it('connects the typed API to the modal store and resolves completed outcomes', async () => {
-    const outcome = openModal('feedbackModal');
+    const outcome = openModal('unsavedChangesModal', { fileName: 'README.md' });
 
-    expect(modalStore.activeModalId).toBe('feedbackModal');
-    modalStore.complete(undefined);
+    expect(modalStore.activeModalId).toBe('unsavedChangesModal');
+    modalStore.complete('discard');
 
-    await expect(outcome).resolves.toEqual(ok(undefined));
+    await expect(outcome).resolves.toEqual(ok('discard'));
   });
 });

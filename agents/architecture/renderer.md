@@ -61,6 +61,12 @@ Task state, and Host generation readiness. Views and navigation handlers only ex
 is current; they do not opportunistically provision it. Explicit Retry and Re-provision actions
 remain direct user commands.
 
+The workbench layout's optional `sidebar` slot is rendered inside the left sidebar, below the
+project/task list and above the footer. Task views fill it with an always-visible file tree for
+the active task's workspace; the right sidebar only contains conversations and changes. The view
+wrapper encloses the whole workspace layout so all slots share the same task scope. Switching
+worktrees remounts the tree's transient UI while preserving each task's stored expansion state.
+
 Feature views, modals, and task tabs are exposed through `contributions/` and aggregated by
 `src/core/manifests/browser/browser-contributions.ts` and
 `src/core/manifests/browser/task-tab-contributions.ts`.
