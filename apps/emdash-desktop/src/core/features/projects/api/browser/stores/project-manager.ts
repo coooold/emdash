@@ -38,7 +38,6 @@ import type { StoredIntegrationAccounts } from '@core/primitives/project-setting
 import { type LocalProject, type SshProject } from '@core/primitives/projects/api';
 import type { ProviderAccountRef } from '@core/primitives/provider-accounts/api/provider-account-summary';
 import type { ScopedStoreContribution } from '@core/primitives/scoped-stores/browser';
-import { captureTelemetry } from '@core/primitives/telemetry/browser/telemetry-client';
 import { observeReadableInAction } from '@core/primitives/wire/browser/mobx-readable';
 import { hostsContract } from '@core/services/hosts/api';
 import { getHostsClient } from '@core/services/hosts/api/client';
@@ -434,8 +433,6 @@ export class ProjectManagerStore {
     targetPath: string
   ): Promise<ProjectCreationCompletion> {
     const projectsClient = await getProjectsWireClient();
-    const projectTelemetryStrategy: 'open' | 'create' | 'clone' =
-      data.mode === 'clone' ? 'clone' : data.mode === 'create' ? 'create' : 'open';
 
     let result: ProjectCreationCompletion;
     try {
@@ -540,11 +537,6 @@ export class ProjectManagerStore {
       }
     } catch (error) {
       this._markUnexpectedCreationError(projectId, error);
-      captureTelemetry('project_added', {
-        type: 'local',
-        strategy: projectTelemetryStrategy,
-        success: false,
-      });
       throw error;
     }
 
@@ -555,11 +547,6 @@ export class ProjectManagerStore {
         this._markCreationError(projectId, result.error);
       }
     }
-    captureTelemetry('project_added', {
-      type: 'local',
-      strategy: projectTelemetryStrategy,
-      success: result.success,
-    });
     return result;
   }
 

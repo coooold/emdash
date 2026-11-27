@@ -8,5 +8,4 @@ export const automationsViewDef = defineView({
     automationId: z.string().optional(),
   }),
   layout: workbenchLayout,
-  telemetryEvent: 'automations_viewed',
 });

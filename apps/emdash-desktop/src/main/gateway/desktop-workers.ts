@@ -64,7 +64,7 @@ import type { Unsubscribe } from '@emdash/shared';
 import type { Scope } from '@emdash/shared/concurrency';
 import { queuedClient, type ContractClient } from '@emdash/wire/rpc';
 import {
-  createVitalsCollectingSpawner,
+  createSpawnLoggingSpawner,
   createWireWorkerHost,
   type WireWorker,
   type WireWorkerState,
@@ -84,7 +84,6 @@ import { getAppDb } from '@main/db/instance';
 import { desktopKeyValueStore } from '@main/db/kv';
 import { resolveDatabasePath } from '@main/db/path';
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import { refreshUserEnv, userShellEnvManager } from '@main/lib/userEnv';
 import { desktopWorkerPath } from './worker-paths';
 
@@ -144,11 +143,6 @@ export type DesktopWorkersHandle = {
   readonly workers: DesktopRuntimeWorkers;
   /** Resolves after required local Host runtimes have completed their Wire worker handshakes. */
   runtimeReady(): Promise<void>;
-  /**
-   * Activate per-worker vitals self-sampling (telemetry-sampled sessions
-   * only). Reaches every live worker and any worker spawned later.
-   */
-  startVitalsSampling(intervalMs: number): void;
   /** Toggle verbose per-spawn logging in every live and future worker. */
   setSpawnLogging(enabled: boolean): void;
   dispose(): Promise<void>;
@@ -173,22 +167,17 @@ export async function startDesktopWorkers(
   deps: StartDesktopWorkersDeps
 ): Promise<DesktopWorkersHandle> {
   const workerScope = deps.scope.child('wire-workers');
-  const vitalsSpawner = createVitalsCollectingSpawner(childProcessSpawner(), {
-    onReport: (workerName, vitals) => {
-      telemetryService.capture('perf_vitals', { process_name: `worker_${workerName}`, ...vitals });
-    },
-  });
+  const spawnLogging = createSpawnLoggingSpawner(childProcessSpawner());
   const host = createWireWorkerHost({
     scope: workerScope,
-    processSpawner: vitalsSpawner,
+    processSpawner: spawnLogging,
     logger: log,
   });
   try {
     const handle = startDesktopWorkersWithHost(deps, workerScope, host);
     return {
       ...handle,
-      startVitalsSampling: (intervalMs) => vitalsSpawner.startSampling(intervalMs),
-      setSpawnLogging: (enabled) => vitalsSpawner.setSpawnLogging(enabled),
+      setSpawnLogging: (enabled) => spawnLogging.setSpawnLogging(enabled),
     };
   } catch (error) {
     await workerScope.dispose(error);
@@ -200,7 +189,7 @@ function startDesktopWorkersWithHost(
   deps: StartDesktopWorkersDeps,
   workerScope: Scope,
   host: ReturnType<typeof createWireWorkerHost>
-): Omit<DesktopWorkersHandle, 'startVitalsSampling' | 'setSpawnLogging'> {
+): Omit<DesktopWorkersHandle, 'setSpawnLogging'> {
   const workersStartedAt = Date.now();
   const userShellEnv = createUserShellEnvController(() => userShellEnvManager.current());
   const gitCredentialChannels = createGitCredentialChannelsController();

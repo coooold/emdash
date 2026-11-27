@@ -6,5 +6,4 @@ export const homeViewDef = defineView({
   id: 'home',
   params: z.object({}),
   layout: workbenchLayout,
-  telemetryEvent: 'home_viewed',
 });

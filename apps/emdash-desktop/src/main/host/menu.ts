@@ -1,4 +1,4 @@
-import { app, clipboard, Menu, shell } from 'electron';
+import { app, Menu, shell } from 'electron';
 import { desktopHostEvents } from '@core/features/workbench/node';
 import { MENU_ITEMS } from '@core/manifests/shared/menu-items';
 import {
@@ -10,7 +10,6 @@ import {
   EMDASH_DOCS_URL,
   EMDASH_RELEASES_URL,
 } from '@core/primitives/urls/api/urls';
-import { telemetryService } from '@main/lib/telemetry';
 
 export interface MenuKeybindingSnapshotEntry {
   readonly commandId: string;
@@ -34,17 +33,6 @@ let currentKeybindings: readonly MenuKeybindingSnapshotEntry[] = MENU_ITEMS.map(
 
 function emitCommand(commandId: string): void {
   desktopHostEvents.emit(undefined, { type: 'menu-command', commandId });
-}
-
-function copyInstallationId(): void {
-  const instanceId = telemetryService.getInstanceId() ?? 'unavailable';
-  const lines = [
-    `Emdash ${app.getVersion()}`,
-    `Installation ID: ${instanceId}`,
-    `Platform: ${process.platform} ${process.arch}`,
-    `Electron: ${process.versions.electron}`,
-  ];
-  clipboard.writeText(lines.join('\n'));
 }
 
 export function setupApplicationMenu(
@@ -193,15 +181,6 @@ export function setupApplicationMenu(
           },
         },
         { type: 'separator' as const },
-        {
-          label: '故障排查',
-          submenu: [
-            {
-              label: '复制安装 ID',
-              click: copyInstallationId,
-            },
-          ],
-        },
         {
           label: '提供反馈',
           click: () => emitCommand('app.giveFeedback'),

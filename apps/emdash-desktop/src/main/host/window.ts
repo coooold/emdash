@@ -19,7 +19,6 @@ import {
 } from '@main/host/browser/webview-security';
 import { registerExternalLinkHandlers } from '@main/host/externalLinks';
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import { APP_ORIGIN } from './protocol';
 
 let mainWindow: BrowserWindow | null = null;
@@ -114,17 +113,10 @@ export function createMainWindow(): BrowserWindow {
     });
   });
 
-  // Track window focus for telemetry
   mainWindow.on('focus', () => {
-    telemetryService.capture('app_window_focused');
     if (typeof mainWindow?.setWindowButtonVisibility === 'function') {
       mainWindow.setWindowButtonVisibility(true);
     }
-    void telemetryService.checkAndReportDailyActiveUser();
-  });
-
-  mainWindow.on('blur', () => {
-    telemetryService.capture('app_window_unfocused');
   });
 
   mainWindow.on('close', (event) => {

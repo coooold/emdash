@@ -94,7 +94,6 @@ it.each(['claude', 'codex'] as const)(
         runtimes,
         workspaceIdentity,
         sessionLaunchContexts,
-        telemetry: { capture: vi.fn() } as never,
         projects,
         taskSessions: { getTask: vi.fn() },
         withCompensation: async ({ action }) => action(),
@@ -159,7 +158,6 @@ it.each(['claude', 'codex'] as const)(
             killTerminals: async () => {},
           },
           logger: { warn: vi.fn() } as never,
-          telemetry: { capture: vi.fn() },
         },
         'project'
       );

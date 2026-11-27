@@ -4,7 +4,6 @@ import { launchTuiConversation } from './launch-tui-conversation';
 
 const resolveTask = vi.hoisted(() => vi.fn());
 const emit = vi.hoisted(() => vi.fn());
-const capture = vi.hoisted(() => vi.fn());
 
 vi.mock('@core/features/conversations/api/node', () => ({
   conversationWireEvents: { emit },
@@ -14,7 +13,6 @@ describe('launchTuiConversation', () => {
   beforeEach(() => {
     resolveTask.mockReset();
     emit.mockReset();
-    capture.mockReset();
   });
 
   it('starts first-spawn conversations without a client session id write', async () => {
@@ -33,7 +31,6 @@ describe('launchTuiConversation', () => {
       taskId: 'task-1',
       conversationId: 'conversation-1',
       database: database as never,
-      telemetry: { capture },
       taskSessions: { getTask: resolveTask },
     });
 
@@ -66,7 +63,6 @@ describe('launchTuiConversation', () => {
       taskId: 'task-1',
       conversationId: 'conversation-1',
       database: database as never,
-      telemetry: { capture },
       taskSessions: { getTask: resolveTask },
     });
 

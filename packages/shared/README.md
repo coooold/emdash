@@ -59,8 +59,7 @@ root, domain symbols from their subpath. Nothing is exported from both.
 - `@emdash/shared/util`: stable utility helpers such as `stableStringify`.
 - `@emdash/shared/markdown`: mention grammar helpers.
 - `@emdash/shared/config`: layered config parsing with zod schemas.
-- `@emdash/shared/perf` and `@emdash/shared/perf/node`: spawn accounting and
-  process vitals instrumentation.
+- `@emdash/shared/perf`: spawn counters and local development diagnostics.
 
 ## Choosing Lifecycle Primitives
 

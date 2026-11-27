@@ -25,13 +25,6 @@ export const SETTINGS_SEARCH_INDEX: SettingsSearchEntry[] = [
     keywords: ['version', 'update', 'upgrade', 'restart', 'release'],
   },
   {
-    id: 'privacy-telemetry',
-    label: '隐私和遥测',
-    tab: 'general',
-    description: '发送匿名使用数据，帮助改进 Emdash。',
-    keywords: ['privacy & telemetry', 'analytics', 'posthog', 'usage data', 'tracking'],
-  },
-  {
     id: 'auto-generate-task-names',
     label: '自动生成任务名称',
     tab: 'general',

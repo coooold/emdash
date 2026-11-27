@@ -1,7 +1,6 @@
 import { conversationEvents } from '@core/features/conversations/api/node/conversation-events';
 import type { ConversationRemovalBroker } from '@core/features/conversations/api/node/operations/conversation-removal';
 import { createConversationRegistry } from '@core/features/conversations/api/node/registry';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type { AppDb } from '@core/services/app-db/node/db';
 import { appDbPokes } from '@core/services/app-db/node/pokes';
 import { conversationWireEvents } from './event-host';
@@ -16,8 +15,7 @@ import { removeConversationOrTombstone } from './remove-conversation';
 export async function deleteHostConversation(
   db: AppDb,
   runtimes: ConversationRemovalBroker,
-  conversationId: string,
-  telemetry: Pick<TelemetryService, 'capture'>
+  conversationId: string
 ): Promise<void> {
   const row = createConversationRegistry(db).getLive(conversationId);
   // Idempotent toward the caller: an absent row is a no-op.
@@ -38,5 +36,4 @@ export async function deleteHostConversation(
     projectId: row.projectId ?? undefined,
     taskId: row.taskId ?? undefined,
   });
-  telemetry.capture('conversation_deleted', { conversation_id: conversationId });
 }

@@ -34,9 +34,6 @@ vi.mock('@core/primitives/modals/react/modal-store', () => ({
   modalStore: { dismissAll: dismissModal },
 }));
 
-vi.mock('@core/primitives/telemetry/browser/focus-tracker', () => ({
-  focusTracker: { transition: vi.fn(() => null) },
-}));
 
 function handle<T>(value: T, options: { hasStoredValue?: boolean } = {}): MementoHandle<T> {
   let current = value;

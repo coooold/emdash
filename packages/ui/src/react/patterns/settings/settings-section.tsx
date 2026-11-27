@@ -31,7 +31,7 @@ export interface SettingsSectionProps {
  * ```tsx
  * <SettingsSection title="Preferences">
  *   <SettingsRow label="Automatic updates" control={<Switch />} />
- *   <SettingsRow label="Telemetry" control={<Switch />} />
+ *   <SettingsRow label="Notifications" control={<Switch />} />
  * </SettingsSection>
  * ```
  *

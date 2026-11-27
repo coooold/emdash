@@ -29,9 +29,6 @@ vi.mock('@core/features/machines/contributions/app-stores', () => ({
   getMachinesStore: () => ({ healthFor: vi.fn(() => ({ status: 'ok' })) }),
 }));
 
-vi.mock('@core/primitives/telemetry/browser/telemetry-scope', () => ({
-  setTelemetryConversationScope: vi.fn(),
-}));
 
 // Stub out the React UI components brought in by the definitions bootstrap so
 // the test can run in the node Vitest project without a real DOM.

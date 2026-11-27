@@ -34,7 +34,7 @@ export interface TabResource {
   onClose?(): void;
   /**
    * Called when the tab becomes the active tab in a visible pane.
-   * Use for telemetry scope, mark-seen, lazy bootstrap, etc.
+   * Use for marking items as seen or lazy initialization.
    */
   onActivate?(): void;
   /**

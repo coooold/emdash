@@ -220,13 +220,6 @@ describe('AutomationsService definition synchronization', () => {
     expect(mocks.deploy.mock.calls.map(([deployment]) => deployment.revision)).toEqual([2, 3]);
     expect(mocks.setAutomationRevision).toHaveBeenCalledWith(expect.anything(), existing.id, 3);
   });
-  it('publishes deletion hooks for callers that tombstoned an automation', () => {
-    const service = createService();
-    const hook = vi.fn();
-    service.on('automation:deleted', hook);
-    service.notifyDeleted('automation-1');
-    expect(hook).toHaveBeenCalledWith('automation-1');
-  });
 });
 describe('AutomationsService run projection', () => {
   it('reconciles only definitions for the runtime host supplied at startup', async () => {
@@ -249,17 +242,14 @@ describe('AutomationsService run projection', () => {
     expect(mocks.buildAutomationDeployment).toHaveBeenCalledWith(localAutomation);
     expect(mocks.deploy).toHaveBeenCalledOnce();
   });
-  it('projects runtime events and logs projection failures without stopping telemetry hooks', async () => {
+  it('projects runtime events and logs projection failures', async () => {
     const service = createService();
-    const telemetryHook = vi.fn();
-    service.on('run:step-completed', telemetryHook);
     await service.initialize();
     const run = runFixture();
     mocks.upsertRunProjection.mockRejectedValue(new Error('database unavailable'));
     expect(() => mocks.onEvent?.({ run })).not.toThrow();
     await vi.waitFor(() => {
       expect(mocks.upsertRunProjection).toHaveBeenCalledWith(expect.anything(), run);
-      expect(telemetryHook).toHaveBeenCalledWith(run);
       expect(mocks.logWarn).toHaveBeenCalledWith('Failed to update the automation run projection', {
         automationId: 'automation-1',
         runId: 'run-1',
@@ -271,8 +261,6 @@ describe('AutomationsService run projection', () => {
   });
   it('ignores runtime events for tombstoned automations', async () => {
     const service = createService();
-    const telemetryHook = vi.fn();
-    service.on('run:step-completed', telemetryHook);
     await service.initialize();
     mocks.getAutomation.mockResolvedValue(null);
     mocks.onEvent?.({ run: runFixture() });
@@ -280,6 +268,5 @@ describe('AutomationsService run projection', () => {
       expect(mocks.getAutomation).toHaveBeenCalledWith(expect.anything(), 'automation-1');
     });
     expect(mocks.upsertRunProjection).not.toHaveBeenCalled();
-    expect(telemetryHook).not.toHaveBeenCalled();
   });
 });

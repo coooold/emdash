@@ -7,7 +7,6 @@ import { tuiAgentStatusBridge } from '@main/core/agent-status/tui-agent-status-b
 import { closeAppDb } from '@main/db/instance';
 import { updateService } from '@main/host/updates/update-service';
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import { appScope } from '../core/app-scope';
 import { runPhase, type Phase } from '../core/phase';
 import { disposeNotificationService } from '../core/service-instances';
@@ -62,10 +61,6 @@ function criticalPhases(services: QuitCleanupServices): Phase<void>[] {
       name: 'editor-buffers',
       run: async () => services.editorBuffers.dispose(),
     },
-    {
-      name: 'telemetry-service',
-      run: () => telemetryService.dispose(),
-    },
   ];
 }
 
@@ -81,7 +76,6 @@ function bestEffortPhases(services: QuitCleanupServices): Phase<void>[] {
 export async function runQuitCleanup(): Promise<void> {
   const services = cleanupServices;
   if (!services) throw new Error('Quit cleanup services were not configured');
-  telemetryService.capture('app_closed');
 
   services.automations.stop();
   updateService.dispose();

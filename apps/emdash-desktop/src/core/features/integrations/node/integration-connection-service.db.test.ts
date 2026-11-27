@@ -27,7 +27,6 @@ describe('IntegrationConnectionService account identity', () => {
   let fixture: RegistryFixture;
   let credentials: IntegrationAccountStore;
   let service: IntegrationConnectionService;
-  const capture = vi.fn();
   const accountsChanged = vi.fn();
   const identity = { id: 'org:user', login: 'ada', host: 'linear.app' };
 
@@ -38,7 +37,6 @@ describe('IntegrationConnectionService account identity', () => {
     service = new IntegrationConnectionService(
       fixture.registry,
       credentials,
-      { capture },
       { error: vi.fn(), warn: vi.fn() } as unknown as Logger,
       accountsChanged
     );
@@ -52,27 +50,22 @@ describe('IntegrationConnectionService account identity', () => {
 
   afterEach(() => fixture?.close());
 
-  it('publishes one inventory change and connection event for each saved connection', async () => {
+  it('publishes one inventory change for each saved connection', async () => {
     const connected = await service.connect('linear', { apiKey: 'one' });
     if (!connected.success) throw new Error(connected.error);
     expect(accountsChanged).toHaveBeenCalledExactlyOnceWith('linear');
-    expect(capture).toHaveBeenCalledExactlyOnceWith('integration_connected', {
-      provider: 'linear',
-    });
     expect(await credentials.getAccount('linear', connected.accountId)).not.toBeNull();
 
     await service.connect('linear', { apiKey: 'replacement' }, { accountId: connected.accountId });
     expect(accountsChanged).toHaveBeenCalledTimes(2);
-    expect(capture).toHaveBeenCalledTimes(2);
   });
 
-  it('does not publish account changes or connection telemetry for a rejected connection', async () => {
+  it('does not publish account changes for a rejected connection', async () => {
     verify.mockResolvedValue({ connected: false, error: 'Invalid credentials' });
     await expect(service.connect('linear', { apiKey: 'invalid' })).resolves.toMatchObject({
       success: false,
     });
     expect(accountsChanged).not.toHaveBeenCalled();
-    expect(capture).not.toHaveBeenCalled();
   });
 
   it('passes a selected method separately and persists only the plugin output', async () => {
@@ -118,7 +111,6 @@ describe('IntegrationConnectionService account identity', () => {
       'Secret store unavailable'
     );
     expect(accountsChanged).not.toHaveBeenCalled();
-    expect(capture).not.toHaveBeenCalled();
   });
 
   it('persists canonical credentials and deduplicates a stable identity without a login', async () => {

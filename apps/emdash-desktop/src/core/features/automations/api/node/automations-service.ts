@@ -14,7 +14,6 @@ import type {
   UpdateAutomationPatch,
 } from '@core/primitives/automations/api';
 import { assertValidCronTrigger, getLocalTimeZone } from '@core/primitives/automations/api';
-import { HookCore, type Hookable } from '@core/primitives/hooks/api/hookable';
 import { projectHostRef } from '@core/primitives/projects/api';
 import type { AppDb } from '@core/services/app-db/node/db';
 import type { buildAutomationDeployment } from '../../node/deployment-builder';
@@ -36,18 +35,7 @@ import {
 type AutomationRuntimeClient = HostRuntimesClient['automations'];
 type DefinitionResult<T> = Result<T, AutomationDefinitionError>;
 
-export type AutomationsServiceHooks = {
-  'automation:created': (automation: Automation) => void | Promise<void>;
-  'automation:updated': (automation: Automation) => void | Promise<void>;
-  'automation:enabled': (automation: Automation) => void | Promise<void>;
-  'automation:deleted': (id: string) => void | Promise<void>;
-  'run:step-completed': (run: AutomationRun) => void | Promise<void>;
-};
-
-export class AutomationsService implements Hookable<AutomationsServiceHooks> {
-  private readonly hooks = new HookCore<AutomationsServiceHooks>((name, error) =>
-    log.error(`AutomationsService: ${String(name)} hook error`, { error })
-  );
+export class AutomationsService {
   private readonly definitionMutationMutex = new KeyedMutex();
   private runEventsUnsubscribe: Unsubscribe | undefined;
   private initializationPromise: Promise<void> | undefined;
@@ -59,10 +47,6 @@ export class AutomationsService implements Hookable<AutomationsServiceHooks> {
       runtime: AutomationRuntimeDependencies;
     }
   ) {}
-
-  on<K extends keyof AutomationsServiceHooks>(name: K, handler: AutomationsServiceHooks[K]) {
-    return this.hooks.on(name, handler);
-  }
 
   initialize(): Promise<void> {
     this.initializationPromise ??= this.initializeOnce();
@@ -80,10 +64,6 @@ export class AutomationsService implements Hookable<AutomationsServiceHooks> {
 
   getTargetAvailability(projectId?: string) {
     return getAutomationRuntimeAvailability(this.dependencies.runtime, projectId);
-  }
-
-  notifyDeleted(id: string): void {
-    this.hooks.callHookBackground('automation:deleted', id);
   }
 
   async create(params: CreateAutomationParams): Promise<DefinitionResult<Automation>> {
@@ -117,7 +97,6 @@ export class AutomationsService implements Hookable<AutomationsServiceHooks> {
       if (!deployed.success) return deployed;
       try {
         const inserted = await insertAutomation(this.dependencies.db, automation);
-        this.hooks.callHookBackground('automation:created', inserted);
         return ok(inserted);
       } catch (error) {
         const rollback = await this.removeFromRuntime(client.automations, automation.id, true);
@@ -159,11 +138,7 @@ export class AutomationsService implements Hookable<AutomationsServiceHooks> {
           revision: existing.data.revision + 1,
           updatedAt: Date.now(),
         });
-        const hook =
-          patch.enabled !== undefined && patch.enabled !== existing.data.enabled
-            ? 'automation:enabled'
-            : 'automation:updated';
-        return this.replaceDeployedDefinition(existing.data, updated, hook);
+        return this.replaceDeployedDefinition(existing.data, updated);
       });
     } catch (error) {
       return err(runtimeUnavailable(error));
@@ -194,7 +169,7 @@ export class AutomationsService implements Hookable<AutomationsServiceHooks> {
         onEvent: ({ run }) => void this.handleRunEvent(run),
         onGap: () => {},
         onError: (error, { retrying }) => {
-          if (!retrying) log.warn('Automation telemetry event stream disconnected', { error });
+          if (!retrying) log.warn('Automation run event stream disconnected', { error });
         },
       }
     );
@@ -284,8 +259,7 @@ export class AutomationsService implements Hookable<AutomationsServiceHooks> {
 
   private async replaceDeployedDefinition(
     existing: Automation,
-    updated: Automation,
-    hook: 'automation:updated' | 'automation:enabled'
+    updated: Automation
   ): Promise<DefinitionResult<Automation>> {
     const valid = validateDefinition(updated);
     if (!valid.success) return valid;
@@ -337,7 +311,6 @@ export class AutomationsService implements Hookable<AutomationsServiceHooks> {
       }
 
       if (!saved) return err(automationConflict(existing.id));
-      this.hooks.callHookBackground(hook, saved);
       return ok(saved);
     } catch (error) {
       return err(runtimeUnavailable(error));
@@ -432,7 +405,6 @@ export class AutomationsService implements Hookable<AutomationsServiceHooks> {
         error: error instanceof Error ? error.message : String(error),
       });
     });
-    this.hooks.callHookBackground('run:step-completed', run);
   }
 
   private async requireAutomation(id: string): Promise<DefinitionResult<Automation>> {

@@ -20,7 +20,6 @@ import { getWorkspaceRegistryWireClient } from '@core/features/workspaces/api/br
 import { Resource } from '@core/primitives/async-resource/browser/resource';
 import { commitRef, mergeBaseRange } from '@core/primitives/git/api';
 import { projectHostRef } from '@core/primitives/projects/api';
-import { captureTelemetry } from '@core/primitives/telemetry/browser/telemetry-client';
 import { observeReadableInAction } from '@core/primitives/wire/browser/mobx-readable';
 import { compilePrUpdateInstruction } from '@core/primitives/workspaces/api';
 import { prHeadRef } from '@core/primitives/workspaces/api/pr-source-refs';
@@ -219,14 +218,6 @@ export class PrStore {
   async mergePr(id: string, options: PullRequestMergeOptions): Promise<MergeResult> {
     const pr = this.pullRequests.find((p) => p.url === id);
     if (!pr) {
-      captureTelemetry('pr_merged', {
-        strategy: options.strategy,
-        bypass_requirements: options.bypassRequirements ?? false,
-        success: false,
-        error_type: 'pr_not_found',
-        project_id: this.projectId,
-        task_id: this.workspaceId,
-      });
       return { success: false, error: 'Pull request not found' };
     }
 
@@ -247,24 +238,9 @@ export class PrStore {
       options,
     });
     if (result.success) {
-      captureTelemetry('pr_merged', {
-        strategy: options.strategy,
-        bypass_requirements: options.bypassRequirements ?? false,
-        success: true,
-        project_id: this.projectId,
-        task_id: this.workspaceId,
-      });
       return { success: true };
     }
 
-    captureTelemetry('pr_merged', {
-      strategy: options.strategy,
-      bypass_requirements: options.bypassRequirements ?? false,
-      success: false,
-      error_type: 'merge_failed',
-      project_id: this.projectId,
-      task_id: this.workspaceId,
-    });
     return { success: false, error: pullRequestErrorMessage(result.error) };
   }
 

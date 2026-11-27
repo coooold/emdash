@@ -1,7 +1,7 @@
 /**
  * Per-process spawn counters. Every own-code child-process spawn (and the
  * preview-port probe attempts, which are rate-tracked the same way) is recorded
- * here with a purpose tag so the dev instruments and telemetry can report
+ * here with a purpose tag so the local development instruments can report
  * spawns-per-minute broken down by purpose.
  *
  * Recording is a map increment — cheap enough to stay always-on. Reporting is
@@ -11,9 +11,7 @@
 import type { Logger } from '../logger/types';
 
 /**
- * Single source of truth for the purpose key set — the `SpawnPurpose` union,
- * the vitals iteration order, and the `spawns_*` telemetry field names are all
- * derived from this array.
+ * The `SpawnPurpose` union and local counter names are derived from this array.
  */
 export const SPAWN_PURPOSES = [
   'git',

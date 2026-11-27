@@ -13,7 +13,6 @@ export default defineConfig({
     'logger-node': 'src/logger/node/index.ts',
     markdown: 'src/markdown/index.ts',
     perf: 'src/perf/index.ts',
-    'perf-node': 'src/perf/node/index.ts',
     plugins: 'src/plugins/index.ts',
   },
   format: ['esm'],

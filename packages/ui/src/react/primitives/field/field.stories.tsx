@@ -89,10 +89,10 @@ export const Horizontal: Story = {
     <Box display="flex" flexDirection="column" gap="3" className={s.w72}>
       <Field.Root orientation="horizontal">
         <Field.Content>
-          <Field.Label>Send telemetry</Field.Label>
-          <Field.Description>Anonymous usage data helps us improve.</Field.Description>
+          <Field.Label>Show desktop notifications</Field.Label>
+          <Field.Description>Show a notification when a background task completes.</Field.Description>
         </Field.Content>
-        <Switch defaultChecked aria-label="Send telemetry" />
+        <Switch defaultChecked aria-label="Show desktop notifications" />
       </Field.Root>
       <Field.Root orientation="horizontal">
         <Field.Content>

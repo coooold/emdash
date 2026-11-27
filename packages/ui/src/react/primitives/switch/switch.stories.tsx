@@ -21,7 +21,7 @@ export const Controlled: Story = {
     const [checked, setChecked] = useState(false);
     return (
       <Box display="flex" alignItems="center" gap="2">
-        <Switch checked={checked} onCheckedChange={setChecked} aria-label="Telemetry" />
+        <Switch checked={checked} onCheckedChange={setChecked} aria-label="Notifications" />
         <span style={{ fontSize: 'var(--em-text-sm)' }}>{checked ? 'On' : 'Off'}</span>
       </Box>
     );
@@ -58,12 +58,12 @@ export const InFormRow: Story = {
       className={s.w72}
     >
       <Box display="flex" flexDirection="column" gap="1">
-        <span style={{ fontSize: 'var(--em-text-sm)', fontWeight: 400 }}>Send telemetry</span>
+        <span style={{ fontSize: 'var(--em-text-sm)', fontWeight: 400 }}>Show desktop notifications</span>
         <span style={{ fontSize: 'var(--em-text-xs)', color: 'var(--em-foreground-muted)' }}>
-          Anonymous usage data helps us improve.
+          Show a notification when a background task completes.
         </span>
       </Box>
-      <Switch defaultChecked aria-label="Send telemetry" />
+      <Switch defaultChecked aria-label="Show desktop notifications" />
     </Box>
   ),
 };

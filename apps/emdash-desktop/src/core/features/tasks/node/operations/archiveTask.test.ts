@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { archiveTask } from './archiveTask';
 
 const mocks = vi.hoisted(() => ({
-  capture: vi.fn(),
   forceRemoveTask: vi.fn(),
   selectLimit: vi.fn(),
   teardownTask: vi.fn(),
@@ -44,7 +43,7 @@ describe('archiveTask', () => {
     ]);
     mocks.teardownTask.mockResolvedValue({ success: true });
 
-    await archiveTask(db, taskSessions, 'project-1', 'task-1', { capture: mocks.capture });
+    await archiveTask(db, taskSessions, 'project-1', 'task-1');
 
     expect(mocks.updateSet).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -57,10 +56,6 @@ describe('archiveTask', () => {
     expect(updatePayload).not.toHaveProperty('statusChangedAt');
 
     expect(mocks.teardownTask).toHaveBeenCalledWith('task-1', 'archive', 'workspace-1');
-    expect(mocks.capture).toHaveBeenCalledWith('task_archived', {
-      project_id: 'project-1',
-      task_id: 'task-1',
-    });
     expect(mocks.selectLimit).toHaveBeenCalledTimes(1);
   });
 
@@ -79,7 +74,7 @@ describe('archiveTask', () => {
         error: { type, message: 'teardown failed' },
       });
 
-      await archiveTask(db, taskSessions, 'project-1', 'task-1', { capture: mocks.capture });
+      await archiveTask(db, taskSessions, 'project-1', 'task-1');
 
       expect(mocks.forceRemoveTask).not.toHaveBeenCalled();
     }

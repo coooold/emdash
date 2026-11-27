@@ -172,7 +172,7 @@ export const InvalidState: Story = {
 function SettingsPanelDemo() {
   const form = useAppForm({
     defaultValues: {
-      telemetry: true,
+      notifications: true,
       betaFeatures: false,
       theme: 'system',
       displayName: 'David',
@@ -184,11 +184,11 @@ function SettingsPanelDemo() {
     <div className={cx(s.w96, card({ level: 'elevated', padding: 'md' }), 'surface-elevated')}>
       <form onSubmit={(e) => e.preventDefault()}>
         <SeparatedList gap="0.75rem">
-          <form.AppField name="telemetry">
+          <form.AppField name="notifications">
             {(f) => (
               <f.SwitchField
-                label="Send telemetry"
-                description="Anonymous usage data helps us improve."
+                label="Show desktop notifications"
+                description="Show a notification when a background task completes."
               />
             )}
           </form.AppField>

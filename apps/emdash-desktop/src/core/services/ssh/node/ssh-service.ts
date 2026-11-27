@@ -28,10 +28,6 @@ type SshServiceLog = {
   warn(message: string, metadata?: Record<string, unknown>): void;
 };
 
-type SshServiceTelemetry = {
-  capture(event: 'ssh_connection_attempted', properties: { success: boolean }): void;
-};
-
 export interface SshServiceDeps {
   db: AppDb;
   manager: SshConnectionManager;
@@ -39,7 +35,6 @@ export interface SshServiceDeps {
   resolveConnectConfig(input: SshConnectInput): Promise<SshConnectResult>;
   parseSshConfigFile(): Promise<SshConfigHost[]>;
   resolveSshConfig(alias: string): Promise<ResolvedSshConfig>;
-  telemetry: SshServiceTelemetry;
   log: SshServiceLog;
   createId?: () => string;
   now?: () => number;
@@ -165,7 +160,6 @@ export class SshService implements SshServiceContract {
       });
     }
 
-    this.deps.telemetry.capture('ssh_connection_attempted', { success: result.success });
     return result;
   }
 

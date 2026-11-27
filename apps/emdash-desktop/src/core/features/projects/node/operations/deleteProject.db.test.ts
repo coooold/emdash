@@ -137,7 +137,6 @@ describe('deleteProject', () => {
     };
     const automations = { removeProjectDeployments: vi.fn(async () => {}) };
     const projectsManager = { invalidate: vi.fn(async () => {}) };
-    const telemetry = { capture: vi.fn() };
     const dependencies: ProjectDeletionDependencies = {
       db: fixture.db,
       runtimes,
@@ -146,7 +145,6 @@ describe('deleteProject', () => {
       logger: { warn: vi.fn(), info: vi.fn(), error: vi.fn(), debug: vi.fn() } as unknown as Logger,
       projects: projectsManager as unknown as ProjectDeletionDependencies['projects'],
       sessionCleanup,
-      telemetry,
     };
     return {
       dependencies,
@@ -154,14 +152,13 @@ describe('deleteProject', () => {
       mementos,
       projectsManager,
       sessionCleanup,
-      telemetry,
     };
   }
 
   it('purges the project cascade and removes provenance worktrees through the verb when reachable', async () => {
     await seedProject();
     const { registry, runtimes } = makeRuntimes();
-    const { dependencies, automations, projectsManager, telemetry } = makeDependencies(runtimes);
+    const { dependencies, automations, projectsManager } = makeDependencies(runtimes);
     projectsManager.invalidate.mockImplementationOnce(async () => {
       const [tombstoned] = await fixture.db
         .select()
@@ -195,13 +192,6 @@ describe('deleteProject', () => {
       registry.deleteWorktree.mock.invocationCallOrder[0]!
     );
     expect(automations.removeProjectDeployments).toHaveBeenCalledWith('project-1');
-    expect(telemetry.capture).toHaveBeenCalledWith('project_deleted', {
-      project_id: 'project-1',
-    });
-    expect(telemetry.capture).toHaveBeenCalledWith('task_deleted', {
-      project_id: 'project-1',
-      task_id: 'task-1',
-    });
   });
 
   it.each(['saved-ssh-host', null])(

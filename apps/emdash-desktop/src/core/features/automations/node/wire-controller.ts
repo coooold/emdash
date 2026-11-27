@@ -42,7 +42,6 @@ export function createAutomationsWireController(options: {
         automationId
       );
       if (!result.success) return err(toAutomationDefinitionError(result.error, automationId));
-      automationsService.notifyDeleted(automationId);
       return ok(undefined);
     },
     adoptRun: ({ automationId, runId }) => adoptRun(options, automationId, runId),

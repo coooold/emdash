@@ -31,7 +31,6 @@ const expectedModalIds = [
   'skillDetailModal',
   'taskModal',
   'unsavedChangesModal',
-  'waitlistModal',
 ] as const;
 
 function openUnsavedChangesForTypeTest() {

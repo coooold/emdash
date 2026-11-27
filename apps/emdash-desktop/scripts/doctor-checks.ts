@@ -100,12 +100,10 @@ export const ESCAPE_HATCH_VARS = [
   'EMDASH_DB_FILE',
   'EMDASH_USER_DATA_DIR',
   'EMDASH_AUTH_SERVER_URL',
-  'WAITLIST_API_URL',
   'EMDASH_FORCE_BOOT_FAILURE',
   'EMDASH_TEST_SKIP_BROWSER',
   'CODEX_SANDBOX_MODE',
   'CODEX_APPROVAL_POLICY',
-  'TELEMETRY_ENABLED',
 ] as const;
 
 export function checkEscapeHatches(env: Record<string, string | undefined>): CheckResult {

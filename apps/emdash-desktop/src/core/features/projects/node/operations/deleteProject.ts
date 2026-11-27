@@ -20,7 +20,6 @@ import {
   liveWorkspaces,
   workspaceRegistryTable as workspaces,
 } from '@core/features/workspaces/api/node/registry';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type { MutationError } from '@core/primitives/wire/api/mutations';
 import type { AppDb } from '@core/services/app-db/node/db';
 import { appDbPokes } from '@core/services/app-db/node/pokes';
@@ -47,7 +46,6 @@ export type ProjectDeletionDependencies = {
   logger: Logger;
   projects: Pick<ProjectAttachmentManager, 'invalidate'>;
   sessionCleanup: TaskSessionCleanup;
-  telemetry: Pick<TelemetryService, 'capture'>;
 };
 
 export async function deleteProject(
@@ -115,7 +113,6 @@ export async function deleteProject(
     db.transaction((tx) => {
       tx.delete(tasks).where(eq(tasks.id, task.id)).run();
     });
-    dependencies.telemetry.capture('task_deleted', { project_id: projectId, task_id: task.id });
   }
   appDbPokes.tasks.poke({ projectId });
 
@@ -183,5 +180,4 @@ async function purgeProjectLocalState(
   if (!projectResult.success) throw new Error(projectResult.error.message);
   if (!taskResult.success) throw new Error(taskResult.error.message);
   projectEvents._emit('project:deleted', projectId);
-  dependencies.telemetry.capture('project_deleted', { project_id: projectId });
 }

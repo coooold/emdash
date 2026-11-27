@@ -9,7 +9,6 @@
 import { log } from '@emdash/shared/logger';
 import { IntegrationAccountStore } from '@core/features/integrations/node/integration-account-store';
 import { IntegrationConnectionService } from '@core/features/integrations/node/integration-connection-service';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type { ProviderAccountSecretStore } from '@core/services/provider-accounts/api/provider-account-store';
 import { ProviderAccountRegistry } from '@main/core/provider-accounts/provider-account-registry';
 import { openFixture, type FixtureDb } from './db';
@@ -41,7 +40,6 @@ export type RegistryFixture = FixtureDb & {
 export async function openRegistryFixture(
   name: Parameters<typeof openFixture>[0] = 'empty',
   connectionHooks: {
-    telemetry?: Pick<TelemetryService, 'capture'>;
     onAccountsChanged?: (providerId: string) => void;
   } = {}
 ): Promise<RegistryFixture> {
@@ -52,7 +50,6 @@ export async function openRegistryFixture(
   const connections = new IntegrationConnectionService(
     registry,
     integrationAccounts,
-    connectionHooks.telemetry ?? { capture: () => {} },
     log,
     connectionHooks.onAccountsChanged
   );

@@ -57,7 +57,6 @@ const target = {
     sessionId: null,
   },
 } as const;
-type TestRuntimeTarget = typeof target;
 
 describe('createConversationsWireController', () => {
   it.each([false, true])(
@@ -238,7 +237,6 @@ describe('createConversationsWireController', () => {
         },
         getProviderEnv,
         sessionLaunchContexts: { resolve: resolveLaunchContext },
-        telemetry: { capture: vi.fn() } as never,
         projects: { requireAttached: vi.fn(() => ok({} as never)) },
         taskSessions: { getTask: vi.fn() },
         withCompensation: async ({ action }) => action(),
@@ -512,26 +510,13 @@ describe('createConversationsWireController', () => {
     }
   );
 
-  it('records submitted TUI input only after a successful carriage return', async () => {
+  it('forwards TUI input to the conversation runtime', async () => {
     const sendInput = vi.fn(async () => ok(undefined));
-    const recordTuiInput = vi.fn(async () => {});
-    const controller = setupController({
-      client: { tuiAgents: { sendInput } },
-      hooks: { recordTuiInput },
-    });
+    const controller = setupController({ client: { tuiAgents: { sendInput } } });
+    const input = { conversationId: target.conversationId, data: 'hello\r' };
 
-    await controller.call('tui.sendInput', {
-      conversationId: target.conversationId,
-      data: 'hello',
-    });
-    expect(recordTuiInput).not.toHaveBeenCalled();
-
-    await controller.call('tui.sendInput', {
-      conversationId: target.conversationId,
-      data: '\r',
-    });
-    expect(recordTuiInput).toHaveBeenCalledOnce();
-    expect(recordTuiInput).toHaveBeenCalledWith(target);
+    await expect(controller.call('tui.sendInput', input)).resolves.toEqual(ok(undefined));
+    expect(sendInput).toHaveBeenCalledWith(input, expect.anything());
   });
 
   it.each(['acp', 'pty'] as const)(
@@ -759,14 +744,7 @@ function setupController(options: {
   runtimeError?: RuntimeResolveError;
   attachmentError?: { type: 'project-missing'; projectId: string };
   resolvedHosts?: HostRef[];
-  hooks?: Partial<{
-    recordTuiInput: (target: TestRuntimeTarget) => Promise<void>;
-  }>;
 }) {
-  const hooks = {
-    recordTuiInput: async () => {},
-    ...options.hooks,
-  };
   return createConversationsWireController({
     terminalFileSources: { prepare: vi.fn() },
     db: {} as never,
@@ -797,7 +775,6 @@ function setupController(options: {
     } as never,
     workspaceIdentity: {} as never,
     sessionLaunchContexts: {} as never,
-    telemetry: { capture: vi.fn() } as never,
     projects: {
       requireAttached: vi.fn(() =>
         options.attachmentError ? err(options.attachmentError) : ok({} as never)
@@ -811,7 +788,6 @@ function setupController(options: {
       host: options.host ?? target.host,
       conversationType: options.conversationType ?? target.conversationType,
     }),
-    hooks,
   });
 }
 

@@ -96,7 +96,6 @@ describe('project deletion search cleanup', () => {
           killAcp: vi.fn(),
           killTerminals: vi.fn(),
         },
-        telemetry: { capture: vi.fn() },
       },
       'project-1'
     );

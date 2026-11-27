@@ -37,7 +37,6 @@ import {
 } from '@core/features/terminals/api/runtime-adapter';
 import { hostFileRefFromNativePath } from '@core/primitives/desktop-runtime/api';
 import { makePtySessionId, parsePtySessionId } from '@core/primitives/pty/api';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import { lifecycleScriptNodeIdFromTerminalId, type Terminal } from '@core/primitives/terminals/api';
 import type { AppDb } from '@core/services/app-db/node/db';
 import { tasks, terminals } from '@core/services/app-db/node/schema';
@@ -56,7 +55,6 @@ export type CreateTerminalsWireControllerOptions = Readonly<{
   settings: Pick<AppSettingsService, 'get'>;
   workspaceIdentity: TerminalsWorkspaceIdentityResolver;
   logger: Logger;
-  telemetry: TelemetryService;
   terminalShell: {
     getColorEnv(): Promise<Record<string, string>>;
   };
@@ -188,11 +186,6 @@ async function createTerminal(
     return hydrated;
   }
 
-  options.telemetry.capture('terminal_created', {
-    terminal_id: input.id,
-    project_id: input.projectId,
-    task_id: input.taskId,
-  });
   return ok({ terminal, key: hydrated.data.key });
 }
 
@@ -230,11 +223,6 @@ async function deleteTerminal(
     ).catch(() => {});
   }
 
-  options.telemetry.capture('terminal_deleted', {
-    terminal_id: terminalId,
-    project_id: projectId,
-    task_id: taskId,
-  });
   return ok(undefined);
 }
 

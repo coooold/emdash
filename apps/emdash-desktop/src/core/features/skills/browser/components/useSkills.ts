@@ -6,7 +6,6 @@ import { useCallback, useMemo } from 'react';
 import { getCatalogClient } from '@core/features/catalog/api/browser/client';
 import { log } from '@core/primitives/logging/browser/logger';
 import { useDebounce } from '@core/primitives/react-hooks/browser/useDebounce';
-import { captureTelemetry } from '@core/primitives/telemetry/browser/telemetry-client';
 import { getSkillsClient } from '../client';
 import { useInstalledSkillsLiveModel } from '../live-model-hooks';
 
@@ -65,11 +64,6 @@ export function useSkills({ host, searchQuery = '' }: { host: HostRef; searchQue
       toast.error('Install failed', { description: error.message });
     },
     onSuccess: (skillId) => {
-      const skill = queryClient
-        .getQueryData<CatalogIndex>(CATALOG_QUERY_KEY)
-        ?.skills.find((s) => s.id === skillId);
-
-      captureTelemetry('skill_installed', { source: skill?.source });
       toast('Skill installed', { description: `${skillId} is now available across your agents` });
       void queryClient.invalidateQueries({ queryKey: ['skills', 'skillssh-search'] });
       queryClient.removeQueries({ queryKey: ['skills', 'detail'] });
@@ -105,8 +99,6 @@ export function useSkills({ host, searchQuery = '' }: { host: HostRef; searchQue
       toast.error('Uninstall failed', { description: error.message });
     },
     onSuccess: () => {
-      captureTelemetry('skill_uninstalled');
-
       toast('Skill removed', { description: 'Skill has been uninstalled' });
       void queryClient.invalidateQueries({ queryKey: ['skills', 'skillssh-search'] });
       queryClient.removeQueries({ queryKey: ['skills', 'detail'] });

@@ -87,9 +87,7 @@ search slice.
   definitions, store, and close guards live in `src/core/primitives/modals/react/`
 - `layout/` — workspace layout and right-sidebar composition
 - `keybindings/` — keybinding dispatcher mount and browser shortcut forwarding
-- `stores/` — navigation telemetry wiring; app-lifetime stores are slice-owned and ride the app
-  scope (`src/core/manifests/browser/app-scoped-stores.ts`)
-- `providers/`, `hooks/` — shared providers and hooks (theme, feature flags, multi-select)
+- `providers/`, `hooks/` — shared providers and hooks (theme and multi-select)
 
 Navigation lives in `src/core/primitives/navigation/`; commands and the palette live in
 `src/core/primitives/commands/`, `src/core/primitives/view-scopes/`, and

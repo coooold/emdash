@@ -22,5 +22,4 @@ export const taskViewDef = defineView({
     schema: taskViewLocationSchema,
     key: ({ tabId }) => tabId,
   },
-  telemetryEvent: 'task_viewed',
 });

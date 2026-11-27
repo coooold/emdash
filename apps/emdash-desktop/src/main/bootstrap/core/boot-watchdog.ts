@@ -3,7 +3,7 @@ import { activeBootSteps } from './phase';
 /**
  * One generous timer armed at boot start that catches hung boots. On trigger
  * it reports the currently running boot phase to the injected handler —
- * nothing destructive happens here; the handler logs, reports telemetry, and
+ * nothing destructive happens here; the handler logs the issue and
  * surfaces the renderer's escape hatch.
  */
 

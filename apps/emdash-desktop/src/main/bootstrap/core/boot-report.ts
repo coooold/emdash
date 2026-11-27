@@ -3,8 +3,7 @@ import { log } from '@main/lib/logger';
 /**
  * Per-launch boot report: aggregates the boot-timeline instrumentation into
  * one structured log line so any user's slow boot is diagnosable from their
- * log file, and attaches the two boot metrics to the `app_started` telemetry
- * event. Diagnostic only — no thresholds.
+ * log file.
  *
  * The report emits once boot has settled (backend + window load, see
  * boot-status) and the renderer has reported its usable-workspace moment, or
@@ -62,18 +61,4 @@ function emit(): void {
     usableWorkspaceMs,
     phases: { ...phases },
   });
-
-  // Dynamic import keeps the telemetry module graph off the pre-window boot
-  // path (this module is imported by core/phase.ts, which loads very early).
-  void import('@main/lib/telemetry')
-    .then(({ telemetryService }) => {
-      // capture() is a no-op when telemetry is disabled.
-      telemetryService.capture('app_started', {
-        ...(windowVisibleMs !== undefined && { window_visible_ms: windowVisibleMs }),
-        ...(usableWorkspaceMs !== undefined && { usable_workspace_ms: usableWorkspaceMs }),
-      });
-    })
-    .catch((error: unknown) => {
-      log.warn('boot-report: failed to capture app_started telemetry', { error });
-    });
 }

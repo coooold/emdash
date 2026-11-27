@@ -234,10 +234,9 @@ pnpm run test
   generated dependency folders, or release artifacts.
 - Application secrets are stored through encrypted app secret services and Electron
   safe storage; SSH credentials are managed through SSH services and OS-backed storage.
-- Release secrets live in GitHub Actions secrets, including PostHog, Cloudflare R2,
+- Release secrets live in GitHub Actions secrets, including Cloudflare R2,
   Apple signing/notarization, Azure Trusted Signing, and Cachix credentials.
-- Telemetry must remain optional; users can disable it with `TELEMETRY_ENABLED=false`
-  or in app settings.
+- Keep desktop diagnostics local.
 - File logging must preserve redaction of common secret patterns.
 - PTY environment construction must go through `packages/core/src/services/pty/api/terminal-env.ts`.
 - Treat ACP process spawning, SSH command construction, shell escaping, PTY spawning,
@@ -372,11 +371,9 @@ pnpm run test
   `src/core/features/projects/node/settings/migrations/` and run in order when an attachment is
   established. Legacy schemas and readers stay migration-only; destination markers make imports
   idempotent and retryable.
-- Optional environment variables include `TELEMETRY_ENABLED`, `EMDASH_DB_FILE`,
+- Optional environment variables include `EMDASH_DB_FILE`,
   `EMDASH_DISABLE_NATIVE_DB`, `EMDASH_DISABLE_PTY`, `EMDASH_AUTH_SERVER_URL` (development
   builds only), `CODEX_SANDBOX_MODE`, and `CODEX_APPROVAL_POLICY`.
-- Build-time telemetry configuration may use `VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST`.
-- Runtime feature flags are read through telemetry-backed feature flag helpers.
 - App-internal path aliases are defined in `tsconfig.json` (`@/*`, `@core/*`, `@renderer/*`,
   `@main/*`, `@root/*`, and `@tooling/*`) and mirrored where needed in
   `electron.vite.config.ts`; workspace packages resolve through their `exports` maps with a

@@ -33,7 +33,7 @@ The main process is organized into domain modules under `src/main/core/`. Each d
 ## Other Main Process Areas
 
 - `src/main/app/` — Menu, protocol handler, window creation
-- `src/main/lib/` — Logger, telemetry, events, result type, updater error
+- `src/main/lib/` — Logger, events, result type, updater error
 - `src/main/db/` — Database schema and initialization
 - `src/main/utils/` — Shell environment, shell escaping, child process env, external links
 - `src/main/core/agent-status/` — Agent status cache projection and runtime bridges

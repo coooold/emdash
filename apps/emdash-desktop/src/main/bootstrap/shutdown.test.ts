@@ -21,7 +21,6 @@ const mocks = vi.hoisted(() => ({
   projectsDispose: vi.fn(),
   projectsRelease: vi.fn(),
   runtimesDispose: vi.fn(),
-  telemetryDispose: vi.fn(),
   updateService: {
     isInstallRequested: false as boolean,
     dispose: vi.fn(),
@@ -56,9 +55,6 @@ vi.mock('@main/host/updates/update-service', () => ({
 vi.mock('@main/lib/logger', () => ({
   log: { error: vi.fn(), info: vi.fn(), warn: vi.fn() },
 }));
-vi.mock('@main/lib/telemetry', () => ({
-  telemetryService: { capture: vi.fn(), dispose: mocks.telemetryDispose },
-}));
 vi.mock('./core/service-instances', () => ({
   disposeNotificationService: vi.fn(),
 }));
@@ -83,7 +79,7 @@ afterEach(() => {
 });
 
 describe('quit cleanup phases', () => {
-  it('closes the database after app scope and before telemetry', async () => {
+  it('closes the database after app scope and before the project manager is disposed', async () => {
     configureQuitCleanupServices({
       automations: { stop: mocks.automationsStop },
       editorBuffers: { dispose: mocks.editorBuffersDispose },
@@ -106,9 +102,6 @@ describe('quit cleanup phases', () => {
     );
     expect(mocks.appScopeDispose.mock.invocationCallOrder[0]!).toBeLessThan(
       mocks.closeAppDb.mock.invocationCallOrder[0]!
-    );
-    expect(mocks.closeAppDb.mock.invocationCallOrder[0]!).toBeLessThan(
-      mocks.telemetryDispose.mock.invocationCallOrder[0]!
     );
     expect(mocks.closeAppDb.mock.invocationCallOrder[0]!).toBeLessThan(
       mocks.projectsDispose.mock.invocationCallOrder[0]!

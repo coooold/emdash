@@ -40,5 +40,4 @@ export const settingsViewDef = defineView({
     detail: settingsDetailPathSchema.optional(),
   }),
   layout: workbenchLayout,
-  telemetryEvent: 'settings_viewed',
 });

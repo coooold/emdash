@@ -91,7 +91,7 @@ The `UPDATE_CHANNEL` / `v1-stable` / `v1-canary` naming applies **only** to the 
 
 ### R2 decommission path
 
-R2 uploads continue until telemetry confirms all clients have migrated to the GitHub-backed feed. At that point:
+R2 uploads continue until clients have migrated to the GitHub-backed feed. At that point:
 
 1. Remove the `provider: generic` block from `electron-builder.config.ts` and `electron-builder.canary.config.ts`.
 2. Remove R2 staging/promotion from `finalize-release.ts` and `duplicateChannelManifests` from

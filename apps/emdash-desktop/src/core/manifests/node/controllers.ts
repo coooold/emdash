@@ -55,7 +55,6 @@ import type { TaskSessionLaunchContextResolver } from '@core/features/tasks/api/
 import type { TaskSessionManager } from '@core/features/tasks/api/node/task-session-manager';
 import { TaskListService } from '@core/features/tasks/node/task-list-service';
 import { createTasksWireController } from '@core/features/tasks/node/wire-controller';
-import { createTelemetryWireController } from '@core/features/telemetry/node/wire-controller';
 import {
   createTerminalsWireController,
   type CreateTerminalsWireControllerOptions,
@@ -64,10 +63,6 @@ import {
   createUpdatesWireController,
   type UpdateOperations,
 } from '@core/features/updates/node/wire-controller';
-import {
-  createWaitlistWireController,
-  type WaitlistOperations,
-} from '@core/features/waitlist/node/wire-controller';
 import {
   createDesktopHostWireController,
   type DesktopHostControllerOperations,
@@ -88,7 +83,6 @@ import {
 import { WorkspaceMutationService } from '@core/features/workspaces/node/workspace-mutation-service';
 import { desktopDomainContracts } from '@core/manifests/shared/domain-contracts';
 import type { HostReachabilityProbe } from '@core/primitives/ssh/api';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type { AppDb } from '@core/services/app-db/node/db';
 import type { TerminalFileSources } from '@core/services/attachments/node/prepare-terminal-files';
 import type { HostAvailabilityService } from '@core/services/hosts/node/availability';
@@ -143,13 +137,11 @@ export type DesktopControllerContext = {
   readonly sessionLaunchContexts: TaskSessionLaunchContextResolver;
   readonly runtimes: RuntimeBroker;
   readonly settingsRuntime: SettingsRuntimePort;
-  readonly telemetry: TelemetryService;
   readonly taskService: TaskService;
   readonly taskSessions: TaskSessionManager;
   readonly terminalFileSources: TerminalFileSources;
   readonly terminalShell: CreateTerminalsWireControllerOptions['terminalShell'];
   readonly updateOperations: UpdateOperations;
-  readonly waitlistOperations: WaitlistOperations;
   readonly workspaceIdentity: WorkspaceIdentityService;
   readonly workspacePlacement: WorkspacePlacementResolver;
   readonly workspaces: Omit<CreateWorkspacesWireControllerOptions, 'db' | 'mutations'>;
@@ -239,9 +231,6 @@ export const desktopNodeControllers = {
   search: {
     create: ({ search }) => createSearchWireController(search),
   },
-  telemetry: {
-    create: ({ telemetry }) => createTelemetryWireController(telemetry),
-  },
   sourceControl: {
     create: ({ gitCredentials, runtimes, workspaceIdentity, projects }) =>
       createSourceControlWireController({
@@ -267,7 +256,6 @@ export const desktopNodeControllers = {
       projects,
       runtimes,
       sessionLaunchContexts,
-      telemetry,
       terminalShell,
       workspaceIdentity,
     }) =>
@@ -279,7 +267,6 @@ export const desktopNodeControllers = {
         sessionLaunchContexts,
         settings: appSettings,
         logger,
-        telemetry,
         terminalShell,
         workspaceIdentity,
         resolveSessionGitCredentials: gitCredentials.resolveSessionSpec,
@@ -375,7 +362,6 @@ export const desktopNodeControllers = {
       runtimes,
       sessionLaunchContexts,
       taskSessions,
-      telemetry,
       workspaceIdentity,
     }) =>
       createConversationsWireController({
@@ -387,7 +373,6 @@ export const desktopNodeControllers = {
         sessionLaunchContexts,
         runtimes,
         taskSessions,
-        telemetry,
         workspaceIdentity,
         withCompensation: compensation,
         hostIsReachable,
@@ -403,7 +388,7 @@ export const desktopNodeControllers = {
     create: ({ hostAvailability, scope }) => createHostsWireController(hostAvailability, scope),
   },
   tasks: {
-    create: ({ db, scope, taskService, taskSessions, telemetry }) => {
+    create: ({ db, scope, taskService, taskSessions }) => {
       const taskList = new TaskListService({
         taskService,
         taskSessions,
@@ -415,7 +400,6 @@ export const desktopNodeControllers = {
           db,
           service: taskService,
           taskList,
-          telemetry,
         }),
         scope
       );
@@ -423,10 +407,6 @@ export const desktopNodeControllers = {
   },
   updates: {
     create: ({ updateOperations }) => createUpdatesWireController(updateOperations),
-  },
-  waitlist: {
-    create: ({ logger, waitlistOperations }) =>
-      createWaitlistWireController(waitlistOperations, logger),
   },
   host: {
     create: ({ hostOperations }) => createDesktopHostWireController(hostOperations),

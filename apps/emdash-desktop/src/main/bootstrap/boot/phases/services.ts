@@ -4,7 +4,6 @@ import {
   parseHostRef,
   type HostRef,
 } from '@emdash/core/primitives/host/api';
-import { app } from 'electron';
 import { getPluginMetadata } from '@core/features/agents/api/node/plugin-registry';
 import { AutomationsService } from '@core/features/automations/api/node/automations-service';
 import { buildAutomationDeployment } from '@core/features/automations/node/deployment-builder';
@@ -37,8 +36,6 @@ import { TaskService } from '@core/features/tasks/api/node/task-service';
 import type { TaskSessionCleanup } from '@core/features/tasks/api/node/task-session-cleanup';
 import { TaskSessionLaunchContextResolver } from '@core/features/tasks/api/node/task-session-launch-context';
 import { TaskSessionManager } from '@core/features/tasks/api/node/task-session-manager';
-import { installAutomationTelemetry } from '@core/features/telemetry/node/automation-telemetry';
-import { installTaskTelemetry } from '@core/features/telemetry/node/task-telemetry';
 import { desktopHostEvents } from '@core/features/workbench/node/event-host';
 import {
   createWorkspaceLifecycleParticipants,
@@ -91,7 +88,6 @@ import { setTrayVisible } from '@main/host/tray';
 import { installUpdateNotifications } from '@main/host/updates/update-notifications';
 import { applyNativeTheme, isAppFocused } from '@main/host/window';
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import { appScope } from '../../core/app-scope';
 import { step } from '../../core/phase';
 import { setCoreServiceInstances } from '../../core/service-instances';
@@ -290,7 +286,6 @@ export async function bootServices(
       runtimes,
       sessionCleanup: lifecycleSessions,
       getMementosRuntimeClient,
-      telemetry: telemetryService,
       evictFileSearchRoot: fileSearchRuntime.evictRoot,
     },
   });
@@ -326,8 +321,6 @@ export async function bootServices(
         automation
       ),
   });
-  installAutomationTelemetry(telemetryService, automationsService);
-  installTaskTelemetry(telemetryService, taskService, taskSessionManager);
 
   // Unmigrated string-typed consumers get the documented plaintext view over
   const promptLibraryService = createPromptLibraryService({
@@ -364,18 +357,6 @@ export async function bootServices(
     promptLibrary: promptLibraryService,
     providerSettings: providerOverrideSettings,
   });
-  try {
-    await step('services:telemetry-init', () =>
-      telemetryService.initialize({
-        appVersion: app.getVersion(),
-        isPackaged: app.isPackaged,
-        installSource: app.isPackaged ? 'dmg' : 'dev',
-      })
-    );
-  } catch (error) {
-    log.warn('telemetry init failed:', error);
-  }
-
   projectSettingsService.initialize();
   appService.initialize({
     acquireWorkspaceRuntime: createDesktopWorkspaceRuntimeAcquirer(runtimes, workspaceIdentity),
@@ -401,7 +382,6 @@ export async function bootServices(
     logger: log,
     projects: projectManager,
     sessionCleanup: lifecycleSessions,
-    telemetry: telemetryService,
   };
   // Push-based mirror of each host's workspace registry (ADR 0005).
   const workspaceRegistrySync = new WorkspaceRegistrySyncService({

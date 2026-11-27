@@ -150,9 +150,6 @@ vi.mock('@core/features/conversations/browser/acp/acp-chat-panel', () => ({
   AcpChatPanel: () => null,
 }));
 
-vi.mock('@core/primitives/telemetry/browser/telemetry-client', () => ({
-  captureTelemetry: vi.fn(),
-}));
 
 vi.mock('@core/primitives/logging/browser/logger', () => ({
   log: { error: mocks.logError, info: vi.fn() },

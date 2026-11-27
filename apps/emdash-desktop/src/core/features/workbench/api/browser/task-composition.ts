@@ -63,7 +63,6 @@ import {
 } from '@core/primitives/mementos/browser';
 import { getMementoClient } from '@core/primitives/mementos/browser';
 import { getNavigation } from '@core/primitives/navigation/browser/navigation-selectors';
-import { focusTracker } from '@core/primitives/telemetry/browser/focus-tracker';
 
 export type RendererKind =
   | 'monaco'
@@ -228,12 +227,6 @@ export class TaskComposition {
         }),
         () => this.syncWorkspace(),
         { fireImmediately: true }
-      ),
-      // focusedRegion is mutated only inside chrome commands; the analytics
-      // transition observes the ephemeral field so every path is reported.
-      reaction(
-        () => this.chrome.ephemeral.focusedRegion,
-        (region) => focusTracker.transition({ focusedRegion: region }, 'region_switch')
       )
     );
   }
@@ -470,17 +463,6 @@ export class TaskComposition {
       .reverse()
       .find((id) => this.activePane.entries.get(id)?.kind === kind);
     if (!tabId) return;
-    const panelView =
-      kind === 'conversation'
-        ? 'agents'
-        : kind === 'file'
-          ? 'editor'
-          : kind === 'diff'
-            ? 'diff'
-            : kind === 'browser'
-              ? 'browser'
-              : 'terminal';
-    focusTracker.transition({ mainPanel: panelView }, 'panel_switch');
     this.activePane.setActiveTab(tabId);
   }
 

@@ -82,7 +82,7 @@ export const Default: Story = {
 function FormSettings() {
   const form = useAppForm({
     defaultValues: {
-      telemetry: true,
+      notifications: true,
       theme: 'system',
       displayName: 'Emdash',
     },
@@ -99,15 +99,15 @@ function FormSettings() {
           }}
         >
           <SeparatedList gap="0.75rem" direction="column">
-            <form.AppField name="telemetry">
+            <form.AppField name="notifications">
               {(field) => (
                 <SettingsRow
-                  label="Send telemetry"
-                  description="Anonymous usage data helps improve the application."
-                  htmlFor="telemetry"
+                  label="Show desktop notifications"
+                  description="Show a notification when a background task completes."
+                  htmlFor="notifications"
                   control={
                     <Switch
-                      id="telemetry"
+                      id="notifications"
                       checked={field.state.value ?? false}
                       onCheckedChange={(checked) => field.handleChange(checked)}
                       onBlur={field.handleBlur}
@@ -176,7 +176,7 @@ export const WithFormFields: Story = {
 
 function PageAnatomy() {
   const [autoUpdate, setAutoUpdate] = useState(true);
-  const [telemetry, setTelemetry] = useState(false);
+  const [notifications, setNotifications] = useState(false);
 
   return (
     <div style={{ height: '100vh', overflowY: 'auto' }}>
@@ -201,11 +201,11 @@ function PageAnatomy() {
               }
             />
             <SettingsRow
-              label="Send telemetry"
-              description="Anonymous usage data helps improve the application."
-              htmlFor="anatomy-telemetry"
+              label="Show desktop notifications"
+              description="Show a notification when a background task completes."
+              htmlFor="anatomy-notifications"
               control={
-                <Switch id="anatomy-telemetry" checked={telemetry} onCheckedChange={setTelemetry} />
+                <Switch id="anatomy-notifications" checked={notifications} onCheckedChange={setNotifications} />
               }
             />
           </SettingsSection>

@@ -93,7 +93,6 @@ const runtimes = {
 function dependencies(overrides: Partial<Parameters<typeof createConversation>[1]> = {}) {
   return {
     db: fakeDatabase() as never,
-    telemetry: { capture: vi.fn() },
     taskSessions: { getTask: vi.fn() },
     withCompensation: (async ({ action, compensate }) => {
       try {

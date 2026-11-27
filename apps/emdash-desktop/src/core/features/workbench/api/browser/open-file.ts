@@ -2,7 +2,6 @@ import type { HostFileRef } from '@emdash/core/primitives/path/api';
 import { taskViewDef } from '@core/features/tasks/contributions/views';
 import { nativePathFromHost } from '@core/primitives/desktop-runtime/api';
 import { getNavigation } from '@core/primitives/navigation/browser/navigation-selectors';
-import { focusTracker } from '@core/primitives/telemetry/browser/focus-tracker';
 import { getTaskComposition } from './task-composition-selectors';
 
 export interface OpenFileContext {
@@ -48,7 +47,6 @@ export function openFile(ref: HostFileRef, options: OpenFileOptions = {}): boole
     { preview: options.preview ?? false, target: options.target ?? 'active' }
   );
   if (options.reveal) {
-    focusTracker.transition({ mainPanel: 'editor' }, 'panel_switch');
     composition.setFocusedRegion('main');
     composition.revealWorkspaceFile(path);
   }

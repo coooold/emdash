@@ -3,16 +3,12 @@ import type { ConversationStore } from '@core/features/conversations/api/browser
 import { ConversationTabResource } from './conversation-tab-resource';
 
 const registryGet = vi.hoisted(() => vi.fn());
-const setTelemetryConversationScope = vi.hoisted(() => vi.fn());
 const retryHydration = vi.hoisted(() => vi.fn());
 
 vi.mock('@core/features/conversations/api/browser/stores/conversation-registry', () => ({
   conversationRegistry: { get: registryGet },
 }));
 
-vi.mock('@core/primitives/telemetry/browser/telemetry-scope', () => ({
-  setTelemetryConversationScope,
-}));
 
 vi.mock('@core/features/conversations/browser/stores/conversation-session-manager', () => ({
   getConversationSessionManager: () => ({ retryHydration }),
@@ -23,7 +19,6 @@ describe('ConversationTabResource activation', () => {
 
   beforeEach(() => {
     registryGet.mockReset();
-    setTelemetryConversationScope.mockReset();
     retryHydration.mockReset();
     isSessionActive.mockReset();
     registryGet.mockReturnValue({

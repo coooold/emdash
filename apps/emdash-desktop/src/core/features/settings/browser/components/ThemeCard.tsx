@@ -2,7 +2,6 @@ import { SelectableCard } from '@emdash/ui/react/primitives';
 import { Monitor, Moon, Sun, type LucideIcon } from 'lucide-react';
 import React from 'react';
 import type { Theme } from '@core/primitives/app-settings/api';
-import { captureTelemetry } from '@core/primitives/telemetry/browser/telemetry-client';
 import { useTheme } from '@core/primitives/theme/browser';
 
 const themeOptions: Array<{
@@ -19,20 +18,13 @@ const themeOptions: Array<{
 const ThemeCard: React.FC = () => {
   const { theme, setTheme } = useTheme();
 
-  const handleSetTheme = (next: Theme) => {
-    if (theme !== next) {
-      captureTelemetry('setting_changed', { setting: 'theme' });
-    }
-    setTheme(next);
-  };
-
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(6.5rem,1fr))] gap-2 text-sm">
       {themeOptions.map(({ value, label, ariaLabel, icon: Icon }) => (
         <SelectableCard
           key={label}
           selected={theme === value}
-          onClick={() => handleSetTheme(value)}
+          onClick={() => setTheme(value)}
           aria-label={ariaLabel}
           aria-pressed={theme === value}
           className="min-h-24"

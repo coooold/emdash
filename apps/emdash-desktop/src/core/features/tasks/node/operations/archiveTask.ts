@@ -1,7 +1,6 @@
 import { log } from '@emdash/shared/logger';
 import { and, eq, isNull, sql } from 'drizzle-orm';
 import type { TaskSessionManager } from '@core/features/tasks/api/node/task-session-manager';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type { AppDb } from '@core/services/app-db/node/db';
 import { appDbPokes } from '@core/services/app-db/node/pokes';
 import { tasks } from '@core/services/app-db/node/schema';
@@ -10,8 +9,7 @@ export async function archiveTask(
   db: AppDb,
   taskSessionManager: Pick<TaskSessionManager, 'teardownTask'>,
   projectId: string,
-  taskId: string,
-  telemetry: Pick<TelemetryService, 'capture'>
+  taskId: string
 ): Promise<void> {
   const [task] = await db
     .select()
@@ -28,7 +26,6 @@ export async function archiveTask(
     })
     .where(and(eq(tasks.id, taskId), isNull(tasks.deletedAt)));
   appDbPokes.tasks.poke({ projectId, taskId });
-  telemetry.capture('task_archived', { project_id: projectId, task_id: taskId });
 
   // 'archive' reaps the tmux session + agent process but keeps the worktree and the
   // persisted session id, so Restore can resume. Plain 'detach' would leak the tmux

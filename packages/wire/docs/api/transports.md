@@ -193,7 +193,7 @@ down a runtime host so session hubs and controllers finish disposal before the
 worker or window bridge is replaced.
 
 Transport composition is ordinary function wrapping, so order matters when
-stacking adapters around `reconnectingTransport()`. For semantic telemetry (one
+stacking adapters around `reconnectingTransport()`. For operation-level diagnostics (one
 event per logical call, snapshot, attachment, cancellation, resync, or mutation
 dedupe), attach a `WireInstrumentation`; see
 [observability](../observability.md).

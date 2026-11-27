@@ -4,8 +4,6 @@ import type { JsonObject, JsonValue } from '@core/primitives/json/api';
 import type { MementoHandle } from '@core/primitives/mementos/browser';
 import { modalStore } from '@core/primitives/modals/react/modal-store';
 import type { Subject } from '@core/primitives/subjects/api';
-import type { FocusView } from '@core/primitives/telemetry/api/telemetry';
-import { focusTracker } from '@core/primitives/telemetry/browser/focus-tracker';
 import type { ViewRef } from '@core/primitives/views/api';
 import { getViewRuntime } from '@core/primitives/views/react';
 import type {
@@ -285,17 +283,6 @@ export class NavigationStore implements NavigationParticipantHost {
 
   private commit(ref: ViewRef, kind: NavigationEventKind, source: NavigationEventSource): void {
     const from = this._currentRef;
-    const viewChanged = from.viewId !== ref.viewId;
-    if (viewChanged) {
-      const viewId = ref.viewId as FocusView;
-      focusTracker.transition(
-        viewId === 'task'
-          ? { view: viewId }
-          : { view: viewId, mainPanel: null, focusedRegion: null },
-        'navigation'
-      );
-    }
-
     this._currentRef = ref;
     this._lastRefByViewId.set(ref.viewId, ref);
     this.onDidNavigate.emit({ from, to: ref, kind, source });

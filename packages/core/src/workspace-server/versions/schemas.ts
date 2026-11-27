@@ -9,7 +9,7 @@ export const clientHelloSchema = z.object({
 });
 
 export const serverHelloSchema = z.object({
-  /** The server's own protocol version, for display and telemetry. */
+  /** The server's own protocol version, for display. */
   protocolVersion: z.string(),
   /** Negotiated version: major.min(clientMinor, serverMinor).0 */
   agreedVersion: z.string(),

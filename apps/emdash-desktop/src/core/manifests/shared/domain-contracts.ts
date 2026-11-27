@@ -20,7 +20,6 @@ import { sourceControlContract, sourceControlDomain } from '@core/features/sourc
 import { tasksDomain, tasksWireContract } from '@core/features/tasks/api';
 import { terminalsContract, terminalsDomain } from '@core/features/terminals/api';
 import { updatesContract, updatesDomain } from '@core/features/updates/api';
-import { waitlistContract, waitlistDomain } from '@core/features/waitlist/api/contract';
 import {
   lifecycleScriptsDomain,
   lifecycleScriptsWireContract,
@@ -39,7 +38,6 @@ import {
 } from '@core/primitives/desktop-host/api/host-contract';
 import { loggingDomain, loggingWireContract } from '@core/primitives/logging/api/wire-contract';
 import { mementosDomain, mementosWireContract } from '@core/primitives/mementos/api';
-import { telemetryContract, telemetryDomain } from '@core/primitives/telemetry/api/wire-contract';
 import { hostsContract, hostsDomain } from '@core/services/hosts/api';
 import { notificationsContract, notificationsDomain } from '@core/services/notifications/api';
 import { appSettingsContract, appSettingsDomain } from '@core/services/settings/api';
@@ -58,7 +56,6 @@ export const desktopDomainContracts = {
   [promptLibraryDomain]: promptLibraryContract,
   [repositoryDomain]: repositoryContract,
   [searchDomain]: searchContract,
-  [telemetryDomain]: telemetryContract,
   [sourceControlDomain]: sourceControlContract,
   [mcpDomain]: mcpContract,
   [skillsDomain]: skillsContract,
@@ -78,6 +75,5 @@ export const desktopDomainContracts = {
   [hostsDomain]: hostsContract,
   [tasksDomain]: tasksWireContract,
   [updatesDomain]: updatesContract,
-  [waitlistDomain]: waitlistContract,
   [desktopHostDomain]: desktopHostContract,
 } as const;

@@ -1,11 +1,9 @@
 import type { TaskService } from '@core/features/tasks/api/node/task-service';
 import type { CreateTaskParams, DeleteTaskOptions } from '@core/primitives/tasks/api';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import { generateTaskName } from './name-generation/generateTaskName';
 
 export function createTaskOperations(dependencies: {
   service: TaskService;
-  telemetry: TelemetryService;
 }) {
   const { service: taskService } = dependencies;
   return {

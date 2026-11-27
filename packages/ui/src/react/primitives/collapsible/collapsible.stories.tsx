@@ -111,11 +111,11 @@ export const SettingsGroup: Story = {
         </Collapsible.Panel>
       </Collapsible.Root>
       <Collapsible.Root>
-        <Collapsible.Trigger>Telemetry</Collapsible.Trigger>
+        <Collapsible.Trigger>Notifications</Collapsible.Trigger>
         <Collapsible.Panel>
           <Box style={{ padding: '0.5rem' }}>
             <span style={{ fontSize: 'var(--em-text-sm)', color: 'var(--em-foreground-muted)' }}>
-              No telemetry settings configured.
+              No notification channels configured.
             </span>
           </Box>
         </Collapsible.Panel>

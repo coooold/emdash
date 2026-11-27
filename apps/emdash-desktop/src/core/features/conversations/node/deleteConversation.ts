@@ -5,7 +5,6 @@ import {
   conversationRegistryTable as conversations,
   liveConversations,
 } from '@core/features/conversations/api/node/registry';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type { AppDb } from '@core/services/app-db/node/db';
 import { appDbPokes } from '@core/services/app-db/node/pokes';
 import { conversationWireEvents } from './event-host';
@@ -22,8 +21,7 @@ export async function deleteConversation(
   runtimes: ConversationRemovalBroker,
   projectId: string,
   taskId: string,
-  conversationId: string,
-  telemetry: Pick<TelemetryService, 'capture'>
+  conversationId: string
 ): Promise<void> {
   const [convRow] = await db
     .select({
@@ -49,9 +47,4 @@ export async function deleteConversation(
   conversationEvents._emit('conversation:deleted', conversationId);
   conversationWireEvents.emit(undefined, { type: 'deleted', conversationId, projectId, taskId });
   appDbPokes.conversations.poke({ projectId, taskId });
-  telemetry.capture('conversation_deleted', {
-    project_id: projectId,
-    task_id: taskId,
-    conversation_id: conversationId,
-  });
 }

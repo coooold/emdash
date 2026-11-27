@@ -7,8 +7,6 @@ describe('loadAppConfig', () => {
 
     expect(config.dbFile).toBeUndefined();
     expect(config.disableNativeDb).toBe(false);
-    expect(config.telemetryEnabled).toBe(true);
-    expect(config.installSource).toBeUndefined();
     expect(config.forceBootFailure).toBe(false);
   });
 
@@ -16,20 +14,12 @@ describe('loadAppConfig', () => {
     const config = loadAppConfig({
       EMDASH_DB_FILE: ' ./test.db ',
       EMDASH_DISABLE_NATIVE_DB: '1',
-      TELEMETRY_ENABLED: 'false',
-      INSTALL_SOURCE: 'managed',
       EMDASH_FORCE_BOOT_FAILURE: '1',
     });
 
     expect(config.dbFile).toBe('./test.db');
     expect(config.disableNativeDb).toBe(true);
-    expect(config.telemetryEnabled).toBe(false);
-    expect(config.installSource).toBe('managed');
     expect(config.forceBootFailure).toBe(true);
-  });
-
-  it.each(['false', '0', 'no', 'NO'])('disables telemetry for %s', (value) => {
-    expect(loadAppConfig({ TELEMETRY_ENABLED: value }).telemetryEnabled).toBe(false);
   });
 
   it('only disables the native database for the value 1', () => {

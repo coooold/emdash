@@ -128,23 +128,21 @@ describe('deleteTask', () => {
     const mementos = {
       deleteBySubject: vi.fn(async () => ({ success: true as const, data: undefined })),
     };
-    const telemetry = { capture: vi.fn() };
     const evictFileSearchRoot = vi.fn();
     const dependencies: TaskDeletionDependencies = {
       db: fixture.db,
       runtimes,
       sessionCleanup,
       getMementosRuntimeClient: async () => mementos as unknown as MementosRuntimeClient,
-      telemetry,
       evictFileSearchRoot,
     };
-    return { dependencies, sessionCleanup, mementos, telemetry, evictFileSearchRoot };
+    return { dependencies, sessionCleanup, mementos,  evictFileSearchRoot };
   }
 
   it('deletes desktop rows immediately and removes the worktree through the verb when reachable', async () => {
     await seedTask();
     const { registry, runtimes } = makeRuntimes();
-    const { dependencies, telemetry, mementos } = makeDependencies(runtimes);
+    const { dependencies,  mementos } = makeDependencies(runtimes);
 
     const result = await deleteTask(dependencies, { taskId: 'task-1' });
 
@@ -157,10 +155,6 @@ describe('deleteTask', () => {
     });
     expect(createWorkspaceRegistry(fixture.db).getLive('workspace-1')).toBeUndefined();
     expect(mementos.deleteBySubject).toHaveBeenCalled();
-    expect(telemetry.capture).toHaveBeenCalledWith('task_deleted', {
-      project_id: 'project-1',
-      task_id: 'task-1',
-    });
   });
 
   it('passes deleteBranch through to the verb', async () => {

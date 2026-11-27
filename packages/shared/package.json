@@ -68,11 +68,6 @@
       "types": "./dist/perf.d.mts",
       "default": "./dist/perf.mjs"
     },
-    "./perf/node": {
-      "development": "./src/perf/node/index.ts",
-      "types": "./dist/perf-node.d.mts",
-      "default": "./dist/perf-node.mjs"
-    },
     "./plugins": {
       "development": "./src/plugins/index.ts",
       "types": "./dist/plugins.d.mts",

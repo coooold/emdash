@@ -8,7 +8,6 @@ import {
   EnableTmuxRow,
   PreserveTaskNameCapitalizationRow,
 } from '../components/TaskSettingsRows';
-import TelemetryCard from '../components/TelemetryCard';
 import { UpdateCard } from '../components/UpdateCard';
 
 export function GeneralSettingsPage() {
@@ -22,7 +21,6 @@ export function GeneralSettingsPage() {
       />
       <SettingsSection title="应用">
         <UpdateCard />
-        <TelemetryCard />
       </SettingsSection>
       <SettingsSection title="通知" bare>
         <NotificationSettingsCard />

@@ -6,19 +6,17 @@ import { createGithubOperations } from './controller';
 
 describe('GitHub authentication shared connection lifecycle', () => {
   let fixture: RegistryFixture;
-  const capture = vi.fn();
   const accountsChanged = vi.fn();
 
   beforeEach(async () => {
     vi.clearAllMocks();
     fixture = await openRegistryFixture('empty', {
-      telemetry: { capture },
       onAccountsChanged: accountsChanged,
     });
   });
   afterEach(() => fixture?.close());
 
-  it('records one connection and inventory notification for CLI import', async () => {
+  it('publishes one account inventory notification for CLI import', async () => {
     const logger = { error: vi.fn(), warn: vi.fn() } as unknown as Logger;
     const connections = fixture.connections;
     const user = { id: 42, login: 'ada', name: 'Ada', email: '', avatar_url: '' };
@@ -48,9 +46,6 @@ describe('GitHub authentication shared connection lifecycle', () => {
 
     expect(result.success).toBe(true);
     expect(await fixture.registry.listAccounts('github')).toHaveLength(1);
-    expect(capture).toHaveBeenCalledExactlyOnceWith('integration_connected', {
-      provider: 'github',
-    });
     expect(accountsChanged).toHaveBeenCalledExactlyOnceWith('github');
   });
 });

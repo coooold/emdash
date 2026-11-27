@@ -60,6 +60,8 @@ export default defineConfig({
       'global.GENTLY': 'false',
     },
     build: {
+      // Packagers include all of out/, so removed modules must leave no old chunks behind.
+      emptyOutDir: true,
       externalizeDeps: {
         exclude: workspacePackages,
       },
@@ -89,6 +91,7 @@ export default defineConfig({
   preload: {
     root: 'src/entry',
     build: {
+      emptyOutDir: true,
       externalizeDeps: {
         exclude: workspacePackages,
       },
@@ -107,6 +110,7 @@ export default defineConfig({
   renderer: {
     root: 'src/renderer',
     plugins: [react(), tailwindcss()],
+    build: { emptyOutDir: true },
     resolve: {
       alias: {
         '@': resolve('src'),

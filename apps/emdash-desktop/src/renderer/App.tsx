@@ -16,9 +16,7 @@ import { AppMenuEvents } from './app/app-menu-events';
 import { AppShutdownLifecycle } from './app/app-shutdown-lifecycle';
 import { WelcomeScreen } from './app/welcome';
 import { Workspace } from './app/workspace';
-import { WorkspaceViewProvider } from './lib/layout/provider';
 import { ModalRenderer } from './lib/modal/modal-renderer';
-import { FeatureFlagProvider } from './lib/providers/feature-flag-override-context';
 import { ThemeProvider } from './lib/providers/theme-provider';
 
 export const HAS_SEEN_ONBOARDING = 'emdash:has-seen-onboarding:v1';
@@ -99,7 +97,6 @@ function AppContent() {
       <WorkspaceLayoutContextProvider>
         <TerminalPoolProvider>
           <IntegrationsProvider>
-            <WorkspaceViewProvider>
               <AppMenuEvents onOpenSettings={handleOpenSettingsFromMenu} />
               <ExternalLinkProvider openExternalLink={confirmOpenExternalLink}>
                 <ThemeProvider>
@@ -109,7 +106,6 @@ function AppContent() {
                   {renderContent()}
                 </ThemeProvider>
               </ExternalLinkProvider>
-            </WorkspaceViewProvider>
           </IntegrationsProvider>
         </TerminalPoolProvider>
       </WorkspaceLayoutContextProvider>
@@ -120,9 +116,7 @@ function AppContent() {
 export function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <FeatureFlagProvider>
         <AppContent />
-      </FeatureFlagProvider>
     </QueryClientProvider>
   );
 }

@@ -10,5 +10,4 @@ export const projectViewDef = defineView({
   }),
   layout: workbenchLayout,
   subject: ({ projectId }) => projectSubject({ projectId }),
-  telemetryEvent: 'project_viewed',
 });

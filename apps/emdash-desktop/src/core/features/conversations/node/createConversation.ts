@@ -15,8 +15,8 @@ import {
   createHostConversationRecord,
 } from '@core/features/conversations/api/node/host-index';
 import {
-  conversationRegistryTable as conversations,
   createConversationRegistry,
+  type conversationRegistryTable as conversations,
 } from '@core/features/conversations/api/node/registry';
 import { mapConversationRowToConversation } from '@core/features/conversations/api/node/utils';
 import type { ConversationsRuntimeBroker } from '@core/features/conversations/api/runtime-adapter';
@@ -26,7 +26,6 @@ import {
   type Conversation,
   type CreateConversationParams,
 } from '@core/primitives/conversations/api';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type { AppDb } from '@core/services/app-db/node/db';
 import { appDbPokes } from '@core/services/app-db/node/pokes';
 import { tasks } from '@core/services/app-db/node/schema';
@@ -48,7 +47,6 @@ export async function createConversation(
   params: CreateConversationParams,
   dependencies: {
     db: ConversationCreateDb;
-    telemetry: Pick<TelemetryService, 'capture'>;
     taskSessions: Pick<TaskSessionManager, 'getTask'>;
     withCompensation: CompensationRunner;
     runtimes: ConversationsRuntimeBroker;
@@ -56,14 +54,8 @@ export async function createConversation(
     workspaceIdentity: ConversationWorkspaceIdentityResolver;
   }
 ): Promise<Conversation> {
-  const { db: database, telemetry, withCompensation, runtimes } = dependencies;
+  const { db: database,  withCompensation, runtimes } = dependencies;
   const id = params.id ?? randomUUID();
-  const [existingConversation] = await database
-    .select({ id: conversations.id })
-    .from(conversations)
-    .where(eq(conversations.taskId, params.taskId))
-    .limit(1);
-
   const [taskRow] = await database
     .select({ workspaceId: tasks.workspaceId })
     .from(tasks)
@@ -172,7 +164,6 @@ export async function createConversation(
           conversationId: id,
           initialSize: params.initialSize,
           database,
-          telemetry,
           taskSessions: dependencies.taskSessions,
         }),
       compensate: async () => {
@@ -193,13 +184,6 @@ export async function createConversation(
   conversationEvents._emit('conversation:created', conversation);
   conversationWireEvents.emit(undefined, { type: 'created', conversation });
   appDbPokes.conversations.poke({ projectId: params.projectId, taskId: params.taskId });
-  telemetry.capture('conversation_created', {
-    provider: params.provider,
-    is_first_in_task: existingConversation === undefined,
-    project_id: params.projectId,
-    task_id: params.taskId,
-    conversation_id: id,
-  });
 
   return conversation;
 }

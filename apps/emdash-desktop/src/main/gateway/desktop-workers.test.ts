@@ -28,7 +28,6 @@ vi.mock('electron', () => ({ app: { getPath: () => '/tmp/emdash-worker-test' } }
 vi.mock('@main/lib/logger', async () => ({
   log: (await import('@emdash/shared/logger')).noopLogger,
 }));
-vi.mock('@main/lib/telemetry', () => ({ telemetryService: { capture: vi.fn() } }));
 vi.mock('@main/lib/userEnv', () => ({
   userShellEnvManager: { current: async () => ({}) },
   refreshUserEnv: async () => ({}),

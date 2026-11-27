@@ -7,7 +7,6 @@ import { useAgentInstallationStatuses } from '@core/features/agents/api/browser/
 import { useAgents } from '@core/features/agents/api/browser/use-agents';
 import { getCatalogClient } from '@core/features/catalog/api/browser/client';
 import { getMcpClient } from '@core/features/mcp/api/browser/client';
-import { captureTelemetry } from '@core/primitives/telemetry/browser/telemetry-client';
 import { useInstalledMcpServersLiveModel } from '../live-model-hooks';
 
 const MCP_CATALOG_QUERY_KEY = ['mcp', 'catalog'] as const;
@@ -53,15 +52,10 @@ export function useMcps(host: HostRef) {
   // ── Mutations ────────────────────────────────────────────────────────
 
   const saveMutation = useMutation({
-    mutationFn: async (payload: { server: McpServer; source: 'catalog' | 'custom' | null }) => {
+    mutationFn: async (server: McpServer) => {
       const client = await getMcpClient();
-      const result = await client.saveServer({ host, server: payload.server });
+      const result = await client.saveServer({ host, server });
       if (!result.success) throw new Error(agentConfigErrorMessage(result.error));
-    },
-    onSuccess: (_, payload) => {
-      if (payload.source) {
-        captureTelemetry('mcp_server_added', { source: payload.source });
-      }
     },
     onError: (error) => {
       toast.error('Failed to save server', { description: error.message });
@@ -69,8 +63,8 @@ export function useMcps(host: HostRef) {
   });
 
   const saveServer = useCallback(
-    async (server: McpServer, source: 'catalog' | 'custom' | null = null) => {
-      await saveMutation.mutateAsync({ server, source });
+    async (server: McpServer) => {
+      await saveMutation.mutateAsync(server);
     },
     [saveMutation]
   );
@@ -80,9 +74,6 @@ export function useMcps(host: HostRef) {
       const client = await getMcpClient();
       const result = await client.removeServer({ host, name: serverName });
       if (!result.success) throw new Error(agentConfigErrorMessage(result.error));
-    },
-    onSuccess: () => {
-      captureTelemetry('mcp_server_removed');
     },
     onError: (error) => {
       toast.error('Failed to remove server', { description: error.message });

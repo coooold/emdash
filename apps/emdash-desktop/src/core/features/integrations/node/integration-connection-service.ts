@@ -4,7 +4,6 @@ import { integrationPluginRegistry } from '@emdash/plugins/integrations';
 import type { Logger } from '@emdash/shared/logger';
 import type { ConnectionStatus } from '@core/primitives/issue-providers/api';
 import { toProviderAccountSummary } from '@core/primitives/provider-accounts/api';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type {
   ProviderAccount,
   ProviderAccountStore,
@@ -28,7 +27,6 @@ export class IntegrationConnectionService implements IntegrationConnections {
   constructor(
     private readonly accounts: ProviderAccountStore,
     private readonly credentials: IntegrationAccountStore,
-    private readonly telemetry: Pick<TelemetryService, 'capture'>,
     private readonly logger: Logger,
     private readonly onAccountsChanged?: (providerId: string) => void
   ) {}
@@ -140,7 +138,6 @@ export class IntegrationConnectionService implements IntegrationConnections {
       options.signal
     );
     if (!saved) return { success: false, error: 'The connection was cancelled.' };
-    this.telemetry.capture('integration_connected', { provider: integrationId });
     this.onAccountsChanged?.(integrationId);
 
     return {

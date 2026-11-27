@@ -18,9 +18,6 @@ vi.mock('@core/features/browser/api/browser/client', () => ({
   }),
 }));
 
-vi.mock('@core/primitives/telemetry/browser/telemetry-scope', () => ({
-  setTelemetryConversationScope: vi.fn(),
-}));
 
 vi.mock('@core/features/browser/browser/browser-tab-item', () => ({
   BrowserTabBarItem: () => null,

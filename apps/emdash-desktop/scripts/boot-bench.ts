@@ -166,7 +166,6 @@ function appEnv(profile: Profile, logFile: string): NodeJS.ProcessEnv {
     EMDASH_DB_FILE: profile.dbFile,
     EMDASH_LOG_FILE: logFile,
     EMDASH_LOG_LEVEL: 'info',
-    TELEMETRY_ENABLED: 'false',
   };
 }
 

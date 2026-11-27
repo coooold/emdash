@@ -15,7 +15,6 @@ describe('defineView', () => {
       id: 'project',
       params: z.object({ projectId: z.string() }),
       layout,
-      telemetryEvent: 'project_viewed',
     });
 
     const ref = view({ projectId: 'project-1' });
@@ -27,7 +26,6 @@ describe('defineView', () => {
     });
     expect(Object.isFrozen(ref)).toBe(true);
     expect(Object.isFrozen(ref.params)).toBe(true);
-    expect(view.telemetryEvent).toBe('project_viewed');
   });
 
   it('deeply freezes ref params and the traits collection', () => {

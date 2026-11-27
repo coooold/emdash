@@ -164,7 +164,6 @@ describe.each([
       taskId: 'old-task',
       conversationId: 'old-conversation',
       database: fixture.db,
-      telemetry: { capture: vi.fn() },
       taskSessions: { getTask: () => ({ conversations: { ensureSession } }) as never },
     });
     expect(ensureSession).toHaveBeenCalledWith(
@@ -350,7 +349,6 @@ describe.each([
       taskId: 'old-task',
       conversationId: resumeId,
       database: fixture.db,
-      telemetry: { capture: vi.fn() },
       taskSessions: { getTask: () => ({ conversations: { ensureSession } }) as never },
     });
     expect(ensureSession).toHaveBeenCalledWith(

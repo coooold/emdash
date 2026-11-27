@@ -17,7 +17,6 @@ import { submitFeedbackToRelay, type FeedbackAttachment } from '@main/core/app/s
 import { getDiagnosticLogAttachment } from '@main/host/file-logger';
 import { setApplicationMenuKeybindings } from '@main/host/menu';
 import { log } from '@main/lib/logger';
-import { telemetryService } from '@main/lib/telemetry';
 import { appService } from './service';
 
 const execFileAsync = promisify(execFile);
@@ -55,7 +54,6 @@ export const appOperations = {
   openExternal: async (url: string) => {
     try {
       await appService.openExternal(url);
-      telemetryService.capture('open_in_external', { app: 'browser' });
       return { success: true };
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : String(error) };
@@ -149,7 +147,6 @@ export const appOperations = {
   }) => {
     try {
       await appService.openIn(args);
-      telemetryService.capture('open_in_external', { app: args.app });
       return { success: true };
     } catch (error) {
       return { success: false, error: error instanceof Error ? error.message : String(error) };

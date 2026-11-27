@@ -51,7 +51,6 @@ import type {
   RenameTaskSuccess,
   Task,
 } from '@core/primitives/tasks/api';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import { compileWorktreeGitPlan } from '@core/primitives/workspaces/api';
 import type { AppDb } from '@core/services/app-db/node/db';
 import { appDbPokes } from '@core/services/app-db/node/pokes';
@@ -85,8 +84,6 @@ export type TaskLifecycleHooks = {
   'task:archived': (taskId: string, projectId: string) => void | Promise<void>;
   'task:deleted': (taskId: string, projectId: string) => void | Promise<void>;
   'task:workspace-ready': (taskId: string, result: ProvisionResult) => void | Promise<void>;
-  /** Fires after a full (non-fast-path) provision succeeds, with the wall-clock cost. */
-  'task:provision-timing': (info: { taskId: string; durationMs: number }) => void | Promise<void>;
 };
 
 export class TaskService implements Hookable<TaskLifecycleHooks> {
@@ -190,7 +187,6 @@ export class TaskService implements Hookable<TaskLifecycleHooks> {
     const attached = this.dependencies.projects.requireAttached(row.projectId);
     if (!attached.success) return err(provisionProjectError(attached.error));
 
-    const startedAt = Date.now();
     const result = await this._activateWorkspace(row, attached.data, signal);
     if (!result.success) return err(result.error);
 
@@ -202,10 +198,6 @@ export class TaskService implements Hookable<TaskLifecycleHooks> {
       sshConnectionId: result.data.persistData.sshConnectionId,
     };
 
-    this._hooks.callHookBackground('task:provision-timing', {
-      taskId,
-      durationMs: Date.now() - startedAt,
-    });
     this._hooks.callHookBackground('task:workspace-ready', taskId, provisionResult);
     return ok(provisionResult);
   }
@@ -574,8 +566,7 @@ export class TaskService implements Hookable<TaskLifecycleHooks> {
 
   async archiveTask(
     projectId: string,
-    taskId: string,
-    telemetry: Pick<TelemetryService, 'capture'>
+    taskId: string
   ): Promise<void> {
     const [task] = await this.dependencies.db
       .select({ projectId: tasks.projectId })
@@ -587,8 +578,7 @@ export class TaskService implements Hookable<TaskLifecycleHooks> {
       this.dependencies.db,
       this.dependencies.sessions,
       projectId,
-      taskId,
-      telemetry
+      taskId
     );
     this._hooks.callHookBackground('task:archived', taskId, projectId);
   }
@@ -610,10 +600,9 @@ export class TaskService implements Hookable<TaskLifecycleHooks> {
 
   async updateLinkedIssue(
     taskId: string,
-    issue: LinkedIssue | undefined,
-    telemetry: Pick<TelemetryService, 'capture'>
+    issue: LinkedIssue | undefined
   ): Promise<void> {
-    const task = await updateLinkedIssue(this.dependencies.db, taskId, issue, telemetry);
+    const task = await updateLinkedIssue(this.dependencies.db, taskId, issue);
     if (task) this._hooks.callHookBackground('task:updated', task);
   }
 
@@ -634,10 +623,9 @@ export class TaskService implements Hookable<TaskLifecycleHooks> {
   // Operations with no hook — thin pass-throughs
   updateTaskStatus(
     taskId: string,
-    status: Parameters<typeof updateTaskStatus>[2],
-    telemetry: Pick<TelemetryService, 'capture'>
+    status: Parameters<typeof updateTaskStatus>[2]
   ) {
-    return updateTaskStatus(this.dependencies.db, taskId, status, telemetry);
+    return updateTaskStatus(this.dependencies.db, taskId, status);
   }
   setTaskPinned = (taskId: string, isPinned: boolean) =>
     setTaskPinned(this.dependencies.db, taskId, isPinned);

@@ -179,7 +179,7 @@ function SettingsDemo() {
               sticky
             />
             <Card title="Update settings" rows={4} />
-            <Card title="Telemetry" rows={2} />
+            <Card title="Notifications" rows={2} />
             <Card title="Auto-approve defaults" rows={3} />
             <Card title="Appearance" rows={2} />
           </div>

@@ -31,7 +31,6 @@ const row = {
   sshConnectionId: null,
 };
 const runtimes: ConversationRemovalBroker = { client: vi.fn() };
-const telemetry = { capture: vi.fn() };
 const db = {
   select: () => ({
     from: () => ({
@@ -54,8 +53,8 @@ beforeEach(() => {
 describe.each(['task', 'machine'] as const)('%s conversation deletion events', (surface) => {
   const deleteFromSurface = () =>
     surface === 'task'
-      ? deleteConversation(db, runtimes, row.projectId, row.taskId, row.id, telemetry)
-      : deleteHostConversation(db, runtimes, row.id, telemetry);
+      ? deleteConversation(db, runtimes, row.projectId, row.taskId, row.id)
+      : deleteHostConversation(db, runtimes, row.id);
 
   it.each(['removed', 'tombstoned'])(
     'publishes task membership removal after the record is %s',
@@ -86,7 +85,7 @@ describe.each(['task', 'machine'] as const)('%s conversation deletion events', (
 
 it('does not invent a task notification for an unlinked host conversation', async () => {
   getLive.mockReturnValue({ ...row, taskId: null, projectId: null });
-  await deleteHostConversation(db, runtimes, row.id, telemetry);
+  await deleteHostConversation(db, runtimes, row.id);
   expect(remove).toHaveBeenCalledOnce();
   expect(emit).not.toHaveBeenCalled();
 });

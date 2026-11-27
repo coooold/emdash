@@ -52,17 +52,4 @@ describe('viewCatalog', () => {
     expect(taskViewDef({ projectId: 'project-1', taskId: 'task-2' }).key).toBe('task:task-2');
   });
 
-  it('declares the existing telemetry event for every view', () => {
-    expect(
-      Object.fromEntries(
-        viewCatalog.defs.map((definition) => [definition.id, definition.telemetryEvent])
-      )
-    ).toEqual({
-      home: 'home_viewed',
-      automations: 'automations_viewed',
-      project: 'project_viewed',
-      task: 'task_viewed',
-      settings: 'settings_viewed',
-    });
-  });
 });

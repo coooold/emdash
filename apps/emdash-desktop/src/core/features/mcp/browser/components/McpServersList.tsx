@@ -35,13 +35,6 @@ export const McpServersList: React.FC<McpServersListProps> = ({
     });
   };
 
-  const drawerSource =
-    drawerMode?.type === 'add-catalog'
-      ? 'catalog'
-      : drawerMode?.type === 'add-custom'
-        ? 'custom'
-        : null;
-
   const lowerSearch = search.toLowerCase();
   const installedNames = new Set(mcp.installed.map((server) => server.name));
   const filteredInstalled = mcp.installed.filter(
@@ -73,7 +66,7 @@ export const McpServersList: React.FC<McpServersListProps> = ({
         onOpenChange={(open) => {
           if (!open) onDrawerModeChange(null);
         }}
-        onSave={(server) => mcp.saveServer(server, drawerSource)}
+        onSave={mcp.saveServer}
         onRemove={handleRemoveRequest}
       />
       <div className="flex flex-col gap-8 pt-3 pb-8">

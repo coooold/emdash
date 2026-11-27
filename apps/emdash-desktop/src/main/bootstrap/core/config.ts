@@ -22,8 +22,6 @@ export type AppConfig = {
   dbFile: string | undefined;
   userDataDir: string | undefined;
   disableNativeDb: boolean;
-  telemetryEnabled: boolean;
-  installSource: string | undefined;
   forceBootFailure: boolean;
 };
 
@@ -32,29 +30,17 @@ const flagIsOne = z
   .optional()
   .transform((value) => value === '1');
 
-const telemetryEnabled = z
-  .string()
-  .optional()
-  .transform((value) => {
-    const normalized = (value ?? 'true').toLowerCase();
-    return normalized !== 'false' && normalized !== '0' && normalized !== 'no';
-  });
-
 const rawAppConfigSchema = z
   .object({
     emdashDbFile: z.string().trim().min(1, 'Database path cannot be empty').optional(),
     emdashUserDataDir: z.string().trim().min(1, 'User data directory cannot be empty').optional(),
     emdashDisableNativeDb: flagIsOne,
-    telemetryEnabled,
-    installSource: z.string().trim().min(1, 'Install source cannot be empty').optional(),
     emdashForceBootFailure: flagIsOne,
   })
   .transform((config): Omit<AppConfig, 'identity' | 'isDev'> => ({
     dbFile: config.emdashDbFile,
     userDataDir: config.emdashUserDataDir,
     disableNativeDb: config.emdashDisableNativeDb,
-    telemetryEnabled: config.telemetryEnabled,
-    installSource: config.installSource,
     forceBootFailure: config.emdashForceBootFailure,
   }));
 

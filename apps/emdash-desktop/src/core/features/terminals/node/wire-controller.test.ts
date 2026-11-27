@@ -20,7 +20,6 @@ const controllerDeps = {
   logger: { warn: vi.fn() } as never,
   projects: { requireAttached: vi.fn(() => ok({} as never)) },
   settings: { get: vi.fn(async () => ({ defaultShell: 'default' })) } as never,
-  telemetry: { capture: vi.fn() } as never,
   terminalShell: {
     getColorEnv: vi.fn(async () => ({})),
   } as never,

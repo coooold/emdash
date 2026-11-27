@@ -12,7 +12,7 @@ import {
   type SshConnectResult,
 } from './connect/resolve-ssh-connect-config';
 import { SshConnectionManager } from './lifecycle/ssh-connection-manager';
-import { SshService, type SshServiceDeps } from './ssh-service';
+import { SshService } from './ssh-service';
 
 const { privateKey: hostKey } = generateKeyPairSync('rsa', {
   modulusLength: 2048,
@@ -36,7 +36,6 @@ function createService(options: {
   db?: AppDb;
   createId?: () => string;
   now?: () => number;
-  capture?: SshServiceDeps['telemetry']['capture'];
 }): SshService {
   return new SshService({
     db: options.db ?? ({} as AppDb),
@@ -45,9 +44,6 @@ function createService(options: {
     resolveConnectConfig: options.resolve,
     parseSshConfigFile: vi.fn(),
     resolveSshConfig: vi.fn(),
-    telemetry: {
-      capture: options.capture ?? vi.fn<SshServiceDeps['telemetry']['capture']>(),
-    },
     log: { warn: vi.fn() },
     createId: options.createId ?? (() => 'temporary-check'),
     now: options.now,
@@ -196,7 +192,6 @@ function createIntentFixture(options: {
     resolveConnectConfig,
     parseSshConfigFile: vi.fn(),
     resolveSshConfig: vi.fn(),
-    telemetry: { capture: vi.fn() },
     log: { warn: vi.fn() },
     now: () => options.now ?? 0,
   });
@@ -283,10 +278,8 @@ describe('SshService.testConnection', () => {
     const cleanups: string[] = [];
     const manager = new SshConnectionManager();
     const dropConnection = vi.spyOn(manager, 'dropConnection');
-    const capture = vi.fn<SshServiceDeps['telemetry']['capture']>();
     const service = createService({
       manager,
-      capture,
       now: vi.fn().mockReturnValueOnce(100).mockReturnValueOnce(145),
       resolve: async () => ({
         config: {
@@ -308,7 +301,6 @@ describe('SshService.testConnection', () => {
     });
     expect(cleanups).toEqual(['cleanup']);
     expect(dropConnection).toHaveBeenCalledWith('temporary-check');
-    expect(capture).toHaveBeenCalledWith('ssh_connection_attempted', { success: true });
     expect(manager.getAllConnectionStates()).toEqual({});
   });
 
@@ -346,12 +338,10 @@ describe('SshService.testConnection', () => {
   });
 
   it('maps resolver and client failures and still cleans up', async () => {
-    const resolverCapture = vi.fn<SshServiceDeps['telemetry']['capture']>();
     const resolverManager = new SshConnectionManager();
     const resolverDrop = vi.spyOn(resolverManager, 'dropConnection');
     const resolverService = createService({
       manager: resolverManager,
-      capture: resolverCapture,
       resolve: async () => {
         throw new Error('resolve failed');
       },
@@ -363,7 +353,6 @@ describe('SshService.testConnection', () => {
       debugLogs: [],
     });
     expect(resolverDrop).toHaveBeenCalledWith('temporary-check');
-    expect(resolverCapture).toHaveBeenCalledWith('ssh_connection_attempted', { success: false });
 
     const cleanups: string[] = [];
     class ErrorClient extends EventEmitter {

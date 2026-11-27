@@ -24,7 +24,6 @@ import {
   workspaceRegistryTable as workspaces,
 } from '@core/features/workspaces/api/node/registry';
 import { hostFileRefFromNativePath } from '@core/primitives/desktop-runtime/api';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type { MutationError } from '@core/primitives/wire/api/mutations';
 import type { AppDb } from '@core/services/app-db/node/db';
 import { appDbPokes } from '@core/services/app-db/node/pokes';
@@ -66,7 +65,6 @@ export type TaskDeletionDependencies = {
   runtimes: WorkspaceRemovalBroker;
   sessionCleanup: TaskSessionCleanup;
   getMementosRuntimeClient(): Promise<MementosRuntimeClient>;
-  telemetry: Pick<TelemetryService, 'capture'>;
   evictFileSearchRoot(path: HostAbsolutePath, host: HostRef): Promise<void> | void;
 };
 
@@ -205,16 +203,12 @@ function purgeTaskDesktopRows(
 }
 
 export async function purgeTaskLocalState(
-  dependencies: Pick<TaskDeletionDependencies, 'getMementosRuntimeClient' | 'telemetry'>,
+  dependencies: Pick<TaskDeletionDependencies, 'getMementosRuntimeClient'>,
   task: Pick<TaskRow, 'id' | 'projectId'>
 ): Promise<void> {
   const client = await dependencies.getMementosRuntimeClient();
   const result = await client.deleteBySubject(taskSubject({ taskId: task.id }));
   if (!result.success) throw new Error(result.error.message);
-  dependencies.telemetry.capture('task_deleted', {
-    project_id: task.projectId ?? undefined,
-    task_id: task.id,
-  });
 }
 
 function workspaceIsUntracked(db: AppDb, workspaceId: string): boolean {

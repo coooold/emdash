@@ -5,7 +5,6 @@ import { openFile } from './open-file';
 const mocks = vi.hoisted(() => ({
   getTaskComposition: vi.fn(),
   getNavigation: vi.fn(),
-  transition: vi.fn(),
 }));
 
 vi.mock('@core/features/tasks/contributions/views', () => ({
@@ -16,9 +15,6 @@ vi.mock('@core/primitives/navigation/browser/navigation-selectors', () => ({
   getNavigation: mocks.getNavigation,
 }));
 
-vi.mock('@core/primitives/telemetry/browser/focus-tracker', () => ({
-  focusTracker: { transition: mocks.transition },
-}));
 
 vi.mock('./task-composition-selectors', () => ({
   getTaskComposition: mocks.getTaskComposition,
@@ -53,7 +49,6 @@ describe('openFile placement policy', () => {
       { path: '/repo/src/a.ts' },
       { preview: false, target: 'active' }
     );
-    expect(mocks.transition).not.toHaveBeenCalled();
     expect(composition.setFocusedRegion).not.toHaveBeenCalled();
     expect(composition.revealWorkspaceFile).not.toHaveBeenCalled();
   });
@@ -81,7 +76,6 @@ describe('openFile placement policy', () => {
 
     openFile(hostFileRefFromNativePath('/repo/src/a.ts'), { context: CONTEXT, reveal: true });
 
-    expect(mocks.transition).toHaveBeenCalledWith({ mainPanel: 'editor' }, 'panel_switch');
     expect(composition.setFocusedRegion).toHaveBeenCalledWith('main');
     expect(composition.revealWorkspaceFile).toHaveBeenCalledWith('/repo/src/a.ts');
   });

@@ -156,16 +156,6 @@ async function handleBootWatchdogTrigger(trigger: BootWatchdogTrigger): Promise<
     windowLoaded: signals.windowLoaded,
   });
   try {
-    const { telemetryService } = await import('@main/lib/telemetry');
-    telemetryService.capture('boot_watchdog_triggered', {
-      stuck_phase: trigger.stuckPhase,
-      backend_completed: signals.backend,
-      window_loaded: signals.windowLoaded,
-    });
-  } catch (telemetryError) {
-    log.warn('boot watchdog: failed to report telemetry', { error: telemetryError });
-  }
-  try {
     // Direct webContents channel: a hung backend means the wire gateway may
     // never register controllers, so the escape hatch cannot ride the wire.
     const { getMainWindow } = await import('@main/host/window');

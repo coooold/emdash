@@ -23,7 +23,6 @@ import {
 import type { ProjectAttachmentManager } from '@core/features/projects/api/node/project-attachment-manager';
 import type { TaskSessionLaunchContextResolver } from '@core/features/tasks/api/node/task-session-launch-context';
 import type { TaskSessionManager } from '@core/features/tasks/api/node/task-session-manager';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type { AppDb } from '@core/services/app-db/node/db';
 import { tasks } from '@core/services/app-db/node/schema';
 import {
@@ -58,22 +57,16 @@ type WorkspaceIdentityResolver = Readonly<{
   resolve(workspaceId: string): Promise<{ host: HostRef; path: string } | null>;
 }>;
 
-type ConversationRuntimeHooks = Readonly<{
-  recordTuiInput(target: ConversationRuntimeTarget): Promise<void>;
-}>;
-
 export type CreateConversationsWireControllerOptions = Readonly<{
   db: AppDb;
   terminalFileSources: TerminalFileSources;
   runtimes: ConversationsRuntimeBroker;
   workspaceIdentity: WorkspaceIdentityResolver;
   resolveTarget?: (conversationId: string) => Promise<ConversationRuntimeTarget>;
-  hooks?: ConversationRuntimeHooks;
   getProviderEnv?: (providerId: string) => Promise<Record<string, string> | undefined>;
   sessionLaunchContexts: Pick<TaskSessionLaunchContextResolver, 'resolve'>;
   logger: Logger;
   projects: Pick<ProjectAttachmentManager, 'requireAttached'>;
-  telemetry: TelemetryService;
   taskSessions: Pick<TaskSessionManager, 'getTask'>;
   withCompensation: CompensationRunner;
   hostIsReachable: (hostRef: SerializedHostRef) => boolean;
@@ -92,12 +85,10 @@ export function createConversationsWireController(
         options.getProviderEnv,
         options.sessionLaunchContexts
       ));
-  const hooks = options.hooks ?? createDefaultRuntimeHooks(options);
   const configurationChanges = createKeyedLanes();
   const conversationOperations = createConversationOperations({
     db: options.db,
     taskSessions: options.taskSessions,
-    telemetry: options.telemetry,
     withCompensation: options.withCompensation,
     runtimes: options.runtimes,
     hostIsReachable: options.hostIsReachable,
@@ -362,16 +353,8 @@ export function createConversationsWireController(
         run(input.conversationId, (client) => client.tuiAgents.delete(input, callOptions(meta))),
       kill: (input, meta) =>
         run(input.conversationId, (client) => client.tuiAgents.kill(input, callOptions(meta))),
-      sendInput: async (input, meta) => {
-        const runtimeTarget = await target(input.conversationId);
-        return withConversationRuntime(options, Promise.resolve(runtimeTarget), async (client) => {
-          const result = await client.tuiAgents.sendInput(input, callOptions(meta));
-          if (result.success && input.data.includes('\r')) {
-            await hooks.recordTuiInput(runtimeTarget);
-          }
-          return result;
-        });
-      },
+      sendInput: (input, meta) =>
+        run(input.conversationId, (client) => client.tuiAgents.sendInput(input, callOptions(meta))),
       resize: (input, meta) =>
         run(input.conversationId, (client) => client.tuiAgents.resize(input, callOptions(meta))),
       output: async ({ conversationId }) =>
@@ -381,26 +364,6 @@ export function createConversationsWireController(
       sessions: tuiSessions,
     },
   });
-}
-
-function createDefaultRuntimeHooks(
-  options: Pick<CreateConversationsWireControllerOptions, 'telemetry'>
-): ConversationRuntimeHooks {
-  const { telemetry } = options;
-  return {
-    // Recency is a host fact now: the runtime's activity report feeds
-    // `lastSessionActivityAt` and convergence caches it — only telemetry stays client-side.
-    async recordTuiInput(target) {
-      if (target.providerId) {
-        telemetry.capture('agent_run_started', {
-          provider: target.providerId,
-          project_id: target.projectId,
-          task_id: target.taskId,
-          conversation_id: target.conversationId,
-        });
-      }
-    },
-  };
 }
 
 function missingAcpInputError(target: ConversationRuntimeTarget): Error {

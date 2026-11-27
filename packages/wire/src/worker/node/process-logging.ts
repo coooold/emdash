@@ -1,8 +1,8 @@
 import type { Logger } from '@emdash/shared/logger';
 import { initProcessLogging } from '@emdash/shared/logger/node';
-import { startDevPerfInstruments } from '@emdash/shared/perf';
+import { setVerboseSpawnLogging, startDevPerfInstruments } from '@emdash/shared/perf';
 import { WORKER_NAME_ENV_VAR } from '../types';
-import { installWorkerVitals } from './vitals';
+import { isWorkerSpawnLogToggle } from '../spawn-logging';
 
 export function initWorkerProcessLogging(fallbackName: string): Logger {
   const logger = initProcessLogging({
@@ -10,8 +10,10 @@ export function initWorkerProcessLogging(fallbackName: string): Logger {
   });
   // Dev-only spawn/RSS reporting; a no-op unless debug logging is enabled.
   startDevPerfInstruments({ logger });
-  // Telemetry vitals + verbose spawn logging: inert until the host sends a
-  // control message; no timers or instruments are created before then.
-  installWorkerVitals({ logger });
+  if (typeof process.send === 'function') {
+    process.on('message', (message) => {
+      if (isWorkerSpawnLogToggle(message)) setVerboseSpawnLogging(logger, message.enabled);
+    });
+  }
   return logger;
 }

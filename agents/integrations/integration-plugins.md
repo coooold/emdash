@@ -198,9 +198,7 @@ The integrations event stream owns `accounts-changed` notifications for successf
 connections, reconnects, removals, default changes, and startup reconciliation. The
 renderer refreshes shared account inventory and dependent issue queries through
 `useIntegrationAccountEvents`, including after a stream gap. GitHub events carry only
-authentication progress and notifications. `IntegrationConnectionService` is the sole
-owner of `integration_connected` telemetry; authentication adapters do not count the
-same connection again.
+authentication progress and notifications.
 
 Project account selection has one provider-parameterized seam: `useProjectAccount` in
 browser consumers and `ProjectIntegrationAccountResolver` in node consumers share

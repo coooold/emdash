@@ -7,7 +7,6 @@ import { useModalController } from '@core/manifests/browser/modal-api';
 import { ConfirmButton } from '@core/primitives/keybindings/browser/confirm-button';
 import { defineModal } from '@core/primitives/modals/react';
 import { useCloseGuard } from '@core/primitives/modals/react/use-close-guard';
-import { captureTelemetry } from '@core/primitives/telemetry/browser/telemetry-client';
 import { getSkillsClient } from '../client';
 
 export function CreateSkillModal({ host }: { host: HostRef }) {
@@ -49,7 +48,6 @@ export function CreateSkillModal({ host }: { host: HostRef }) {
         return;
       }
 
-      captureTelemetry('skill_created');
       complete();
       void queryClient.invalidateQueries({ queryKey: ['skills', 'catalog'] });
     } catch (error) {

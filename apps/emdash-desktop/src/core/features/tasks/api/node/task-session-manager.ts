@@ -74,13 +74,6 @@ export type TaskSessionManagerDependencies = {
 };
 
 export type TaskManagerHooks = {
-  'task:provisioned': (info: {
-    projectId: string;
-    taskId: string;
-    branchName: string | undefined;
-    workspaceId: string;
-    worktreeGitDir?: string;
-  }) => void | Promise<void>;
   'task:torn-down': (info: {
     projectId: string;
     taskId: string;
@@ -190,7 +183,6 @@ export class TaskSessionManager {
   /**
    * Registers a fully-provisioned task into the lifecycle map.
    * Idempotent — if the task is already registered, returns immediately.
-   * Fires `task:provisioned` hook for telemetry, git watchers, PR sync.
    */
   async registerTask(
     taskId: string,
@@ -209,14 +201,6 @@ export class TaskSessionManager {
     const byProject = this._tasksByProject.get(projectId) ?? new Set<string>();
     byProject.add(taskId);
     this._tasksByProject.set(projectId, byProject);
-
-    this._hooks.callHookBackground('task:provisioned', {
-      projectId,
-      taskId,
-      branchName: result.taskProvider.taskBranch,
-      workspaceId: result.persistData.workspaceId,
-      worktreeGitDir: result.persistData.worktreeGitDir,
-    });
   }
 
   async teardownTask(

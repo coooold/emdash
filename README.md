@@ -4,23 +4,11 @@ Emdash Classic 是一款开源桌面应用，可在本机的独立 Git 工作树
 
 <div align="center">
 
-[上游下载](https://emdash.com/download) · [上游文档](https://emdash.com/docs) · [上游发行版](https://github.com/generalaction/emdash/releases/latest) · [Discord](https://discord.gg/f2fv7YxuR2) · [参与贡献](CONTRIBUTING.md)
-
-<br />
-
-[![Apache 2.0 许可证](https://img.shields.io/badge/License-Apache_2.0-555555.svg?labelColor=333333&color=666666)](./LICENSE.md)
-[![上游下载次数](https://img.shields.io/github/downloads/generalaction/emdash/total?labelColor=333333&color=666666)](https://github.com/generalaction/emdash/releases)
-[![上游 GitHub 星标](https://img.shields.io/github/stars/generalaction/emdash?labelColor=333333&color=666666&logo=github)](https://github.com/generalaction/emdash)
-[![上游最近一次提交](https://img.shields.io/github/last-commit/generalaction/emdash?labelColor=333333&color=666666)](https://github.com/generalaction/emdash/commits/main)
-[![上游提交活跃度](https://img.shields.io/github/commit-activity/m/generalaction/emdash?labelColor=333333&color=666666)](https://github.com/generalaction/emdash/graphs/commit-activity)
-
-[![Discord](https://img.shields.io/badge/Discord-join-%235462eb?labelColor=%235462eb&logo=discord&logoColor=%23f5f5f5)](https://discord.gg/f2fv7YxuR2)
-<a href="https://www.ycombinator.com"><img src="https://img.shields.io/badge/Y%20Combinator-W26-orange" alt="Y Combinator W26"></a>
-[![在 X 上关注 @emdashcom](https://img.shields.io/twitter/follow/emdashcom?logo=X&color=%23f5f5f5)](https://twitter.com/intent/follow?screen_name=emdashcom)
+[发行版](https://github.com/coooold/emdash/releases) · [下载源码（ZIP）](https://github.com/coooold/emdash/archive/refs/heads/main2.zip) · [问题反馈](https://github.com/coooold/emdash/issues) · [参与贡献](CONTRIBUTING.md)
 
 </div>
 
-<img alt="上游 Emdash Classic 界面截图" src="https://emdash.com/media/blog/public-v1-beta/v1beta.jpg" />
+![Emdash Classic 简体中文项目与任务界面](docs/images/emdash-desktop-zh.png)
 
 ## 当前分支的功能
 
@@ -31,9 +19,11 @@ Emdash Classic 是一款开源桌面应用，可在本机的独立 Git 工作树
 
 ## 安装
 
-### 从源码构建当前分支
+安装包发布后可在 [GitHub Releases](https://github.com/coooold/emdash/releases) 下载。当前可 [下载 `main2` 源码（ZIP）](https://github.com/coooold/emdash/archive/refs/heads/main2.zip)，或通过 Git 获取源码后自行构建。
 
-检出 `main2` 后，在仓库根目录运行以下命令。Linux 安装包生成在 `apps/emdash-desktop/release/`。
+### 从源码构建
+
+在 Linux 下检出 `main2` 后，在仓库根目录运行以下命令。安装包生成在 `apps/emdash-desktop/release/`。
 
 ```bash
 pnpm install
@@ -41,26 +31,13 @@ pnpm exec nx build @emdash/emdash-desktop
 pnpm --dir apps/emdash-desktop run package:linux
 ```
 
-### 上游安装包
-
-下表列出上游 Emdash 的下载和安装方式。
-
-| 平台 | 安装方式 |
-| --- | --- |
-| macOS | `brew install --cask emdash` · [Apple Silicon](https://github.com/generalaction/emdash/releases/latest/download/emdash-arm64.dmg) · [Intel](https://github.com/generalaction/emdash/releases/latest/download/emdash-x64.dmg) |
-| Windows | [安装版](https://github.com/generalaction/emdash/releases/latest/download/emdash-x64.msi) · [便携版](https://github.com/generalaction/emdash/releases/latest/download/emdash-x64.exe) |
-| Linux x64 | [AppImage](https://github.com/generalaction/emdash/releases/latest/download/emdash-x86_64.AppImage) · [DEB](https://github.com/generalaction/emdash/releases/latest/download/emdash-amd64.deb) · [RPM](https://github.com/generalaction/emdash/releases/latest/download/emdash-x86_64.rpm) |
-| Linux ARM64 | [AppImage](https://github.com/generalaction/emdash/releases/latest/download/emdash-arm64.AppImage) · [DEB](https://github.com/generalaction/emdash/releases/latest/download/emdash-arm64.deb) · [RPM](https://github.com/generalaction/emdash/releases/latest/download/emdash-aarch64.rpm) |
-
-所有上游桌面安装包见 [最新发行版](https://github.com/generalaction/emdash/releases/latest)。
-
 ## 智能体
 
 应用会检测本机已安装的智能体命令行工具，并沿用现有配置。若服务商要求认证，请通过对应的命令行工具完成配置。
 
 对于支持生命周期钩子的智能体，应用会在其用户配置中添加带标记的条目。这些钩子用于跟踪状态、发送通知和恢复会话，只在应用启动的会话中生效。
 
-完整的服务商列表、配置命令和各服务商的行为说明见 [服务商文档](https://emdash.com/docs/providers)。
+可在「设置 → 智能体」查看应用已检测到的工具和配置。
 
 ## 隐私
 
@@ -68,20 +45,12 @@ pnpm --dir apps/emdash-desktop run package:linux
 
 智能体命令行工具可能会将代码、提示和上下文发送给各自的服务商。数据处理方式取决于所选的服务商。
 
-可在设置中关闭遥测，也可在启动应用时设置以下环境变量。
-
-```bash
-TELEMETRY_ENABLED=false
-```
-
-详情见 [遥测说明](https://emdash.com/docs/telemetry)。
+此版本已移除 Emdash 自身的使用统计与遥测上报。
 
 ## 参与贡献
 
-欢迎参与贡献。你可以提交议题、阅读 [贡献指南](CONTRIBUTING.md) 或加入 [Discord 社区](https://discord.gg/f2fv7YxuR2)。
+欢迎参与贡献。开发和测试流程见 [贡献指南](CONTRIBUTING.md)。遇到问题或有功能建议，可以 [提交议题](https://github.com/coooold/emdash/issues)。
 
 ## 许可证
 
 本项目采用 [Apache-2.0 许可证](LICENSE.md)。
-
-上游 Emdash 的团队版、自托管和云端方案见 [Emdash 官网](https://emdash.com)。

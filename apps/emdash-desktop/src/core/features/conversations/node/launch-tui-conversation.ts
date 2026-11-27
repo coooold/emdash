@@ -6,7 +6,6 @@ import { mapConversationRowToConversation } from '@core/features/conversations/a
 import { resolveTask } from '@core/features/projects/api/node/utils';
 import type { TaskSessionManager } from '@core/features/tasks/api/node/task-session-manager';
 import type { Conversation } from '@core/primitives/conversations/api';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type { AppDb } from '@core/services/app-db/node/db';
 
 type LaunchTuiConversationDb = Pick<AppDb, 'select' | 'update'>;
@@ -17,7 +16,6 @@ export type LaunchTuiConversationInput = {
   conversationId: string;
   initialSize?: { cols: number; rows: number };
   database: LaunchTuiConversationDb;
-  telemetry: Pick<TelemetryService, 'capture'>;
   taskSessions: Pick<TaskSessionManager, 'getTask'>;
 };
 
@@ -34,7 +32,6 @@ export async function launchTuiConversation({
   conversationId,
   initialSize,
   database,
-  telemetry,
   taskSessions,
 }: LaunchTuiConversationInput): Promise<LaunchTuiConversationResult> {
   return launchMutex.runExclusive(conversationId, async () => {
@@ -70,15 +67,6 @@ export async function launchTuiConversation({
       initialSize,
       initialPrompt,
     });
-
-    if (launched.outcome !== 'attached') {
-      telemetry.capture('agent_run_started', {
-        provider: conversation.providerId,
-        project_id: conversation.projectId,
-        task_id: conversation.taskId,
-        conversation_id: conversation.id,
-      });
-    }
 
     // The resume handle is host truth now: the TUI runtime reports the emdash-chosen
     // handle (or a hook-captured native id) into the index at spawn, and convergence

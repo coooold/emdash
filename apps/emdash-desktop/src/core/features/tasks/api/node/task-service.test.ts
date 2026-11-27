@@ -99,16 +99,14 @@ describe('TaskService offline desktop mutations', () => {
 
   it('archives through the desktop operation when retained-session teardown is unavailable', async () => {
     const { db, projects, service, sessions } = makeService();
-    const telemetry = { capture: vi.fn() };
 
-    await service.archiveTask('project-1', 'task-1', telemetry);
+    await service.archiveTask('project-1', 'task-1');
 
     expect(operationMocks.archiveTask).toHaveBeenCalledWith(
       db,
       sessions,
       'project-1',
-      'task-1',
-      telemetry
+      'task-1'
     );
     expect(projects.requireAttached).not.toHaveBeenCalled();
   });

@@ -53,10 +53,8 @@ import { wireExternalLinkRequests } from '@renderer/lib/external-link-requests';
 import { getDesktopWireClient } from '@renderer/lib/runtime/desktop-wire-client';
 import { seedDesktopWire } from '@renderer/lib/runtime/seed-desktop-wire';
 import { seedRendererNavigationHost } from '@renderer/lib/runtime/seed-navigation-host';
-import { initRendererPerfVitals } from '@renderer/utils/perf-vitals';
 import { initNotificationDeliveryListener } from '@root/src/core/services/notifications/browser';
 import { App } from './App';
-import { wireNavigationTelemetry } from './lib/stores/navigation-telemetry';
 
 const bootstrapStartedAt = performance.now();
 let lastBootMarkAt = bootstrapStartedAt;
@@ -110,7 +108,6 @@ async function bootstrap() {
     .then(() => bootMark('monaco-ready'));
   initSoundPlayer();
   initNotificationDeliveryListener((sound, dedupeKey) => soundPlayer.play(sound, dedupeKey));
-  initRendererPerfVitals();
   configureDevPerfClient(async () => (await getDesktopWireClient()).devPerf);
 
   // Stores may acquire memento spaces while project data loads, so initialize
@@ -144,7 +141,6 @@ async function bootstrap() {
     bootMark('memento-handles-ready');
     getNavigation().attachMemento(historyHandle, legacyNavigationHandle);
     getSidebarStore().attachMemento(sidebarHandle);
-    wireNavigationTelemetry(getNavigation());
   });
   const sidebarInitialized = Promise.all([navigationRestored, projectsLoaded]).then(() => {
     if (!sidebarHandle.hasStoredValue) getSidebarStore().expandAllProjects();

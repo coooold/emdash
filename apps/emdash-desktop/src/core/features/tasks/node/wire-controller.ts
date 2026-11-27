@@ -10,7 +10,6 @@ import {
   workspaceRegistryTable as workspaces,
 } from '@core/features/workspaces/api/node/registry';
 import type { TaskStatsData } from '@core/primitives/tasks/api';
-import type { TelemetryService } from '@core/primitives/telemetry/api/telemetry';
 import type { AppDb } from '@core/services/app-db/node/db';
 import { appDbPokes, matchProject } from '@core/services/app-db/node/pokes';
 import { tasks } from '@core/services/app-db/node/schema';
@@ -29,7 +28,6 @@ export function createTasksWireController(options: {
   db: AppDb;
   service: TaskService;
   taskList: TaskListOperations;
-  telemetry: TelemetryService;
 }): TasksWireController {
   const taskOperations = createTaskOperations(options);
   const taskListFamily = family(
@@ -80,8 +78,7 @@ export function createTasksWireController(options: {
         async setStatus(context) {
           await options.service.updateTaskStatus(
             context.input.taskId,
-            context.input.status,
-            options.telemetry
+            context.input.status
           );
           await context.observed(
             'list',
@@ -100,8 +97,7 @@ export function createTasksWireController(options: {
         async setLinkedIssue(context) {
           await options.service.updateLinkedIssue(
             context.input.taskId,
-            context.input.issue,
-            options.telemetry
+            context.input.issue
           );
           await context.observed(
             'list',
@@ -120,8 +116,7 @@ export function createTasksWireController(options: {
         async archive(context) {
           await options.service.archiveTask(
             context.key.projectId,
-            context.input.taskId,
-            options.telemetry
+            context.input.taskId
           );
           await context.observed(
             'list',

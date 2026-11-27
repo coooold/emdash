@@ -111,7 +111,6 @@ describe('SETTINGS_SEARCH_INDEX integrity', () => {
   });
 
   it('routes well-known queries to the expected tabs', () => {
-    expect(matchedTabsForQuery('telemetry')).toEqual(['general']);
     expect(matchedTabsForQuery('jira')).toEqual([]);
     expect(matchedTabsForQuery('youtrack')).toEqual([]);
     expect(matchedTabsForQuery('ssh')).toEqual([]);

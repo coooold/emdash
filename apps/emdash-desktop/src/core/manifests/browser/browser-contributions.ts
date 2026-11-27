@@ -10,7 +10,6 @@ import { settingsBrowserContributions } from '@core/features/settings/contributi
 import { skillsBrowserContributions } from '@core/features/skills/contributions/browser';
 import { sourceControlBrowserContributions } from '@core/features/source-control/contributions/browser';
 import { tasksBrowserContributions } from '@core/features/tasks/contributions/browser';
-import { waitlistBrowserContributions } from '@core/features/waitlist/contributions/browser';
 import { workbenchBrowserContributions } from '@core/features/workbench/contributions/browser';
 
 export const featureViewRuntimes = [
@@ -33,6 +32,5 @@ export const featureModalDefs = [
   ...skillsBrowserContributions.modalDefs,
   ...sourceControlBrowserContributions.modalDefs,
   ...tasksBrowserContributions.modalDefs,
-  ...waitlistBrowserContributions.modalDefs,
   ...workbenchBrowserContributions.modalDefs,
 ] as const;

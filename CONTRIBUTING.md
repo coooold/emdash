@@ -241,7 +241,7 @@ Main process:
 - Prefer `execFile` over `exec`.
 - Treat shell escaping, PTY spawning, SSH commands, and worktree paths as
   security-sensitive.
-- Preserve secret redaction in logging and telemetry code.
+- Preserve secret redaction in logging code.
 
 Renderer:
 

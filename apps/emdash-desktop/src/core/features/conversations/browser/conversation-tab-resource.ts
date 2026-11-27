@@ -2,7 +2,6 @@ import { reaction } from 'mobx';
 import type { ConversationStore } from '@core/features/conversations/api/browser/conversation-manager';
 import { conversationRegistry } from '@core/features/conversations/api/browser/stores/conversation-registry';
 import { getConversationSessionManager } from '@core/features/conversations/browser/stores/conversation-session-manager';
-import { setTelemetryConversationScope } from '@core/primitives/telemetry/browser/telemetry-scope';
 import type {
   TabHandle,
   TabResource,
@@ -13,7 +12,7 @@ import type {
  *
  * Wraps ConversationStore, wires up:
  *  - Auto-close when the conversation is deleted from the registry.
- *  - Telemetry scope and mark-seen in onActivate().
+ *  - Mark-seen in onActivate().
  *
  * The PTY session lifecycle (hydrate/dehydrate) is managed separately by
  * ConversationSessionManager (called from the tab provider's initialize/dispose).
@@ -48,7 +47,6 @@ export class ConversationTabResource implements TabResource {
   }
 
   onActivate(): void {
-    setTelemetryConversationScope(this.store.data.id);
     if (!this.store.seen) {
       this.store.markSeen();
     }
