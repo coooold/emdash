@@ -1,8 +1,10 @@
 import { cp, rm } from 'node:fs/promises';
+import { isBuiltin } from 'node:module';
 import { basename, extname, resolve } from 'node:path';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'electron-vite';
+import type { Plugin } from 'vite';
 import { desktopWorkers } from './src/core/manifests/node/workers';
 
 function desktopWorkerBuildInputs(): Record<string, string> {
@@ -35,6 +37,29 @@ function isNodeError(error: unknown): error is NodeJS.ErrnoException {
   return error instanceof Error && 'code' in error;
 }
 
+function runtimeDependenciesPlugin(): Plugin {
+  return {
+    name: 'desktop-runtime-dependencies',
+    generateBundle(_options, bundle) {
+      const packages = new Set<string>();
+      for (const chunk of Object.values(bundle)) {
+        if (chunk.type !== 'chunk') continue;
+        for (const specifier of [...chunk.imports, ...chunk.dynamicImports]) {
+          if (specifier in bundle || isBuiltin(specifier) || specifier === 'electron') continue;
+          if (specifier.startsWith('.') || specifier.startsWith('/')) continue;
+          const segments = specifier.split('/');
+          packages.add(segments.slice(0, specifier.startsWith('@') ? 2 : 1).join('/'));
+        }
+      }
+      this.emitFile({
+        type: 'asset',
+        fileName: 'runtime-dependencies.json',
+        source: JSON.stringify([...packages].sort()),
+      });
+    },
+  };
+}
+
 // Workspace packages must be bundled (not externalized) in main/preload builds:
 // externalized modules are resolved by Node at runtime, where the `development`
 // export condition is off, so dev runs would silently load stale dists.
@@ -52,7 +77,7 @@ export default defineConfig({
   main: {
     root: 'src/main',
     envDir: resolve('.'),
-    plugins: [copyAdapterAssetsPlugin()],
+    plugins: [copyAdapterAssetsPlugin(), runtimeDependenciesPlugin()],
     // formidable (bundled via @ply/plugins -> asana) reassigns `require`
     // behind a `global.GENTLY` guard, which Rollup rejects. Defining it false
     // makes the branch dead code so the bundle builds.
@@ -90,6 +115,7 @@ export default defineConfig({
   },
   preload: {
     root: 'src/entry',
+    plugins: [runtimeDependenciesPlugin()],
     build: {
       emptyOutDir: true,
       externalizeDeps: {

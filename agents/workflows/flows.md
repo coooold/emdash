@@ -136,7 +136,8 @@ running (doctor reports it). See
 | Rebuild native deps | `pnpm run rebuild` | `apps/ply-desktop/` |
 | Lint-infra allowlists | `pnpm run prune:boundary-allowlists` | root |
 | Task graph | `pnpm run graph` | root |
-| Releases (maintainers) | `gh workflow run release-prod.yml` / `release-canary.yml` / `release-workspace-server.yml` | — |
+| Desktop packaging check | `gh workflow run release-desktop.yml --ref main2` | — |
+| Releases (maintainers) | Push a desktop version tag from `main2` or run `release-workspace-server.yml` | — |
 
 - Local packaging without signing identities still produces installable
   artifacts; mac builds are unsigned/un-notarized and Gatekeeper will warn.

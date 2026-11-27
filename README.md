@@ -23,19 +23,19 @@ ply 是一款开源桌面应用，可在本机的独立 Git 工作树中并行�
 
 ### 从源码构建
 
-在 Linux 下检出 `main2` 后，在仓库根目录运行以下命令。安装包生成在 `apps/ply-desktop/release/`。
+在 Apple Silicon Mac 上检出 `main2` 后，在仓库根目录运行以下命令。安装包生成在 `apps/ply-desktop/release/`。
 
 ```bash
 pnpm install
 pnpm exec nx build @ply/ply-desktop
-pnpm --dir apps/ply-desktop run package:linux
+pnpm --dir apps/ply-desktop run package:mac
 ```
 
 ### 自动发布
 
-GitHub Actions 会为 Linux x64 和 ARM64、Windows x64、macOS Apple Silicon 构建安装包。可在 `main2` 手动运行工作流，安装包会保存在该次运行的 Artifacts 中。[Package and release desktop](https://github.com/coooold/ply/actions/workflows/release-desktop.yml)
+GitHub Actions 只构建 macOS Apple Silicon 安装包。安装请选择 `ply-arm64.dmg`。自动更新使用单独上传的 ZIP 和更新清单。DMG 和更新 ZIP 均须小于 200 MB。可在 `main2` 手动运行工作流并下载构建产物。[Package and release desktop](https://github.com/coooold/ply/actions/workflows/release-desktop.yml)
 
-正式发行时，在 `main2` 提交 `apps/ply-desktop/package.json` 的版本改动，把提交和对应的 `vX.Y.Z` 标签推送到仓库。所有平台打包成功后，工作流会发布 GitHub Release，并附带 `SHA256SUMS` 校验文件。
+正式发行时，在 `main2` 提交 `apps/ply-desktop/package.json` 的版本改动，把提交和对应的 `vX.Y.Z` 标签推送到仓库。打包和体积检查通过后，工作流会发布 GitHub Release，并附带 `SHA256SUMS` 校验文件。
 
 ```bash
 version=$(node -p "require('./apps/ply-desktop/package.json').version")
@@ -44,7 +44,7 @@ git tag "v$version"
 git push origin "v$version"
 ```
 
-Windows 安装包未使用可信代码签名证书，macOS 安装包使用临时签名。首次安装可能出现系统安全提示。
+macOS 安装包使用临时签名，首次安装可能出现系统安全提示。
 
 ## 项目配置
 

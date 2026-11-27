@@ -1,6 +1,6 @@
 {
   "name": "@ply/ply-desktop",
-  "version": "1.2.14",
+  "version": "1.2.15",
   "description": "A cross-platform Electron app that orchestrates multiple coding agents in parallel",
   "keywords": [
     "claude",
@@ -42,7 +42,7 @@
     "build:main": "electron-vite build --filter main",
     "build:renderer": "electron-vite build --filter renderer",
     "package": "pnpm run build && electron-builder --config electron-builder.config.ts",
-    "package:mac": "pnpm run build && electron-builder --mac --config electron-builder.config.ts",
+    "package:mac": "pnpm run build && node --experimental-strip-types scripts/release/build.ts --platform mac --arch arm64 --package-only",
     "package:linux": "pnpm run build && electron-builder --linux --publish never --config electron-builder.config.ts",
     "package:win": "pnpm run build && electron-builder --win --publish never --config electron-builder.config.ts",
     "postinstall": "node --experimental-strip-types scripts/postinstall.ts",

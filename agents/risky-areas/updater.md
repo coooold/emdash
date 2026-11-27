@@ -16,8 +16,7 @@
 - `scripts/release/rebuild-native.ts`
 - `scripts/release/upload-github-assets.ts`
 - `scripts/release/finalize-release.ts`
-- `.github/workflows/release-prod.yml`
-- `.github/workflows/release-canary.yml`
+- `.github/workflows/release-desktop.yml`
 
 ## Rules
 
@@ -91,19 +90,11 @@ The app does **not** override `autoUpdater.channel`; the GitHub provider resolve
 
 The `UPDATE_CHANNEL` / `v1-stable` / `v1-canary` naming applies **only** to the flat R2 bucket (via the `generic` publish block's `channel`). It is kept as a log label in `update-service.ts` for diagnostics but is not passed to `autoUpdater.channel`.
 
-### R2 decommission path
+### GitHub desktop releases
 
-R2 uploads continue until clients have migrated to the GitHub-backed feed. At that point:
-
-1. Remove the `provider: generic` block from `electron-builder.config.ts` and `electron-builder.canary.config.ts`.
-2. Remove R2 staging/promotion from `finalize-release.ts` and `duplicateChannelManifests` from
-   `build.ts`.
-3. Decommission the R2 bucket.
-
-- Canary publishes to GitHub as prereleases. `ALLOW_PRERELEASE` in `update-service.ts` is driven by `IS_CANARY` so canary clients accept prerelease versions automatically.
-- The `finalize-release.ts` script runs after all three platform builds complete, validates the
-  exact release and manifest contents, promotes R2, and flips the GitHub draft to published. Until
-  that job finishes the release remains invisible to GitHub-backed electron-updater clients.
+The desktop workflow publishes the Mac installer and updater ZIP after both pass
+the size check. Publication uses the default `GITHUB_TOKEN` and a run/commit
+marker so a rerun can resume its own draft.
 
 ## Release Scripts Library Usage
 
@@ -134,22 +125,10 @@ Dependency assessment recorded on 2026-09-01:
 
 ## Current Notes
 
-- macOS and Linux release jobs rebuild native modules for the target Electron version
-- Linux releases use `.github/workflows/release-linux.yml` to build x64 and arm64 in a
-  native-runner matrix inside the same Ubuntu 22.04 userspace baseline. Both architectures emit
-  AppImage, DEB, and RPM artifacts. Verification extracts every package payload and checks the main
-  executable, required native modules, binary architecture, package metadata, and GLIBC ceiling.
-  For DEB and RPM it also checks that every system library the Electron binaries and native modules
-  link against is declared as a package dependency. The dependency lists live in
-  `scripts/release/lib/linux-dependencies.ts`; extend `SYSTEM_LIBRARIES` there when an upgrade
-  links a new library.
-- Production and canary workflows have separate non-canceling concurrency groups. Every build and
-  the finalizer receives the exact draft id; a run/commit marker prevents a different dispatch from
-  adopting a stale draft.
-- Production and canary remain separate release entry points because they select different product
-  identities, versions, and publication semantics. Both call the same reusable Linux architecture
-  matrix; there are not separate stable and canary Linux implementations.
-- A public desktop release always includes x64 and arm64. Failed architecture jobs are retried at
-  the GitHub Actions job level rather than publishing a partial updater release.
-- changelog and auto-update behavior are separate but related surfaces in the app
-- the `finalize-release` CI job requires `contents: write` permission and the default `GITHUB_TOKEN`
+- Desktop CI builds Apple Silicon macOS on a native runner and rebuilds the
+  native modules for the target Electron version.
+- The macOS DMG and updater ZIP have separate Actions downloads. Both archives
+  must be smaller than 200,000,000 bytes before release.
+- The release build stages external dependencies reported by the main and preload
+  bundles and the language servers loaded at runtime. The finished app exercises
+  its bundled language servers with an empty PATH before uploads.

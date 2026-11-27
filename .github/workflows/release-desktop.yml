@@ -39,17 +39,9 @@ jobs:
           fi
 
   package:
-    name: Package ${{ matrix.platform }} ${{ matrix.arch }}
+    name: Package macOS Apple Silicon
     needs: validate
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { runner: ubuntu-22.04, platform: linux, arch: x64 }
-          - { runner: ubuntu-22.04-arm, platform: linux, arch: arm64 }
-          - { runner: windows-2022, platform: win, arch: x64 }
-          - { runner: macos-15, platform: mac, arch: arm64 }
-    runs-on: ${{ matrix.runner }}
+    runs-on: macos-15
     env:
       NX_DAEMON: 'false'
       VITE_RELEASE_REPOSITORY: ${{ github.repository }}
@@ -58,53 +50,49 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install Linux build dependencies
-        if: matrix.platform == 'linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential cpio libasound2 libgbm1 libgtk-3-0 libnss3 libsecret-1-dev pkg-config rpm xz-utils
-
       - uses: ./.github/actions/setup-build
-        with:
-          windows-native: ${{ matrix.platform == 'win' && 'true' || 'false' }}
-          setup-python: ${{ matrix.platform == 'linux' && 'false' || 'true' }}
 
       - name: Build desktop and its workspace dependencies
         run: pnpm exec nx build @ply/ply-desktop
 
       - name: Package desktop
         working-directory: apps/ply-desktop
-        shell: bash
-        env:
-          RELEASE_PLATFORM: ${{ matrix.platform }}
-          RELEASE_ARCH: ${{ matrix.arch }}
         run: |
           node --experimental-strip-types scripts/release/build.ts \
-            --platform "$RELEASE_PLATFORM" --arch "$RELEASE_ARCH" --package-only
+            --platform mac --arch arm64 --package-only
 
-      - name: Verify Linux packages
-        if: matrix.platform == 'linux'
-        working-directory: apps/ply-desktop
-        env:
-          RELEASE_ARCH: ${{ matrix.arch }}
+      - name: Verify download sizes
+        working-directory: apps/ply-desktop/release
+        shell: bash
         run: |
-          node --experimental-strip-types scripts/release/verify-linux.ts \
-            --arch "$RELEASE_ARCH" --targets AppImage,deb,rpm --prefix ply --executable ply
+          for asset in ply-arm64.dmg ply-arm64.zip; do
+            test -s "$asset"
+            bytes=$(wc -c < "$asset")
+            printf '%s: %d bytes\n' "$asset" "$bytes" | tee -a "$GITHUB_STEP_SUMMARY"
+            if (( bytes >= 200000000 )); then
+              echo "::error::$asset exceeds the 200 MB download limit."
+              exit 1
+            fi
+          done
+          test -s latest-mac.yml
 
-      - name: Upload tested packages
+      - name: Upload macOS installer
         uses: actions/upload-artifact@v4
         with:
-          name: desktop-${{ matrix.platform }}-${{ matrix.arch }}
+          name: desktop-mac-arm64-installer
+          path: apps/ply-desktop/release/ply-arm64.dmg
+          compression-level: 0
+          if-no-files-found: error
+
+      - name: Upload macOS update assets
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-mac-arm64-updates
           path: |
-            apps/ply-desktop/release/ply-*.AppImage
-            apps/ply-desktop/release/ply-*.deb
-            apps/ply-desktop/release/ply-*.rpm
-            apps/ply-desktop/release/ply-*.exe
-            apps/ply-desktop/release/ply-*.msi
-            apps/ply-desktop/release/ply-*.dmg
-            apps/ply-desktop/release/ply-*.zip
+            apps/ply-desktop/release/ply-arm64.zip
             apps/ply-desktop/release/ply-*.blockmap
-            apps/ply-desktop/release/latest*.yml
+            apps/ply-desktop/release/latest-mac.yml
+          compression-level: 0
           if-no-files-found: error
 
   publish:
@@ -117,14 +105,14 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          pattern: desktop-*
+          pattern: desktop-mac-arm64-*
           path: artifacts
 
       - name: Assemble and checksum release assets
         shell: bash
         run: |
           mkdir release
-          for file in artifacts/desktop-*/*; do
+          for file in artifacts/desktop-mac-arm64-*/*; do
             asset=${file##*/}
             if [[ -e "release/$asset" ]]; then
               echo "::error::Duplicate release asset $asset."
@@ -133,9 +121,7 @@ jobs:
             cp "$file" "release/$asset"
           done
           cd release
-          for asset in ply-x86_64.AppImage ply-amd64.deb ply-x86_64.rpm \
-            ply-arm64.AppImage ply-arm64.deb ply-aarch64.rpm \
-            ply-x64.exe ply-x64.msi ply-arm64.dmg ply-arm64.zip; do
+          for asset in ply-arm64.dmg ply-arm64.zip latest-mac.yml; do
             if [[ ! -s "$asset" ]]; then
               echo "::error::Missing release asset $asset."
               exit 1

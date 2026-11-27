@@ -90,13 +90,12 @@ pnpm run test:migrations
 Deploy releases only when explicitly asked to do release work:
 
 ```bash
-gh workflow run release-prod.yml --ref main -f arch=both
-gh workflow run release-canary.yml --ref main -f arch=both
+gh workflow run release-desktop.yml --ref main2
 gh workflow run release-workspace-server.yml --ref main -f channel=stable
 ```
 
-Production releases publish artifacts to GitHub Releases and Cloudflare R2. Canary
-releases currently publish to R2 only. See
+The desktop workflow packages macOS Apple Silicon. A manual run produces artifacts.
+Pushing a version tag from `main2` publishes the GitHub Release after verification. See
 [workspace-server packaging](apps/workspace-server/docs/packaging.md) for its independent release
 and channel rules.
 

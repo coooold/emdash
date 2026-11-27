@@ -14,6 +14,7 @@ import {
 } from './lib/artifacts.ts';
 import { createGitHubPackageConfig, createReleaseBuildConfig } from './lib/build-config.ts';
 import { GITHUB_OWNER, GITHUB_REPO, requireEnv } from './lib/config.ts';
+import { retainDesktopRuntimeDependencies } from './lib/deploy-runtime-dependencies.ts';
 import { exec } from './lib/exec.ts';
 import { verifyLanguageServerAssets } from './lib/language-servers.ts';
 import { fail, info, step, warn } from './lib/log.ts';
@@ -118,7 +119,10 @@ const channelConfig: Configuration =
       ? canaryConfig
       : fail(`Unknown electron-builder config "${configName}"`);
 const baseConfig = values['package-only']
-  ? createGitHubPackageConfig(channelConfig, requireEnv('GITHUB_REPOSITORY'))
+  ? createGitHubPackageConfig(
+      channelConfig,
+      process.env.GITHUB_REPOSITORY ?? `${GITHUB_OWNER}/${GITHUB_REPO}`
+    )
   : channelConfig;
 const publishArray = Array.isArray(baseConfig.publish)
   ? baseConfig.publish
@@ -143,6 +147,7 @@ try {
   step('Copying built assets into deployment directory');
   cpSync('out', join(deployDir, 'out'), { recursive: true });
   cpSync('drizzle', join(deployDir, 'drizzle'), { recursive: true });
+  if (values['package-only']) retainDesktopRuntimeDependencies(deployDir);
 
   for (const arch of archs) {
     step(`Building ${platform} ${targetList.join(' ')} for ${arch}`);
