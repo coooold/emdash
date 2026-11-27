@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
 import canaryConfig from '../../../electron-builder.canary.config.ts';
 import stableConfig from '../../../electron-builder.config.ts';
 import packageJson from '../../../package.json';
-import { createReleaseBuildConfig } from './build-config.ts';
+import { createGitHubPackageConfig, createReleaseBuildConfig } from './build-config.ts';
 
 const packageFile = fileURLToPath(new URL('../../../package.json', import.meta.url));
 const projectDir = dirname(packageFile);
@@ -68,6 +68,21 @@ describe('createReleaseBuildConfig', () => {
     expect(first.linux?.desktop?.entry).not.toBe(second.linux?.desktop?.entry);
     expect(canaryConfig).toEqual(original);
   });
+});
+
+it('packages for the workflow repository without upstream signing or storage', async () => {
+  const config = createGitHubPackageConfig(stableConfig, 'coooold/emdash');
+  await new Packager({ projectDir, config }).validateConfig();
+
+  expect(config.publish).toEqual({
+    provider: 'github',
+    owner: 'coooold',
+    repo: 'emdash',
+    releaseType: 'release',
+  });
+  expect(config.win?.azureSignOptions).toBeUndefined();
+  expect(config.mac).toMatchObject({ identity: '-', notarize: false });
+  expect(stableConfig.win?.azureSignOptions).toBeDefined();
 });
 
 it.each([stableConfig, canaryConfig])('unpacks TypeScript and Pyright runtime assets', (config) => {

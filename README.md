@@ -31,6 +31,21 @@ pnpm exec nx build @emdash/emdash-desktop
 pnpm --dir apps/emdash-desktop run package:linux
 ```
 
+### 自动发布
+
+GitHub Actions 会为 Linux x64 和 ARM64、Windows x64、macOS Apple Silicon 构建安装包。可在 `main2` 手动运行工作流，安装包会保存在该次运行的 Artifacts 中。[Package and release desktop](https://github.com/coooold/emdash/actions/workflows/release-desktop.yml)
+
+正式发行时，在 `main2` 提交 `apps/emdash-desktop/package.json` 的版本改动，把提交和对应的 `vX.Y.Z` 标签推送到仓库。所有平台打包成功后，工作流会发布 GitHub Release，并附带 `SHA256SUMS` 校验文件。
+
+```bash
+version=$(node -p "require('./apps/emdash-desktop/package.json').version")
+git push origin main2
+git tag "v$version"
+git push origin "v$version"
+```
+
+Windows 安装包未使用可信代码签名证书，macOS 安装包使用临时签名。首次安装可能出现系统安全提示。
+
 ## 智能体
 
 应用会检测本机已安装的智能体命令行工具，并沿用现有配置。若服务商要求认证，请通过对应的命令行工具完成配置。

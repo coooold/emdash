@@ -1,0 +1,172 @@
+name: Package and release desktop
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: desktop-package-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate release source
+    if: github.event_name == 'push' || github.ref == 'refs/heads/main2'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check release tag
+        if: github.event_name == 'push'
+        shell: bash
+        run: |
+          version=$(jq -er .version apps/emdash-desktop/package.json)
+          if [[ ! "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ || "$GITHUB_REF_NAME" != "v$version" ]]; then
+            echo "::error::The release tag must be vX.Y.Z and match the desktop package.json version ($version)."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor HEAD origin/main2; then
+            echo "::error::The release commit must be on main2."
+            exit 1
+          fi
+
+  package:
+    name: Package ${{ matrix.platform }} ${{ matrix.arch }}
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: ubuntu-22.04, platform: linux, arch: x64 }
+          - { runner: ubuntu-22.04-arm, platform: linux, arch: arm64 }
+          - { runner: windows-2022, platform: win, arch: x64 }
+          - { runner: macos-15, platform: mac, arch: arm64 }
+    runs-on: ${{ matrix.runner }}
+    env:
+      NX_DAEMON: 'false'
+      VITE_RELEASE_REPOSITORY: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install Linux build dependencies
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cpio libasound2 libgbm1 libgtk-3-0 libnss3 libsecret-1-dev pkg-config rpm xz-utils
+
+      - uses: ./.github/actions/setup-build
+        with:
+          windows-native: ${{ matrix.platform == 'win' && 'true' || 'false' }}
+          setup-python: ${{ matrix.platform == 'linux' && 'false' || 'true' }}
+
+      - name: Build desktop and its workspace dependencies
+        run: pnpm exec nx build @emdash/emdash-desktop
+
+      - name: Package desktop
+        working-directory: apps/emdash-desktop
+        shell: bash
+        env:
+          RELEASE_PLATFORM: ${{ matrix.platform }}
+          RELEASE_ARCH: ${{ matrix.arch }}
+        run: |
+          node --experimental-strip-types scripts/release/build.ts \
+            --platform "$RELEASE_PLATFORM" --arch "$RELEASE_ARCH" --package-only
+
+      - name: Verify Linux packages
+        if: matrix.platform == 'linux'
+        working-directory: apps/emdash-desktop
+        env:
+          RELEASE_ARCH: ${{ matrix.arch }}
+        run: |
+          node --experimental-strip-types scripts/release/verify-linux.ts \
+            --arch "$RELEASE_ARCH" --targets AppImage,deb,rpm --prefix emdash --executable Emdash
+
+      - name: Upload tested packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ matrix.platform }}-${{ matrix.arch }}
+          path: |
+            apps/emdash-desktop/release/emdash-*.AppImage
+            apps/emdash-desktop/release/emdash-*.deb
+            apps/emdash-desktop/release/emdash-*.rpm
+            apps/emdash-desktop/release/emdash-*.exe
+            apps/emdash-desktop/release/emdash-*.msi
+            apps/emdash-desktop/release/emdash-*.dmg
+            apps/emdash-desktop/release/emdash-*.zip
+            apps/emdash-desktop/release/emdash-*.blockmap
+            apps/emdash-desktop/release/latest*.yml
+          if-no-files-found: error
+
+  publish:
+    name: Publish GitHub Release
+    if: github.event_name == 'push'
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: desktop-*
+          path: artifacts
+
+      - name: Assemble and checksum release assets
+        shell: bash
+        run: |
+          mkdir release
+          for file in artifacts/desktop-*/*; do
+            asset=${file##*/}
+            if [[ -e "release/$asset" ]]; then
+              echo "::error::Duplicate release asset $asset."
+              exit 1
+            fi
+            cp "$file" "release/$asset"
+          done
+          cd release
+          for asset in emdash-x86_64.AppImage emdash-amd64.deb emdash-x86_64.rpm \
+            emdash-arm64.AppImage emdash-arm64.deb emdash-aarch64.rpm \
+            emdash-x64.exe emdash-x64.msi emdash-arm64.dmg emdash-arm64.zip; do
+            if [[ ! -s "$asset" ]]; then
+              echo "::error::Missing release asset $asset."
+              exit 1
+            fi
+          done
+          sha256sum -- * > SHA256SUMS
+
+      - name: Publish release after all uploads succeed
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          tag_sha=$(gh api "repos/$GH_REPO/commits/$GITHUB_REF_NAME" --jq .sha)
+          if [[ "$tag_sha" != "$GITHUB_SHA" ]]; then
+            echo "::error::The release tag no longer points at the packaged commit."
+            exit 1
+          fi
+          marker="<!-- desktop-release run=$GITHUB_RUN_ID sha=$GITHUB_SHA -->"
+          if existing=$(gh release view "$GITHUB_REF_NAME" --json isDraft,body 2>/dev/null); then
+            if ! jq -e .isDraft <<< "$existing" >/dev/null; then
+              echo "::notice::Release $GITHUB_REF_NAME already exists."
+              exit 0
+            fi
+            if ! jq -e --arg marker "$marker" '.body | contains($marker)' <<< "$existing" >/dev/null; then
+              echo "::error::An unrelated release draft already exists for $GITHUB_REF_NAME."
+              exit 1
+            fi
+          else
+            gh release create "$GITHUB_REF_NAME" --verify-tag --draft --title "$GITHUB_REF_NAME" \
+              --generate-notes --notes "$marker"
+          fi
+          gh release upload "$GITHUB_REF_NAME" release/* --clobber
+          gh release edit "$GITHUB_REF_NAME" --draft=false

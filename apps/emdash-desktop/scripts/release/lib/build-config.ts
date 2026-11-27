@@ -17,3 +17,21 @@ export function createReleaseBuildConfig(
       : { extraMetadata: { ...config.extraMetadata, version: versionOverride } }),
   };
 }
+
+export function createGitHubPackageConfig(
+  baseConfig: Configuration,
+  repository: string
+): Configuration {
+  if (!/^[a-zA-Z0-9-]+\/[a-zA-Z0-9_.-]+$/.test(repository)) {
+    throw new Error(`Invalid GitHub repository: ${repository}`);
+  }
+  const [owner, repo] = repository.split('/');
+  const win = { ...baseConfig.win };
+  delete win.azureSignOptions;
+  return {
+    ...baseConfig,
+    publish: { provider: 'github', owner, repo, releaseType: 'release' },
+    mac: { ...baseConfig.mac, identity: '-', hardenedRuntime: false, notarize: false },
+    win,
+  };
+}

@@ -12,7 +12,7 @@ import {
   mergeUpdateManifests,
   resolvePublishChannels,
 } from './lib/artifacts.ts';
-import { createReleaseBuildConfig } from './lib/build-config.ts';
+import { createGitHubPackageConfig, createReleaseBuildConfig } from './lib/build-config.ts';
 import { GITHUB_OWNER, GITHUB_REPO, requireEnv } from './lib/config.ts';
 import { exec } from './lib/exec.ts';
 import { verifyLanguageServerAssets } from './lib/language-servers.ts';
@@ -34,6 +34,7 @@ const { values } = parseArgs({
     config: { type: 'string', default: 'electron-builder.config.ts' },
     channel: { type: 'string', default: 'stable' },
     'release-id': { type: 'string' },
+    'package-only': { type: 'boolean' },
   },
   strict: true,
 });
@@ -41,7 +42,7 @@ const { values } = parseArgs({
 const platform = values.platform;
 if (!platform || !['mac', 'linux', 'win'].includes(platform)) {
   fail(
-    'Usage: build.ts --platform mac|linux|win [--arch arm64|x64|both] [--targets dmg,zip] [--config electron-builder.config.ts] [--channel stable|canary] [--release-id id]'
+    'Usage: build.ts --platform mac|linux|win [--arch arm64|x64|both] [--targets dmg,zip] [--config electron-builder.config.ts] [--channel stable|canary] (--release-id id | --package-only)'
   );
 }
 
@@ -82,51 +83,43 @@ if (isCanary) {
   info(`Canary build: packaging as version ${overrideVersion} (tag ${tag})`);
 }
 
-const releaseId = Number(values['release-id']);
-if (!Number.isSafeInteger(releaseId) || releaseId <= 0) {
-  fail('--release-id must be a positive integer from prepare-release');
+if (values['package-only']) {
+  if (values['release-id'] !== undefined) fail('--package-only cannot be used with --release-id');
+} else {
+  const releaseId = Number(values['release-id']);
+  if (!Number.isSafeInteger(releaseId) || releaseId <= 0) {
+    fail('--release-id must be a positive integer from prepare-release');
+  }
+  const octokit = new Octokit({ auth: requireEnv('GH_TOKEN') });
+  const { data: draft } = await octokit.rest.repos.getRelease({
+    owner: GITHUB_OWNER,
+    repo: GITHUB_REPO,
+    release_id: releaseId,
+  });
+  const ownership = {
+    runId: requireEnv('GITHUB_RUN_ID'),
+    sha: requireEnv('GITHUB_SHA'),
+  };
+  if (!draft.draft || draft.tag_name !== tag || !releaseHasOwnership(draft.body, ownership)) {
+    fail(`Release ${releaseId} is not the owned ${tag} draft for this workflow run and commit`);
+  }
+  if (draft.target_commitish !== ownership.sha) {
+    fail(`Release ${releaseId} targets ${draft.target_commitish}, expected ${ownership.sha}`);
+  }
 }
-const ghToken = requireEnv('GH_TOKEN');
-const octokit = new Octokit({ auth: ghToken });
-const { data: draft } = await octokit.rest.repos.getRelease({
-  owner: GITHUB_OWNER,
-  repo: GITHUB_REPO,
-  release_id: releaseId,
-});
-const ownership = {
-  runId: requireEnv('GITHUB_RUN_ID'),
-  sha: requireEnv('GITHUB_SHA'),
-};
-if (!draft.draft || draft.tag_name !== tag || !releaseHasOwnership(draft.body, ownership)) {
-  fail(`Release ${releaseId} is not the owned ${tag} draft for this workflow run and commit`);
-}
-if (draft.target_commitish !== ownership.sha) {
-  fail(`Release ${releaseId} targets ${draft.target_commitish}, expected ${ownership.sha}`);
-}
-
-step('Creating deployment directory with production dependencies');
-const workspaceRoot = resolve(process.cwd(), '../..');
-const deployDir = mkdtempSync(join(workspaceRoot, '.emdash-deploy-'));
-exec(`pnpm --filter @emdash/emdash-desktop deploy --legacy --prod ${deployDir}`, {
-  cwd: workspaceRoot,
-  echo: true,
-});
-
-verifyLanguageServerAssets(deployDir);
-
-step('Copying built assets into deployment directory');
-cpSync('out', join(deployDir, 'out'), { recursive: true });
-cpSync('drizzle', join(deployDir, 'drizzle'), { recursive: true });
 
 const electronVersion = exec(`node -p "require('electron/package.json').version"`);
 
 const configName = basename(values.config ?? 'electron-builder.config.ts');
-const baseConfig: Configuration =
+const channelConfig: Configuration =
   configName === 'electron-builder.config.ts'
     ? stableConfig
     : configName === 'electron-builder.canary.config.ts'
       ? canaryConfig
       : fail(`Unknown electron-builder config "${configName}"`);
+const baseConfig = values['package-only']
+  ? createGitHubPackageConfig(channelConfig, requireEnv('GITHUB_REPOSITORY'))
+  : channelConfig;
 const publishArray = Array.isArray(baseConfig.publish)
   ? baseConfig.publish
   : baseConfig.publish
@@ -137,7 +130,20 @@ const { githubChannel, r2Channel } = resolvePublishChannels(
 );
 const collectedManifests = new Map<string, string[]>();
 
+const workspaceRoot = resolve(process.cwd(), '../..');
+const deployDir = mkdtempSync(join(workspaceRoot, '.emdash-deploy-'));
 try {
+  step('Creating deployment directory with production dependencies');
+  exec(`pnpm --filter @emdash/emdash-desktop deploy --legacy --prod ${deployDir}`, {
+    cwd: workspaceRoot,
+    echo: true,
+  });
+  verifyLanguageServerAssets(deployDir);
+
+  step('Copying built assets into deployment directory');
+  cpSync('out', join(deployDir, 'out'), { recursive: true });
+  cpSync('drizzle', join(deployDir, 'drizzle'), { recursive: true });
+
   for (const arch of archs) {
     step(`Building ${platform} ${targetList.join(' ')} for ${arch}`);
 
@@ -178,7 +184,7 @@ try {
       await verifyPackagedLanguageServers(packagedApps[0]);
     } else {
       warn(
-        `Cannot execute the ${platform}/${arch} app on this host; SSH and language-server runtime verification require a matching host`
+        `Cannot execute the ${platform}/${arch} app on this host; language-server runtime verification requires a matching host`
       );
     }
 

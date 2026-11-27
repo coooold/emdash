@@ -6,6 +6,7 @@ import _electronUpdater, {
 } from 'electron-updater';
 import { updateEvents } from '@core/features/updates/node';
 import { IS_CANARY, UPDATE_CHANNEL } from '@core/primitives/app-identity/api/app-identity';
+import { EMDASH_RELEASES_API_URL } from '@core/primitives/urls/api/urls';
 import { resolveAppVersion } from '@main/core/app/utils';
 import { log } from '@main/lib/logger';
 import { formatUpdaterError, getUpdaterErrorDetails, sanitizeUpdaterLogArgs } from './utils';
@@ -352,9 +353,7 @@ export class UpdateService implements Disposable {
       const version = this.updateState.availableVersion;
       if (!version) return null;
 
-      const response = await fetch(
-        `https://api.github.com/repos/generalaction/emdash/releases/tags/v${version}`
-      );
+      const response = await fetch(`${EMDASH_RELEASES_API_URL}/tags/v${version}`);
 
       if (response.ok) {
         const data = (await response.json()) as { body?: string };
