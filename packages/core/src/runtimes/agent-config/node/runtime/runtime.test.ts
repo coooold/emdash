@@ -1,10 +1,10 @@
 import { chmod, mkdtemp, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { ok } from '@emdash/shared';
-import { createScope } from '@emdash/shared/concurrency';
-import type { Logger } from '@emdash/shared/logger';
-import { noopLogger } from '@emdash/shared/logger';
+import { ok } from '@ply/shared';
+import { createScope } from '@ply/shared/concurrency';
+import type { Logger } from '@ply/shared/logger';
+import { noopLogger } from '@ply/shared/logger';
 import { describe, expect, it, vi } from 'vitest';
 import type { McpServer } from '#primitives/mcp/api';
 import type {

@@ -1,4 +1,4 @@
-import { ok, err } from '@emdash/shared';
+import { ok, err } from '@ply/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LOCAL_HOST_REF } from '#primitives/host/api';
 import type { TempStoreHandle } from '#primitives/sqlite-store/api';

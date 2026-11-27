@@ -1,6 +1,6 @@
 import path from 'node:path';
-import { noopLogger, type Logger } from '@emdash/shared/logger';
-import { systemClock, type Clock } from '@emdash/shared/scheduling';
+import { noopLogger, type Logger } from '@ply/shared/logger';
+import { systemClock, type Clock } from '@ply/shared/scheduling';
 import { nativePathIdentityKey } from '#primitives/path/api';
 import {
   gitMetadataWatchProfile,

@@ -39,7 +39,7 @@ USER devuser
 WORKDIR /home/devuser
 
 RUN git config --global user.email 'devuser@emdash-dev' \
-  && git config --global user.name 'Emdash Dev' \
+  && git config --global user.name 'ply Dev' \
   && git config --global init.defaultBranch main \
   && git config --global safe.directory '*'
 

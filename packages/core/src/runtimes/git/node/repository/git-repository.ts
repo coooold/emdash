@@ -1,4 +1,4 @@
-import { ok, type Result } from '@emdash/shared';
+import { ok, type Result } from '@ply/shared';
 import {
   type FetchError,
   type FetchPrForReviewError,

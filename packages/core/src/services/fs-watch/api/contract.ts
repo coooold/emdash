@@ -1,4 +1,4 @@
-import { defineContract, resourcedStream } from '@emdash/wire/rpc';
+import { defineContract, resourcedStream } from '@ply/wire/rpc';
 import { z } from 'zod';
 
 export const watchBackendSchema = z.enum(['auto', 'os']);

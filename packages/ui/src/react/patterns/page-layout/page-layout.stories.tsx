@@ -463,7 +463,7 @@ function SidebarWithFooterDemo() {
                     paddingRight: '0.75rem',
                   }}
                 >
-                  Emdash UI v1.0.0
+                  ply UI v1.0.0
                 </div>
                 <Button size="xs" variant="ghost" style={{ justifyContent: 'flex-start' }}>
                   Manage sidebar

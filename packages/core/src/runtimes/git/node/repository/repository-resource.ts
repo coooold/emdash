@@ -1,7 +1,7 @@
-import type { Unsubscribe } from '@emdash/shared';
-import { createConcurrencyLimiter, createScope } from '@emdash/shared/concurrency';
-import type { KeyedMutex } from '@emdash/shared/concurrency';
-import { query, type ExposedMutationContext, type Query } from '@emdash/wire/state';
+import type { Unsubscribe } from '@ply/shared';
+import { createConcurrencyLimiter, createScope } from '@ply/shared/concurrency';
+import type { KeyedMutex } from '@ply/shared/concurrency';
+import { query, type ExposedMutationContext, type Query } from '@ply/wire/state';
 import {
   type gitRepositoryContract,
   type GitRefsState,

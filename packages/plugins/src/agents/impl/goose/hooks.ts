@@ -1,5 +1,5 @@
-import type { PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
-import type { HookRegistration } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
+import type { HookRegistration } from '@ply/core/services/agent-plugins/api/plugins';
 import {
   EMDASH_MARKER,
   buildNestedEntry,
@@ -10,7 +10,7 @@ import {
   makeStdinHookCommand,
   readJsonConfig,
   writeJsonConfig,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 
 export const GOOSE_PLUGIN_MANIFEST_PATH = 'plugins/emdash/plugin.json';
 export const GOOSE_HOOKS_PATH = 'plugins/emdash/hooks/hooks.json';
@@ -18,7 +18,7 @@ export const GOOSE_HOOKS_PATH = 'plugins/emdash/hooks/hooks.json';
 const GOOSE_PLUGIN_MANIFEST = {
   name: 'emdash',
   version: '0.1.0',
-  description: 'Emdash lifecycle hooks for Goose sessions',
+  description: 'ply lifecycle hooks for Goose sessions',
 };
 
 const GOOSE_HOOK_SPECS = [

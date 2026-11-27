@@ -84,7 +84,7 @@ function FormSettings() {
     defaultValues: {
       notifications: true,
       theme: 'system',
-      displayName: 'Emdash',
+      displayName: 'ply',
     },
     onSubmit: () => {},
   });
@@ -205,7 +205,11 @@ function PageAnatomy() {
               description="Show a notification when a background task completes."
               htmlFor="anatomy-notifications"
               control={
-                <Switch id="anatomy-notifications" checked={notifications} onCheckedChange={setNotifications} />
+                <Switch
+                  id="anatomy-notifications"
+                  checked={notifications}
+                  onCheckedChange={setNotifications}
+                />
               }
             />
           </SettingsSection>

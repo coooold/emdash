@@ -1,4 +1,4 @@
-import type { PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import { describe, expect, it } from 'vitest';
 import { buildCursorHookConfig, CURSOR_HOOKS_PATH, parseCursorHookEvent } from './hooks';
 import { provider } from './index';

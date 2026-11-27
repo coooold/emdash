@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { deferred } from '@emdash/shared/testing';
+import { deferred } from '@ply/shared/testing';
 import {
   client,
   connect,
@@ -7,7 +7,7 @@ import {
   createWireSessionHub,
   defineContract,
   memoryTransportPair,
-} from '@emdash/wire/rpc';
+} from '@ply/wire/rpc';
 import { describe, expect, it, vi } from 'vitest';
 import { acpApiContract } from '../../api';
 import { makeAcpHarness, makeStartInput } from '../acp-test-support';

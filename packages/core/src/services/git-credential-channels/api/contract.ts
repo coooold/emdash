@@ -1,4 +1,4 @@
-import { defineContract, procedure } from '@emdash/wire/rpc';
+import { defineContract, procedure } from '@ply/wire/rpc';
 import { z } from 'zod';
 
 /**

@@ -1,7 +1,7 @@
-import type { Result } from '@emdash/shared';
-import { createAsyncCache, type AsyncCache } from '@emdash/shared/concurrency';
-import { waitWithSignal, type Clock } from '@emdash/shared/scheduling';
-import { stableStringify } from '@emdash/shared/util';
+import type { Result } from '@ply/shared';
+import { createAsyncCache, type AsyncCache } from '@ply/shared/concurrency';
+import { waitWithSignal, type Clock } from '@ply/shared/scheduling';
+import { stableStringify } from '@ply/shared/util';
 import type { WorkspaceUsage } from '../api/schemas';
 import {
   measureWorkspaceUsage,

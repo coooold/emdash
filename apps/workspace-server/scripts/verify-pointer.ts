@@ -4,7 +4,7 @@ import {
   releaseChannelSchema,
   releaseVersionSchema,
   type ReleaseChannel,
-} from '@emdash/core/workspace-server';
+} from '@ply/core/workspace-server';
 import { channelPointerUrl } from './upload-helpers.ts';
 
 type VerifyOptions = {

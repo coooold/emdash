@@ -85,7 +85,7 @@ describe('safeDirectoryCommand', () => {
     expect(safeDirectoryCommand(value)).toEqual({ command, requiresPowerShell: false });
   });
 
-  // Git for Windows users paste into cmd.exe (Emdash's default terminal there), PowerShell or
+  // Git for Windows users paste into cmd.exe (ply's default terminal there), PowerShell or
   // Git Bash. Double quotes group the value in all three; single quotes do not in cmd.exe.
   it.each([
     ['C:/Users/me/repo', `${add} "C:/Users/me/repo"`],

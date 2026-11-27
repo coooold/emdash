@@ -11,11 +11,11 @@ const currentDir = path.dirname(fileURLToPath(import.meta.url));
 
 export const DEFAULT_DESKTOP_CORE_SRC_ROOT = path.resolve(
   currentDir,
-  '../../../apps/emdash-desktop/src/core'
+  '../../../apps/ply-desktop/src/core'
 );
 export const DEFAULT_MAIN_CORE_SRC_ROOT = path.resolve(
   currentDir,
-  '../../../apps/emdash-desktop/src/main/core'
+  '../../../apps/ply-desktop/src/main/core'
 );
 
 function normalizePath(value) {

@@ -51,7 +51,7 @@ const mockFs: Record<string, DirectoryEntry[]> = {
     file('package.json', 5_125, 2),
     file('pnpm-lock.yaml', 643_220, 2),
   ],
-  '/home/user/repos/emdash/apps': [repo('emdash-desktop', 13), file('README.md', 8_032, 12)],
+  '/home/user/repos/emdash/apps': [repo('ply-desktop', 13), file('README.md', 8_032, 12)],
   '/home/user/repos/emdash/packages': [repo('ui', 13), folder('core', 13), folder('shared', 13)],
   '/home/user/repos/plugins': [folder('providers', 20), symlink('current', 4)],
   '/home/user/emdash': [folder('src', 14), folder('.git', 14), file('README.md', 15_248, 9)],

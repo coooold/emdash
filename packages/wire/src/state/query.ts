@@ -1,6 +1,6 @@
-import { isDeepEqual, type Unsubscribe } from '@emdash/shared';
-import type { Scope } from '@emdash/shared/concurrency';
-import { systemClock, type Clock, type TimerHandle } from '@emdash/shared/scheduling';
+import { isDeepEqual, type Unsubscribe } from '@ply/shared';
+import type { Scope } from '@ply/shared/concurrency';
+import { systemClock, type Clock, type TimerHandle } from '@ply/shared/scheduling';
 import {
   StateNode,
   mergeMutationIds,

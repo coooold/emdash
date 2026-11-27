@@ -4,9 +4,9 @@ import {
   type SDKControlGetUsageResponse,
   type SDKUserMessage,
 } from '@anthropic-ai/claude-agent-sdk';
-import type { UsageProbeResult, UsageWindow } from '@emdash/core/primitives/provider-usage/api';
-import type { UsageProbeContext } from '@emdash/core/services/agent-plugins/api/plugins';
-import { runWithTimeout } from '@emdash/shared/scheduling';
+import type { UsageProbeResult, UsageWindow } from '@ply/core/primitives/provider-usage/api';
+import type { UsageProbeContext } from '@ply/core/services/agent-plugins/api/plugins';
+import { runWithTimeout } from '@ply/shared/scheduling';
 import { percent, resetTime } from '../../helpers/usage-probe';
 
 function planLabel(value: string | null | undefined): string | undefined {

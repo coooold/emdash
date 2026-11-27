@@ -1,10 +1,10 @@
 # Testing And Validation
 
-All paths are relative to `apps/emdash-desktop/`.
+All paths are relative to `apps/ply-desktop/`.
 
 ## Core Local Gate
 
-Run these before merging (from the repo root or `apps/emdash-desktop/`):
+Run these before merging (from the repo root or `apps/ply-desktop/`):
 
 ```bash
 pnpm run format
@@ -17,12 +17,12 @@ pnpm run test
 
 `pnpm test` at the repository root runs every package's default test suite.
 Inside an app or package directory it runs only that package's suite. From the
-root, `pnpm --filter @emdash/plugins test` runs only the selected package's suite.
+root, `pnpm --filter @ply/plugins test` runs only the selected package's suite.
 All three routes use Nx to prepare required builds automatically; dependency
 builds do not cause dependency tests to run. Nx is installed by `pnpm install`.
 
 Pass test-file paths or Vitest options after `test --`, for example
-`pnpm --filter @emdash/emdash-desktop test -- --project scripts`. The separator
+`pnpm --filter @ply/ply-desktop test -- --project scripts`. The separator
 prevents Nx from consuming flags that both tools recognize, such as `--project`.
 Direct `pnpm exec vitest` is an advanced debugging escape hatch that bypasses
 prerequisite preparation.
@@ -55,12 +55,12 @@ can use the Nx cache.
 - Tests use per-file `vi.mock()` setup.
 - Integration-style tests create temporary repos and worktrees in `os.tmpdir()`.
 - `tooling/vitest/setup-isolated-home.mjs` (repo root) gives every test file in the app's `node`,
-  `main-db`, `fixtures`, and `migrations` projects, `@emdash/core`, and `@emdash/workspace-server`
+  `main-db`, `fixtures`, and `migrations` projects, `@ply/core`, and `@ply/workspace-server`
   its own empty `HOME` with a minimal global git config, drops inherited `GIT_*` and XDG home
   variables, and on Windows moves `APPDATA` and `LOCALAPPDATA` into that home (`isolateHomeEnv` in
   `tooling/vitest/isolated-home.mjs`). Tests there never see the developer's git config or write
   to `~/.emdash`, `~/.ssh`, and the like. A test that is about home-directory behavior builds its
-  own environment. The app's `scripts` project and `@emdash/plugins` run the real pnpm/Nx
+  own environment. The app's `scripts` project and `@ply/plugins` run the real pnpm/Nx
   toolchain and keep the developer's home.
 
 ## CI Notes
@@ -69,9 +69,9 @@ can use the Nx cache.
   format:check, typecheck, lint, and test only for projects touched by the PR. Nx
   computes the affected set using `nrwl/nx-set-shas` and the PR base/head SHAs.
 - CI installs with `--ignore-scripts`, so the workflow explicitly installs the
-  native side project (`pnpm --dir apps/emdash-desktop/tooling/node-deps install`)
+  native side project (`pnpm --dir apps/ply-desktop/tooling/node-deps install`)
   for the DB-backed Vitest projects. It also rebuilds and load-checks `node-pty`
-  from `@emdash/core`, a workspace that declares the dependency. Vitest omits the
+  from `@ply/core`, a workspace that declares the dependency. Vitest omits the
   Playwright-backed `browser` projects (app and chat-ui) when it detects CI until
   browser provisioning is proven stable there.
 - The full suite (including `browser` projects) is still expected locally before merging.

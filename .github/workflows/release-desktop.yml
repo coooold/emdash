@@ -28,7 +28,7 @@ jobs:
         if: github.event_name == 'push'
         shell: bash
         run: |
-          version=$(jq -er .version apps/emdash-desktop/package.json)
+          version=$(jq -er .version apps/ply-desktop/package.json)
           if [[ ! "$version" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ || "$GITHUB_REF_NAME" != "v$version" ]]; then
             echo "::error::The release tag must be vX.Y.Z and match the desktop package.json version ($version)."
             exit 1
@@ -70,10 +70,10 @@ jobs:
           setup-python: ${{ matrix.platform == 'linux' && 'false' || 'true' }}
 
       - name: Build desktop and its workspace dependencies
-        run: pnpm exec nx build @emdash/emdash-desktop
+        run: pnpm exec nx build @ply/ply-desktop
 
       - name: Package desktop
-        working-directory: apps/emdash-desktop
+        working-directory: apps/ply-desktop
         shell: bash
         env:
           RELEASE_PLATFORM: ${{ matrix.platform }}
@@ -84,27 +84,27 @@ jobs:
 
       - name: Verify Linux packages
         if: matrix.platform == 'linux'
-        working-directory: apps/emdash-desktop
+        working-directory: apps/ply-desktop
         env:
           RELEASE_ARCH: ${{ matrix.arch }}
         run: |
           node --experimental-strip-types scripts/release/verify-linux.ts \
-            --arch "$RELEASE_ARCH" --targets AppImage,deb,rpm --prefix emdash --executable Emdash
+            --arch "$RELEASE_ARCH" --targets AppImage,deb,rpm --prefix ply --executable ply
 
       - name: Upload tested packages
         uses: actions/upload-artifact@v4
         with:
           name: desktop-${{ matrix.platform }}-${{ matrix.arch }}
           path: |
-            apps/emdash-desktop/release/emdash-*.AppImage
-            apps/emdash-desktop/release/emdash-*.deb
-            apps/emdash-desktop/release/emdash-*.rpm
-            apps/emdash-desktop/release/emdash-*.exe
-            apps/emdash-desktop/release/emdash-*.msi
-            apps/emdash-desktop/release/emdash-*.dmg
-            apps/emdash-desktop/release/emdash-*.zip
-            apps/emdash-desktop/release/emdash-*.blockmap
-            apps/emdash-desktop/release/latest*.yml
+            apps/ply-desktop/release/ply-*.AppImage
+            apps/ply-desktop/release/ply-*.deb
+            apps/ply-desktop/release/ply-*.rpm
+            apps/ply-desktop/release/ply-*.exe
+            apps/ply-desktop/release/ply-*.msi
+            apps/ply-desktop/release/ply-*.dmg
+            apps/ply-desktop/release/ply-*.zip
+            apps/ply-desktop/release/ply-*.blockmap
+            apps/ply-desktop/release/latest*.yml
           if-no-files-found: error
 
   publish:
@@ -133,9 +133,9 @@ jobs:
             cp "$file" "release/$asset"
           done
           cd release
-          for asset in emdash-x86_64.AppImage emdash-amd64.deb emdash-x86_64.rpm \
-            emdash-arm64.AppImage emdash-arm64.deb emdash-aarch64.rpm \
-            emdash-x64.exe emdash-x64.msi emdash-arm64.dmg emdash-arm64.zip; do
+          for asset in ply-x86_64.AppImage ply-amd64.deb ply-x86_64.rpm \
+            ply-arm64.AppImage ply-arm64.deb ply-aarch64.rpm \
+            ply-x64.exe ply-x64.msi ply-arm64.dmg ply-arm64.zip; do
             if [[ ! -s "$asset" ]]; then
               echo "::error::Missing release asset $asset."
               exit 1

@@ -20,8 +20,8 @@ export const ALLOWLISTS_DIR = path.resolve(currentDir, '../allowlists');
 
 export const BOUNDARY_CATEGORIES = ['coreToHost', 'mainCoreToFeatures', 'crossSlice', 'tsxInApi'];
 
-const DESKTOP_CORE_PREFIX = 'apps/emdash-desktop/src/core/';
-const MAIN_CORE_PREFIX = 'apps/emdash-desktop/src/main/core/';
+const DESKTOP_CORE_PREFIX = 'apps/ply-desktop/src/core/';
+const MAIN_CORE_PREFIX = 'apps/ply-desktop/src/main/core/';
 
 function normalizeFilename(filename) {
   const normalized = filename.replaceAll('\\', '/');

@@ -35,7 +35,7 @@ const RUNTIME_ONLY_PREFIXES = [
  * Builds the inherited seed for resolving a user's login-shell environment.
  *
  * A host process environment is an implementation detail of the process that
- * happens to run Emdash. Electron, electron-vite, pnpm/Nx, and Emdash itself
+ * happens to run ply. Electron, electron-vite, pnpm/Nx, and ply itself
  * all add control variables to it. Those variables are not part of a user's
  * terminal environment, so they must not be present in the seed inherited by
  * the login-shell probe. A shell startup file can still deliberately export

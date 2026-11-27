@@ -1,7 +1,7 @@
-import type { Lease, Result, Serializable } from '@emdash/shared';
-import { ok, toSerializedError } from '@emdash/shared';
-import { createLifecycleCell, type LifecycleCell, type Scope } from '@emdash/shared/concurrency';
-import { runWithTimeout, type Clock } from '@emdash/shared/scheduling';
+import type { Lease, Result, Serializable } from '@ply/shared';
+import { ok, toSerializedError } from '@ply/shared';
+import { createLifecycleCell, type LifecycleCell, type Scope } from '@ply/shared/concurrency';
+import { runWithTimeout, type Clock } from '@ply/shared/scheduling';
 import { acpErr, type AcpSessionStartMode } from '#runtimes/acp/api';
 import type { AgentTerminalManager } from '#runtimes/acp/node/agent-ports/terminal-manager';
 import type { SessionConfigCatalog } from '#runtimes/acp/node/session/cell';

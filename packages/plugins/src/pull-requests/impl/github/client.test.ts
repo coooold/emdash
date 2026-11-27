@@ -1,16 +1,16 @@
-import { err, ok, type Result } from '@emdash/shared';
-import { createScope, type Scope } from '@emdash/shared/concurrency';
-import type { Logger } from '@emdash/shared/logger';
+import type { Octokit } from '@octokit/rest';
+import { err, ok, type Result } from '@ply/shared';
+import { createScope, type Scope } from '@ply/shared/concurrency';
+import type { Logger } from '@ply/shared/logger';
 import {
   requestPriorities,
   type CreateRequestSchedulerOptions,
   type RateGate,
   type RequestScheduler,
   type ScheduledRequest,
-} from '@emdash/shared/requests';
-import { retrySchedules } from '@emdash/shared/scheduling';
-import { createStubLogger } from '@emdash/shared/testing';
-import type { Octokit } from '@octokit/rest';
+} from '@ply/shared/requests';
+import { retrySchedules } from '@ply/shared/scheduling';
+import { createStubLogger } from '@ply/shared/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { PullRequestAuthError } from '../../schemas';
 import type { PullRequestCredentials } from '../../types';

@@ -1,9 +1,9 @@
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { ManualClock } from '@emdash/shared/testing';
-import { remote, snapshot } from '@emdash/wire/state';
-import { createTestWire, type TestWire } from '@emdash/wire/testing';
+import { ManualClock } from '@ply/shared/testing';
+import { remote, snapshot } from '@ply/wire/state';
+import { createTestWire, type TestWire } from '@ply/wire/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { TempStoreHandle } from '#primitives/sqlite-store/api';
 import { conversationsContract } from '#runtimes/conversations/api';

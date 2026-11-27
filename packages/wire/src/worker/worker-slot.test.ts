@@ -1,6 +1,6 @@
-import { createScope } from '@emdash/shared/concurrency';
-import { retrySchedules } from '@emdash/shared/scheduling';
-import { createManualClock, createStubLogger } from '@emdash/shared/testing';
+import { createScope } from '@ply/shared/concurrency';
+import { retrySchedules } from '@ply/shared/scheduling';
+import { createManualClock, createStubLogger } from '@ply/shared/testing';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { defineContract, procedure } from '../api/define';

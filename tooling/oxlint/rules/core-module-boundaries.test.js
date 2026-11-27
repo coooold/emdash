@@ -12,7 +12,7 @@ import {
 
 const repoRoot = path.resolve(import.meta.dirname, '../../..');
 const coreSrcRoot = path.join(repoRoot, 'packages/core/src');
-const desktopCoreSrcRoot = path.join(repoRoot, 'apps/emdash-desktop/src/core');
+const desktopCoreSrcRoot = path.join(repoRoot, 'apps/ply-desktop/src/core');
 
 test('classifies core module source files', () => {
   assert.deepEqual(
@@ -71,7 +71,7 @@ test('classifies alias, package, and relative imports', () => {
     surface: 'api',
   });
   assert.deepEqual(
-    classifyImportSpecifier('@emdash/core/primitives/path/api', fromFile, coreSrcRoot),
+    classifyImportSpecifier('@ply/core/primitives/path/api', fromFile, coreSrcRoot),
     {
       type: 'primitives',
       moduleName: 'path',
@@ -86,7 +86,7 @@ test('classifies alias, package, and relative imports', () => {
       surface: 'api',
     }
   );
-  assert.equal(classifyImportSpecifier('@emdash/shared', fromFile, coreSrcRoot), undefined);
+  assert.equal(classifyImportSpecifier('@ply/shared', fromFile, coreSrcRoot), undefined);
   assert.deepEqual(
     classifyImportSpecifier(
       '@core/primitives/mementos/api',

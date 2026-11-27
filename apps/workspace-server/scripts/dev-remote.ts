@@ -6,7 +6,7 @@ import {
   parseChannelPointer,
   protocolMajor,
   type ReleaseChannel,
-} from '@emdash/core/workspace-server';
+} from '@ply/core/workspace-server';
 import { createDevPackageVersion } from './package-helpers.ts';
 import { channelPointerUrl } from './upload-helpers.ts';
 
@@ -82,7 +82,7 @@ Launch the desktop app with:
 pnpm run dev:remote-app
 
 or equivalently:
-EMDASH_WORKSPACE_SERVER_ARTIFACTS_URL=${minioArtifactsUrl} EMDASH_WORKSPACE_SERVER_DEV_AUTO_UPDATE=1 pnpm --dir ../emdash-desktop run dev
+EMDASH_WORKSPACE_SERVER_ARTIFACTS_URL=${minioArtifactsUrl} EMDASH_WORKSPACE_SERVER_DEV_AUTO_UPDATE=1 pnpm --dir ../ply-desktop run dev
 `);
 }
 

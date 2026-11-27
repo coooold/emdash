@@ -1,6 +1,6 @@
-import type { Run, Scope } from '@emdash/shared/concurrency';
-import { throwIfAborted, waitWithSignal, type RetrySchedule } from '@emdash/shared/scheduling';
-import { cell, peek, type Cell, type Readable } from '@emdash/wire/state';
+import type { Run, Scope } from '@ply/shared/concurrency';
+import { throwIfAborted, waitWithSignal, type RetrySchedule } from '@ply/shared/scheduling';
+import { cell, peek, type Cell, type Readable } from '@ply/wire/state';
 import {
   ROOT_RELATIVE_PATH,
   type HostAbsolutePath,

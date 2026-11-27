@@ -1,5 +1,5 @@
-import type { PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
-import { makeStdinHookCommand } from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+import type { PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
+import { makeStdinHookCommand } from '@ply/core/services/agent-plugins/api/plugins/helpers';
 import { describe, expect, it } from 'vitest';
 import { buildMuseHookConfig, MUSE_HOOK_ENV_VARS, MUSE_HOOKS_PATH } from './hooks';
 import { provider } from './index';

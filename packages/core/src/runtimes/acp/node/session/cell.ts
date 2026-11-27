@@ -4,8 +4,8 @@ import type {
   SessionConfigOption,
   SetSessionConfigOptionRequest,
 } from '@agentclientprotocol/sdk';
-import type { Result } from '@emdash/shared';
-import { ok, toSerializedError } from '@emdash/shared';
+import type { Result } from '@ply/shared';
+import { ok, toSerializedError } from '@ply/shared';
 import type {
   AcpCancelTurnError,
   AcpPermissionRequest,

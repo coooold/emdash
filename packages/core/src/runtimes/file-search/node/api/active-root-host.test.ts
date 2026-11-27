@@ -1,10 +1,10 @@
 import { mkdtemp, realpath, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { ok } from '@emdash/shared';
-import { createScope, type Scope } from '@emdash/shared/concurrency';
-import { cell } from '@emdash/wire/state';
-import { createTestWire } from '@emdash/wire/testing';
+import { ok } from '@ply/shared';
+import { createScope, type Scope } from '@ply/shared/concurrency';
+import { cell } from '@ply/wire/state';
+import { createTestWire } from '@ply/wire/testing';
 import type Database from 'better-sqlite3';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { StoreHandle } from '#primitives/sqlite-store/api';

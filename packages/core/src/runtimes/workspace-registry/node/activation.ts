@@ -1,5 +1,5 @@
-import { noopLogger, type Logger } from '@emdash/shared/logger';
-import { systemClock, type Clock } from '@emdash/shared/scheduling';
+import { noopLogger, type Logger } from '@ply/shared/logger';
+import { systemClock, type Clock } from '@ply/shared/scheduling';
 import { type EmdashScriptsConfig } from '#primitives/emdash-config/api';
 import type { WorkspaceRuntimeOverlay } from '../api/schemas';
 import { readWorkspaceConfig } from './config-model';

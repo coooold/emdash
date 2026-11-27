@@ -3,9 +3,9 @@ import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
-import { deferred, ManualClock } from '@emdash/shared/testing';
-import { remote, snapshot } from '@emdash/wire/state';
-import { createTestWire, type TestWire } from '@emdash/wire/testing';
+import { deferred, ManualClock } from '@ply/shared/testing';
+import { remote, snapshot } from '@ply/wire/state';
+import { createTestWire, type TestWire } from '@ply/wire/testing';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import type { TempStoreHandle } from '#primitives/sqlite-store/api';
 // oxlint-disable-next-line emdash/core-module-boundaries -- contract tests wire a real scripts runtime behind the registry, mirroring host composition (activation-scripts-via-terminals spec)

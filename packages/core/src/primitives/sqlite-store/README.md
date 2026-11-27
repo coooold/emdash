@@ -1,6 +1,6 @@
 # SQLite stores
 
-`sqlite-store` standardizes how Emdash opens, migrates, tests, backs up, and
+`sqlite-store` standardizes how ply opens, migrates, tests, backs up, and
 rebuilds SQLite files. It deliberately does not depend on an ORM or a particular
 SQLite package. A host supplies a `SqliteDriver` and may attach an ORM through
 `createOrm`.
@@ -27,8 +27,8 @@ scratch at any time.
 The application owns the driver adapter and ORM attachment:
 
 ```ts
-import { defineDurableSqliteStore } from '@emdash/core/primitives/sqlite-store/node';
-import { assertSqliteStoreInvariants } from '@emdash/core/primitives/sqlite-store/testing';
+import { defineDurableSqliteStore } from '@ply/core/primitives/sqlite-store/node';
+import { assertSqliteStoreInvariants } from '@ply/core/primitives/sqlite-store/testing';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { betterSqlite3Driver } from './better-sqlite3-driver';
 import { migrations } from './migrations.generated';
@@ -61,7 +61,7 @@ import {
   defineDerivedSqliteStore,
   fingerprintDerivedSchema,
   betterSqlite3Driver,
-} from '@emdash/core/primitives/sqlite-store/node';
+} from '@ply/core/primitives/sqlite-store/node';
 
 const schemaSql = `
   CREATE TABLE indexed_paths (
@@ -95,7 +95,7 @@ TypeScript.
 
 #### Build-time Drizzle codegen
 
-`@emdash/core/primitives/sqlite-store/codegen` exposes
+`@ply/core/primitives/sqlite-store/codegen` exposes
 `compileDrizzleSchemaToSql(schema)`. It uses `drizzle-kit/api` entirely in
 memory to diff an empty SQLite snapshot against imported Drizzle table exports.
 The helper sorts export keys before compilation so generated DDL is stable

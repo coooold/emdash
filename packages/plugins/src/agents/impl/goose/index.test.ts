@@ -1,8 +1,8 @@
-import type { PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import {
   buildNestedEntry,
   makeStdinHookCommand,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 import { describe, expect, it } from 'vitest';
 import { GOOSE_HOOKS_PATH, GOOSE_PLUGIN_MANIFEST_PATH } from './hooks';
 import { provider } from './index';
@@ -96,7 +96,7 @@ describe('goose provider', () => {
     expect(JSON.parse(fs.files.get(GOOSE_PLUGIN_MANIFEST_PATH)!)).toEqual({
       name: 'emdash',
       version: '0.1.0',
-      description: 'Emdash lifecycle hooks for Goose sessions',
+      description: 'ply lifecycle hooks for Goose sessions',
     });
 
     const hooksConfig = JSON.parse(fs.files.get(GOOSE_HOOKS_PATH)!);

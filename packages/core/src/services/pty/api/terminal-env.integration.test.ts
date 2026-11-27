@@ -94,7 +94,7 @@ describe('credential config across child environment filtering', () => {
         currentAgentEnvPlatform()
       )
     );
-    // The Emdash test channel is deliberately unavailable. Neither mode may
+    // The ply test channel is deliberately unavailable. Neither mode may
     // fall back to the inherited helper and authenticate as the wrong account.
     expect(() => git(env, ['credential', 'fill'], 'protocol=https\nhost=github.com\n\n')).toThrow(
       /could not read Username|unable to get password from user/

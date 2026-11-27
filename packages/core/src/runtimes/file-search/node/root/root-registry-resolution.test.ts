@@ -1,7 +1,7 @@
 import { mkdtemp, realpath, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { createScope, type Scope } from '@emdash/shared/concurrency';
+import { createScope, type Scope } from '@ply/shared/concurrency';
 import { afterEach, describe, expect, it } from 'vitest';
 import { RootWatchError } from '../path/index/errors';
 import { hostPath as absolute } from '../testing/paths';

@@ -1,8 +1,8 @@
-import type { Logger } from '@emdash/shared/logger';
-import { initProcessLogging } from '@emdash/shared/logger/node';
-import { setVerboseSpawnLogging, startDevPerfInstruments } from '@emdash/shared/perf';
-import { WORKER_NAME_ENV_VAR } from '../types';
+import type { Logger } from '@ply/shared/logger';
+import { initProcessLogging } from '@ply/shared/logger/node';
+import { setVerboseSpawnLogging, startDevPerfInstruments } from '@ply/shared/perf';
 import { isWorkerSpawnLogToggle } from '../spawn-logging';
+import { WORKER_NAME_ENV_VAR } from '../types';
 
 export function initWorkerProcessLogging(fallbackName: string): Logger {
   const logger = initProcessLogging({

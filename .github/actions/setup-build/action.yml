@@ -55,4 +55,4 @@ runs:
       env:
         BUILD_VARIANT: ${{ inputs.build-variant }}
       run: |
-        echo "VITE_BUILD=$BUILD_VARIANT" >> apps/emdash-desktop/.env.production
+        echo "VITE_BUILD=$BUILD_VARIANT" >> apps/ply-desktop/.env.production

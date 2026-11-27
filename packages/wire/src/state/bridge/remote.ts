@@ -1,5 +1,5 @@
-import { createScope, type Scope } from '@emdash/shared/concurrency';
-import type { Clock } from '@emdash/shared/scheduling';
+import { createScope, type Scope } from '@ply/shared/concurrency';
+import type { Clock } from '@ply/shared/scheduling';
 import type { LiveModelClientHandle, MutationCallOptions } from '../../api/client';
 import type { LiveModelDef, LiveModelKey, LiveModelStates, LiveStateData } from '../../api/define';
 import {

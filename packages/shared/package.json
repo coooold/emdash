@@ -1,11 +1,11 @@
 {
-  "name": "@emdash/shared",
+  "name": "@ply/shared",
   "version": "1.0.0",
-  "description": "Shared primitives for Emdash",
+  "description": "Shared primitives for ply",
   "license": "Apache-2.0",
   "author": {
-    "name": "Emdash Contributors",
-    "email": "support@emdash.sh"
+    "name": "ply contributors",
+    "url": "https://github.com/coooold/ply"
   },
   "files": [
     "dist"
@@ -78,7 +78,7 @@
   "scripts": {
     "dev": "tsdown --watch",
     "build": "tsdown",
-    "test": "pnpm exec nx test @emdash/shared",
+    "test": "pnpm exec nx test @ply/shared",
     "lint": "oxlint .",
     "format": "oxfmt",
     "format:check": "oxfmt --check",

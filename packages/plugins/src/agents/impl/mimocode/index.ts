@@ -1,14 +1,11 @@
-import {
-  definePlugin,
-  registerPluginBehavior,
-} from '@emdash/core/services/agent-plugins/api/plugins';
+import { definePlugin, registerPluginBehavior } from '@ply/core/services/agent-plugins/api/plugins';
 import {
   buildStandardCommand,
   createFileDropPlugin,
   mimocodeMcpAdapter,
   npmDependency,
   xdgConfigRoot,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 import { createNativeAcpBehavior } from '../../helpers/acp-stdio';
 import { icon } from './icon';
 import { MIMOCODE_PLUGIN_CONTENT } from './plugin-file';

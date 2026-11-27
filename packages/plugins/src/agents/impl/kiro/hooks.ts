@@ -1,4 +1,4 @@
-import type { HookRegistration, PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { HookRegistration, PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import {
   EMDASH_MARKER,
   buildMinimalJsonHookConfig,
@@ -9,7 +9,7 @@ import {
   makeStdinHookCommand,
   readJsonConfig,
   writeJsonConfig,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 
 export const KIRO_CLASSIC_HOOKS_PATH = 'agents/emdash.json';
 export const KIRO_V3_HOOKS_PATH = 'hooks/emdash.json';
@@ -44,7 +44,7 @@ const KIRO_V3_SPECS = [
 
 const classicBehavior = buildMinimalJsonHookConfig(KIRO_CLASSIC_HOOKS_PATH, KIRO_CLASSIC_SPECS, {
   name: 'emdash',
-  description: 'Emdash-managed Kiro agent configuration for lifecycle hooks.',
+  description: 'ply-managed Kiro agent configuration for lifecycle hooks.',
 });
 
 function buildV3Entry(spec: (typeof KIRO_V3_SPECS)[number]): Record<string, unknown> {

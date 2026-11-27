@@ -1,6 +1,6 @@
 # Project Overview
 
-Emdash is a local-first, cross-platform Electron app for running multiple AI coding
+ply is a local-first, cross-platform Electron app for running multiple AI coding
 agents in parallel. Each task is isolated in its own Git worktree and can run locally
 or over SSH, while the desktop app coordinates provider CLIs, ACP chat sessions,
 terminal sessions, issue and PR integrations, diff review, and release packaging.
@@ -8,17 +8,17 @@ terminal sessions, issue and PR integrations, diff review, and release packaging
 ## Repository Structure
 
 This is a pnpm workspace monorepo. The Electron app lives in
-`apps/emdash-desktop/` as `@emdash/emdash-desktop`; shared packages live under
+`apps/ply-desktop/` as `@ply/ply-desktop`; shared packages live under
 `packages/`. Unless a path is prefixed with `packages/` or another app, app paths
 such as `src/...`, `drizzle/`, `scripts/`, and `build/` are relative to
-`apps/emdash-desktop/`.
+`apps/ply-desktop/`.
 
 Repo root:
 
 - `.claude/` - Local Claude agent settings for this checkout.
 - `.github/` - GitHub issue templates, reusable actions, CI, and release workflows.
 - `agents/` - Agent-facing architecture, workflow, convention, integration, and risk docs.
-- `apps/emdash-desktop/` - The Electron desktop app.
+- `apps/ply-desktop/` - The Electron desktop app.
 - `apps/workspace-server/` - Remote workspace server and its Docker-based dev stack.
 - `packages/chat-ui/` - Shared transcript and ACP chat renderer with Storybook coverage.
 - `packages/core/` - Transport-agnostic runtime primitives, including ACP session logic.
@@ -31,7 +31,7 @@ Repo root:
 - Root config files - `package.json`, `nx.json`, `.nvmrc`, `.oxfmtrc.json`,
   `.oxlintrc.json`, and lockfile/configuration owned at the workspace root.
 
-Inside `apps/emdash-desktop/`:
+Inside `apps/ply-desktop/`:
 
 - `build/` - Electron packaging assets; avoid edits unless working on packaging/signing.
 - `drizzle/` - Generated Drizzle SQL migrations and metadata.
@@ -60,7 +60,7 @@ packaging, remote development, and escape hatches):
 ```bash
 pnpm install        # complete setup from the repo root — nothing else needed
 pnpm run doctor     # report-only environment health check
-pnpm run dev        # full workspace dev (root); app-only from apps/emdash-desktop/
+pnpm run dev        # full workspace dev (root); app-only from apps/ply-desktop/
 pnpm run build      # build all workspace projects
 pnpm run check      # full merge gate: format, lint, typecheck, test
 ```
@@ -80,7 +80,7 @@ Use an isolated development database for schema or migration work:
 EMDASH_DB_FILE=/tmp/emdash-scratch.db pnpm run dev
 ```
 
-Run focused database validation from `apps/emdash-desktop/`:
+Run focused database validation from `apps/ply-desktop/`:
 
 ```bash
 pnpm run db:fixtures
@@ -109,7 +109,7 @@ and channel rules.
   trailing commas where valid in ES5, and sorted imports.
 - Lint with `oxlint`; config is `.oxlintrc.json` with correctness, TypeScript, React
   hooks, and local repo rules enabled.
-- TypeScript strict mode is enabled; app targets share `apps/emdash-desktop/tsconfig.json`.
+- TypeScript strict mode is enabled; app targets share `apps/ply-desktop/tsconfig.json`.
 - Avoid `any`; if a registry or boundary needs it, keep the escape local and documented.
 - Use top-level `import` statements; do not use `require()`.
 - Never re-export as a shortcut; import from the original source.
@@ -165,9 +165,9 @@ flowchart LR
   Services --> VCS[Git, GitHub, GitLab, PRs]
   Services --> Issues[Issue integrations]
   Services --> MCP[MCP and skills]
-  ACP --> CoreAcp[@emdash/core ACP runtime]
-  ACP --> Plugins[@emdash/plugins providers]
-  Renderer --> ChatUI[@emdash/chat-ui]
+  ACP --> CoreAcp[@ply/core ACP runtime]
+  ACP --> Plugins[@ply/plugins providers]
+  Renderer --> ChatUI[@ply/chat-ui]
   Main --> Events[Live models and typed events]
   Events --> Renderer
 ```
@@ -189,7 +189,7 @@ Structured chat conversations use ACP: provider plugins in `packages/plugins/` e
 ACP behavior, `packages/core/src/runtimes/acp/` owns protocol/session state, terminal
 management, and process hosting, the desktop launches that runtime as a Wire component worker
 from `src/main/gateway/entries/acp.ts` (`src/main/core/acp/` bridges agent status), and
-`src/core/features/conversations/browser/acp/` maps updates into `@emdash/chat-ui`.
+`src/core/features/conversations/browser/acp/` maps updates into `@ply/chat-ui`.
 
 Main-process adapter domains live under `src/main/core/`: ACP, agent status, app,
 dependencies, file search, files, Git, preview servers, provider accounts, runtime,
@@ -197,7 +197,7 @@ shared, terminal shell, and utils. Portable domain logic lives in vertical slice
 under `src/core/` and in `packages/core/` (for example PTY services under
 `packages/core/src/services/pty/` and resource monitoring under
 `packages/core/src/runtimes/resource-usage/`). Expected failures should use the
-`Result<T, E>` pattern from `@emdash/shared` or the app-local result helpers.
+`Result<T, E>` pattern from `@ply/shared` or the app-local result helpers.
 
 ## Testing Strategy
 
@@ -211,7 +211,7 @@ pnpm run test
 ```
 
 - Root `pnpm run test` uses Nx to run every workspace package test target.
-- App tests run with Vitest projects in `apps/emdash-desktop/vitest.config.ts`.
+- App tests run with Vitest projects in `apps/ply-desktop/vitest.config.ts`.
 - App `node` tests cover `src/**/*.test.ts` except DB, migration, and browser tests.
 - App `main-db` tests cover main-process integration tests that need real SQLite.
 - App `fixtures` tests generate DB fixtures via `pnpm run db:fixtures`.
@@ -379,7 +379,7 @@ pnpm run test
   `electron.vite.config.ts`; workspace packages resolve through their `exports` maps with a
   `development` condition, not aliases.
 - Versioned JSON column schemas use `defineVersionedSchema()` from
-  `@emdash/core/primitives/versioned-schema/api`
+  `@ply/core/primitives/versioned-schema/api`
  (`packages/core/src/primitives/versioned-schema/api/versioned-schema.ts`) and Drizzle
  `versionedJsonColumn()` from `src/core/services/app-db/node/versioned-column.ts`.
 

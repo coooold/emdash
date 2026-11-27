@@ -1,6 +1,6 @@
 import crypto from 'node:crypto';
 import http from 'node:http';
-import type { Logger } from '@emdash/shared/logger';
+import type { Logger } from '@ply/shared/logger';
 import type { HookHandler, HookServerHandle } from './types';
 
 export class TuiHookServer {

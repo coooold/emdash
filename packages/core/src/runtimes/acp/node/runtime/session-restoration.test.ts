@@ -1,6 +1,6 @@
-import type { Serializable } from '@emdash/shared';
-import { deferred } from '@emdash/shared/testing';
-import { peek } from '@emdash/wire/state';
+import type { Serializable } from '@ply/shared';
+import { deferred } from '@ply/shared/testing';
+import { peek } from '@ply/wire/state';
 import { describe, expect, it, vi } from 'vitest';
 import { acpErr } from '#runtimes/acp/api';
 import { makeAcpHarness, makeStartInput } from '#runtimes/acp/node/acp-test-support';

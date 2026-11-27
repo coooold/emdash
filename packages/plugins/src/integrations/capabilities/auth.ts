@@ -1,5 +1,5 @@
-import type { Result } from '@emdash/shared';
-import { definePluginCapability } from '@emdash/shared/plugins';
+import type { Result } from '@ply/shared';
+import { definePluginCapability } from '@ply/shared/plugins';
 import z from 'zod';
 import type { IntegrationCredentials, IntegrationHostContext } from '../host';
 import type { IntegrationError } from '../types';
@@ -108,7 +108,7 @@ export type DeviceAuthorizationSession = {
   complete(signal: AbortSignal): Promise<Result<IntegrationCredentials, IntegrationError>>;
 };
 
-/** An access token issued through the Emdash auth server, which keeps the refresh token. */
+/** An access token issued through the ply auth server, which keeps the refresh token. */
 export type OAuthAccessToken = {
   accessToken: string;
   /** Epoch milliseconds; absent for tokens that do not expire. */

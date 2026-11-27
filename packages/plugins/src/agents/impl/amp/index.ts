@@ -1,14 +1,11 @@
-import {
-  definePlugin,
-  registerPluginBehavior,
-} from '@emdash/core/services/agent-plugins/api/plugins';
+import { definePlugin, registerPluginBehavior } from '@ply/core/services/agent-plugins/api/plugins';
 import {
   ampMcpAdapter,
   buildStandardCommand,
   createFileDropPlugin,
   homeConfigRoot,
   npmDependency,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 import { AMP_PLUGIN_CONTENT } from './plugin-file';
 
 const AMP_PLUGIN_PATH = 'plugins/emdash-hook.ts';

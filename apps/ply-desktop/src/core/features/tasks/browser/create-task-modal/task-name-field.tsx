@@ -1,0 +1,29 @@
+import { Field, Input } from '@ply/ui/react/primitives';
+import { type TaskNameState } from '@core/features/tasks/api/browser/create-task-modal/use-task-name';
+
+interface TaskNameFieldProps {
+  state: TaskNameState;
+}
+
+export function TaskNameField({ state }: TaskNameFieldProps) {
+  const { taskName, placeholder, handleTaskNameChange, showSlugHint } = state;
+
+  return (
+    <Field.Root className="flex flex-col gap-1">
+      <Input
+        aria-label="任务名称"
+        bare
+        autoFocus
+        value={taskName}
+        placeholder={placeholder || '任务名称…'}
+        className="px-0 text-lg!"
+        onChange={(e) => handleTaskNameChange(e.target.value)}
+      />
+      {showSlugHint && (
+        <p className="text-muted-foreground mt-1 text-xs">
+          任务名称只能包含英文字母、数字和连字符。
+        </p>
+      )}
+    </Field.Root>
+  );
+}

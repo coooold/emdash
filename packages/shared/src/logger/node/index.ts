@@ -1,7 +1,7 @@
 /**
  * Node-only logger surface: process logging bootstrap, the pino-backed Logger,
  * the file transport, and the AsyncLocalStorage log context.
- * Import from '@emdash/shared/logger/node' in Node deployments only.
+ * Import from '@ply/shared/logger/node' in Node deployments only.
  */
 
 import pinoLib from 'pino';

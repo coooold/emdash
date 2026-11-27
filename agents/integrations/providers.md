@@ -25,7 +25,7 @@ codex, claude, opencode, grok, devin, qwen, qoder, droid, cursor, copilot, herme
 ## Agent Hooks And Notifications
 
 Agent activity, completion, and attention states come from explicit hooks or plugins
-installed by the `tui-agents` runtime in `packages/core/src/runtimes/tui-agents/`. Emdash
+installed by the `tui-agents` runtime in `packages/core/src/runtimes/tui-agents/`. ply
 does not infer agent status from terminal output. If a provider has no hook/plugin integration
 for an event, the renderer should not show or notify an inferred status for that event.
 
@@ -47,11 +47,11 @@ the CLI, including provider-specific home overrides and XDG/APPDATA conventions.
 hook and file-drop behaviors are relative to that root. `scope: 'workspace'` remains available as
 an extension escape hatch, but no built-in provider uses it.
 
-Managed config entries include an Emdash hook-config version marker. On session startup the
+Managed config entries include an ply hook-config version marker. On session startup the
 installer checks the complete expected entry set before taking a per-root write lock, checks again
 under the lock, and writes only when missing or stale. Existing JSON or TOML that cannot be parsed
 is left untouched and reported through logging. Global hooks are harmless in sessions outside
-Emdash: their commands exit successfully when the Emdash hook server environment is absent.
+ply: their commands exit successfully when the ply hook server environment is absent.
 On Windows each hook command is a single `powershell.exe ... -EncodedCommand` call, because agents
 run hooks through Git Bash, cmd.exe or PowerShell. Do not wrap it in `cmd.exe /c` or add
 `/`-style switches, redirects, or quotes: Git Bash rewrites `/c` into a path, and cmd.exe then
@@ -77,7 +77,7 @@ host's `agent-config` runtime for both local and remote hosts.
 
 ## Provider API Keys
 
-Emdash passes provider API keys through to the agent CLIs it spawns. The allowlisted agent
+ply passes provider API keys through to the agent CLIs it spawns. The allowlisted agent
 environment in `packages/core/src/primitives/agent-env/api/index.ts` is the single source of truth
 for which variables reach a spawned agent.
 
@@ -128,21 +128,21 @@ you select an OrcaRouter model from the OpenCode model picker.
 - OpenCode's TUI plugin remembers terminal events per provider session until work starts again.
   Errors remain errors and interruptions return to idle; subsequent `session.status` idle,
   `session.idle`, or execution completion events do not emit another completion notification.
-- Qwen Code hooks use the documented Qwen settings schema in `$QWEN_HOME/settings.json` (falling back to `~/.qwen/settings.json`). Emdash installs command hooks for permission requests and session end/stop events while preserving unrelated user hooks.
+- Qwen Code hooks use the documented Qwen settings schema in `$QWEN_HOME/settings.json` (falling back to `~/.qwen/settings.json`). ply installs command hooks for permission requests and session end/stop events while preserving unrelated user hooks.
 - Antigravity CLI installs lifecycle hooks in `~/.gemini/config/plugins/emdash/` to report
   working and completion status while preserving existing user hooks.
 - Muse Code installs managed hooks through `managed_hooks_path` in `settings.json`.
   `SessionStart`, `UserPromptSubmit`, and `Stop` report session, working, and completion events.
-  `managed_hooks_env_vars` forwards the Emdash hook routing variables.
+  `managed_hooks_env_vars` forwards the ply hook routing variables.
   Existing hooks are preserved; paths outside the config root are rejected.
 - Prime Agent uses its native ACP stdio mode (`prime-agent --mode acp`). Its TUI extension reports
-  session file paths, turn starts, and turn completion for resume and notification support. Emdash
+  session file paths, turn starts, and turn completion for resume and notification support. ply
   synchronizes standard stdio and HTTP MCP definitions in `~/.prime/agent/settings.json`. ACP
   sessions receive those definitions through `session/new`, and Prime exposes them to the model
   through its pre-imported `mcp` Python program.
 - IBM Bob runs `bob chat` in terminal mode and its native ACP server (`bob acp`) in chat mode.
   The initial prompt follows `--` because Bob rejects a positional that looks like an option.
-  Emdash never passes `--accept-license` or `--trust`; auto-trusted worktrees are recorded in
+  ply never passes `--accept-license` or `--trust`; auto-trusted worktrees are recorded in
   `~/.bob/trustedFolders.json`, and MCP servers sync to `~/.bob/settings/mcp.json`.
 
 ## Adding Or Changing A Provider

@@ -1,8 +1,8 @@
 import { promises as nodeFs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { createScope } from '@emdash/shared/concurrency';
-import { createStubLogger, deferred } from '@emdash/shared/testing';
+import { createScope } from '@ply/shared/concurrency';
+import { createStubLogger, deferred } from '@ply/shared/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { IExecutionContext } from '#primitives/exec/api';
 import type { HostDependencyResolver } from '#primitives/host-dependencies/api';

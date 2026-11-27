@@ -4,7 +4,7 @@ import {
   envConfigRoot,
   makeNotificationHookCommand,
   makeStdinHookCommand,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 
 export const MISTRAL_HOOKS_PATH = 'hooks.toml';
 
@@ -15,7 +15,7 @@ const MISTRAL_HOOK_ENTRIES = [
     command: makeStdinHookCommand('stop'),
     timeout: 10,
     strict: false,
-    description: 'Notify Emdash when Mistral Vibe finishes an agent turn.',
+    description: 'Notify ply when Mistral Vibe finishes an agent turn.',
   },
   {
     name: 'emdash-ask-user-question',
@@ -24,7 +24,7 @@ const MISTRAL_HOOK_ENTRIES = [
     command: makeNotificationHookCommand('permission_prompt'),
     timeout: 10,
     strict: false,
-    description: 'Notify Emdash when Mistral Vibe asks for user input.',
+    description: 'Notify ply when Mistral Vibe asks for user input.',
   },
 ];
 

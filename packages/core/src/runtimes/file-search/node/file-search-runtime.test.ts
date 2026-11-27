@@ -1,7 +1,7 @@
 import { mkdtemp, mkdir, realpath, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { ok } from '@emdash/shared';
+import { ok } from '@ply/shared';
 import type Database from 'better-sqlite3';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { StoreHandle } from '#primitives/sqlite-store/api';

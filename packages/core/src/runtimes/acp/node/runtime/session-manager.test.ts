@@ -1,8 +1,8 @@
 import type { SessionUpdate } from '@agentclientprotocol/sdk';
-import { isOk, ok } from '@emdash/shared';
-import { createScope } from '@emdash/shared/concurrency';
-import { createManualClock, deferred } from '@emdash/shared/testing';
-import { observe, peek } from '@emdash/wire/state';
+import { isOk, ok } from '@ply/shared';
+import { createScope } from '@ply/shared/concurrency';
+import { createManualClock, deferred } from '@ply/shared/testing';
+import { observe, peek } from '@ply/wire/state';
 import { describe, expect, it, vi } from 'vitest';
 import { wrapHiddenContext } from '#runtimes/acp/api/models/prompt';
 import {

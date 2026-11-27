@@ -1,8 +1,8 @@
-import type { PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import {
   buildNestedEntry,
   makeStdinHookCommand,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 import { describe, expect, it } from 'vitest';
 import { QODER_SETTINGS_PATH } from './hooks';
 import { provider } from './index';

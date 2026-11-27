@@ -1,5 +1,5 @@
-import { type LeasedLiveModelProvider } from '@emdash/wire/rpc';
-import { cell, expose, peek, produce, type Cell } from '@emdash/wire/state';
+import { type LeasedLiveModelProvider } from '@ply/wire/rpc';
+import { cell, expose, peek, produce, type Cell } from '@ply/wire/state';
 import {
   tuiAgentsContract,
   type TuiAgentStateList,

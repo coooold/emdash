@@ -1,4 +1,4 @@
-import type { CommandContext, PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { CommandContext, PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import { describe, expect, it, vi } from 'vitest';
 import { provider } from './index';
 import { BOB_TRUSTED_FOLDERS_PATH } from './trust';
@@ -106,7 +106,7 @@ describe('Bob terminal command', () => {
     expect(
       buildArgs({ isResuming: true, autoApprove: true, initialPrompt: 'fix the build' })
     ).toEqual(['chat', '--resume', '--auto-approve']);
-    // The Emdash conversation id is not a Bob task id, so it must never follow `--resume`.
+    // The ply conversation id is not a Bob task id, so it must never follow `--resume`.
     expect(buildArgs({ isResuming: true, sessionId: 'emdash-conversation-id' })).toEqual([
       'chat',
       '--resume',

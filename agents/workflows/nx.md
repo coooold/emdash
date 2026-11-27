@@ -18,19 +18,19 @@ shelling out.
 Nx derives this graph from `workspace:*` dependency references:
 
 ```
-@emdash/shared    (leaf)
-@emdash/theme     (leaf)
-@emdash/wire      -> shared
-@emdash/core      -> shared, wire
-@emdash/plugins   -> core, shared
-@emdash/chat-ui   -> core, shared
-@emdash/ui        -> chat-ui, shared, theme
-@emdash/workspace-server -> core, plugins, shared, wire
-@emdash/emdash-desktop   -> chat-ui, core, plugins, shared, ui, wire
+@ply/shared    (leaf)
+@ply/theme     (leaf)
+@ply/wire      -> shared
+@ply/core      -> shared, wire
+@ply/plugins   -> core, shared
+@ply/chat-ui   -> core, shared
+@ply/ui        -> chat-ui, shared, theme
+@ply/workspace-server -> core, plugins, shared, wire
+@ply/ply-desktop   -> chat-ui, core, plugins, shared, ui, wire
 ```
 
 The `dependsOn: ["^build"]` default in `nx.json` means "build all upstream packages
-before running this target." A bare `nx build @emdash/emdash-desktop` therefore
+before running this target." A bare `nx build @ply/ply-desktop` therefore
 builds shared, core, plugins, and ui first, in dependency order, with parallelism
 where the graph allows.
 
@@ -73,12 +73,12 @@ pnpm run graph          # opens nx graph in the browser
 **Address a single project or target directly:**
 
 ```bash
-nx build @emdash/core
-nx test @emdash/shared
-nx typecheck @emdash/emdash-desktop
-nx package:mac @emdash/emdash-desktop
-nx db:reset @emdash/emdash-desktop
-nx build:theme @emdash/ui
+nx build @ply/core
+nx test @ply/shared
+nx typecheck @ply/ply-desktop
+nx package:mac @ply/ply-desktop
+nx db:reset @ply/ply-desktop
+nx build:theme @ply/ui
 ```
 
 **Run affected with a custom base:**
@@ -96,8 +96,8 @@ nx show projects
 **Inspect a project's resolved targets:**
 
 ```bash
-nx show project @emdash/core
-nx show project @emdash/emdash-desktop
+nx show project @ply/core
+nx show project @ply/ply-desktop
 ```
 
 ## Task Ordering
@@ -127,7 +127,7 @@ instantly without re-running the task.
 
 Cached output directories per project:
 - `packages/*/dist/` — tsdown output
-- `apps/emdash-desktop/out/` — electron-vite build output
+- `apps/ply-desktop/out/` — electron-vite build output
 
 **What is NOT cached** (intentionally, due to platform/environment sensitivity):
 - `package`, `package:mac`, `package:linux`, `package:win` — electron-builder
@@ -156,7 +156,7 @@ pnpm nx affected -t format:check typecheck lint test
 
 The test gate omits the Playwright-backed `browser` Vitest projects when Vitest
 detects CI and runs after an explicit
-`pnpm --dir apps/emdash-desktop/tooling/node-deps install`, since the workflow's
+`pnpm --dir apps/ply-desktop/tooling/node-deps install`, since the workflow's
 `--ignore-scripts` install skips the postinstall that normally provisions the
 native side project.
 

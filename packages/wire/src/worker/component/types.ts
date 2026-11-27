@@ -1,5 +1,5 @@
-import type { Scope } from '@emdash/shared/concurrency';
-import type { Logger } from '@emdash/shared/logger';
+import type { Scope } from '@ply/shared/concurrency';
+import type { Logger } from '@ply/shared/logger';
 import type { z } from 'zod';
 import type { ContractClient } from '../../api/client';
 import type { Controller } from '../../api/controller';

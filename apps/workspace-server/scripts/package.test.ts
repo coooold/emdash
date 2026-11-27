@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import corePackage from '../../../packages/core/package.json';
-import desktopPackage from '../../emdash-desktop/package.json';
+import desktopPackage from '../../ply-desktop/package.json';
 import serverPackage from '../package.json';
 import runtimePackage from '../runtime-deps/package.json';
 import {
@@ -90,14 +90,14 @@ describe('workspace-server package helpers', () => {
     const target = parsePackageTarget('darwin-arm64');
     expect(
       createArtifactManifest({
-        name: '@emdash/workspace-server',
+        name: '@ply/workspace-server',
         version: '0.1.0',
         protocolVersion: '5.0.0',
         nodeVersion: '24.14.0',
         target,
       })
     ).toEqual({
-      name: '@emdash/workspace-server',
+      name: '@ply/workspace-server',
       version: '0.1.0',
       protocolVersion: '5.0.0',
       os: 'darwin',

@@ -6,7 +6,7 @@ Conventions that apply throughout:
 - **One blessed command per flow.** Aliases that duplicated a flow (`d`,
   `db:setup`, `run:docker-ssh`) no longer exist.
 - **Root vs app dir:** run workspace-wide flows from the repo root, app-scoped
-  flows from `apps/emdash-desktop/`, package-local flows from that package.
+  flows from `apps/ply-desktop/`, package-local flows from that package.
 - **Environment preflight is owned by the doctor.** When a flow lists a
   prerequisite, the check for it is `pnpm run doctor` (root) — report-only,
   every failing line names the fixing command.
@@ -36,18 +36,18 @@ browser test project are the one extra step, only needed for tests:
 | Flow | Command | Where |
 | --- | --- | --- |
 | Full workspace dev | `pnpm run dev` | root |
-| App-only dev | `pnpm run dev` | `apps/emdash-desktop/` |
-| App dev, verbose Vite logs | `pnpm run dev:debug` | `apps/emdash-desktop/` |
-| Main-only / renderer-only watch | `pnpm run dev:main` / `pnpm run dev:renderer` | `apps/emdash-desktop/` |
+| App-only dev | `pnpm run dev` | `apps/ply-desktop/` |
+| App dev, verbose Vite logs | `pnpm run dev:debug` | `apps/ply-desktop/` |
+| Main-only / renderer-only watch | `pnpm run dev:main` / `pnpm run dev:renderer` | `apps/ply-desktop/` |
 | One package in isolation | `pnpm run dev` | that `packages/*` dir |
-| Storybook (ui) | `pnpm --filter @emdash/ui run storybook` (port 6006) | root |
-| Storybook (chat-ui) | `pnpm --filter @emdash/chat-ui run storybook` (port 6007) | root |
+| Storybook (ui) | `pnpm --filter @ply/ui run storybook` (port 6006) | root |
+| Storybook (chat-ui) | `pnpm --filter @ply/chat-ui run storybook` (port 6007) | root |
 | Theme codegen | `pnpm run build:theme` / `pnpm run watch:theme` | `packages/theme/` |
 
 Notes:
 
 - App dev scripts hardcode `LOG_LEVEL=debug` and write the main-process log to
-  `apps/emdash-desktop/.emdash-logs/emdash.log`.
+  `apps/ply-desktop/.emdash-logs/emdash.log`.
 - Root `pnpm run dev` already includes every package watcher; the per-package
   watch flow is only for working on one package in isolation.
 - Nx starts a background daemon that lingers after dev sessions; stop it with
@@ -60,17 +60,17 @@ Notes:
 
 | Flow | Command | Where |
 | --- | --- | --- |
-| Generate a migration | `pnpm run db:generate <schema>` | `apps/emdash-desktop/` |
-| Regenerate fixture DBs | `pnpm run db:fixtures` | `apps/emdash-desktop/` |
-| Validate migrations | `pnpm run test:migrations` | `apps/emdash-desktop/` |
-| Reset dev databases | `pnpm run db:reset` | `apps/emdash-desktop/` |
+| Generate a migration | `pnpm run db:generate <schema>` | `apps/ply-desktop/` |
+| Regenerate fixture DBs | `pnpm run db:fixtures` | `apps/ply-desktop/` |
+| Validate migrations | `pnpm run test:migrations` | `apps/ply-desktop/` |
+| Reset dev databases | `pnpm run db:reset` | `apps/ply-desktop/` |
 
 The `db:generate` dispatcher covers all five Drizzle schemas in the repo and
 prints the follow-up obligations (fixtures, migration tests) after generating:
 
 | Schema | Owner | Migrations directory |
 | --- | --- | --- |
-| `app` | `apps/emdash-desktop` | `apps/emdash-desktop/drizzle/` |
+| `app` | `apps/ply-desktop` | `apps/ply-desktop/drizzle/` |
 | `automations` | `packages/core` | `packages/core/src/runtimes/automations/node/persistence/migrations/` |
 | `conversations` | `packages/core` | `packages/core/src/runtimes/conversations/node/persistence/migrations/` |
 | `file-search` | `packages/core` | `packages/core/src/runtimes/file-search/node/storage/migrations/` |
@@ -89,12 +89,12 @@ schema work: `EMDASH_DB_FILE=/tmp/emdash-scratch.db pnpm run dev`.
 | Full merge gate | `pnpm run check` | root |
 | Individual gates | `pnpm run format` / `lint` / `typecheck` / `test` | root |
 | One package's tests | `pnpm test` | that app or package directory |
-| One package's tests from root | `pnpm --filter @emdash/plugins test` | root |
+| One package's tests from root | `pnpm --filter @ply/plugins test` | root |
 | CI-style scoping | `pnpm run affected` | root |
-| One app Vitest project | `pnpm test -- --project <name>` | `apps/emdash-desktop/` |
+| One app Vitest project | `pnpm test -- --project <name>` | `apps/ply-desktop/` |
 | Plugin tests in watch mode | `pnpm run test:watch` | `packages/plugins/` |
 | chat-ui perf / bench | `pnpm run test:perf` / `pnpm run test:bench` | `packages/chat-ui/` |
-| Remote WSS integration test | `pnpm run test:workspace-server-remote` | `apps/emdash-desktop/` |
+| Remote WSS integration test | `pnpm run test:workspace-server-remote` | `apps/ply-desktop/` |
 
 - `pnpm run check` runs the four gate commands in order and is exactly
   equivalent to running them by hand.
@@ -130,10 +130,10 @@ running (doctor reports it). See
 
 | Flow | Command | Where |
 | --- | --- | --- |
-| Local packaging | `pnpm run package` / `package:mac` / `package:linux` / `package:win` | `apps/emdash-desktop/` |
-| Packaged language-server regression check | `EMDASH_TEST_PACKAGED_LSP=1 pnpm exec vitest run --project scripts scripts/release/lib/packaged-language-servers.test.ts` | `apps/emdash-desktop/` |
-| Packaged SSH regression check | `EMDASH_TEST_PACKAGED_SSH=1 pnpm exec vitest run --project scripts scripts/release/lib/packaged-ssh.test.ts` | `apps/emdash-desktop/` |
-| Rebuild native deps | `pnpm run rebuild` | `apps/emdash-desktop/` |
+| Local packaging | `pnpm run package` / `package:mac` / `package:linux` / `package:win` | `apps/ply-desktop/` |
+| Packaged language-server regression check | `EMDASH_TEST_PACKAGED_LSP=1 pnpm exec vitest run --project scripts scripts/release/lib/packaged-language-servers.test.ts` | `apps/ply-desktop/` |
+| Packaged SSH regression check | `EMDASH_TEST_PACKAGED_SSH=1 pnpm exec vitest run --project scripts scripts/release/lib/packaged-ssh.test.ts` | `apps/ply-desktop/` |
+| Rebuild native deps | `pnpm run rebuild` | `apps/ply-desktop/` |
 | Lint-infra allowlists | `pnpm run prune:boundary-allowlists` | root |
 | Task graph | `pnpm run graph` | root |
 | Releases (maintainers) | `gh workflow run release-prod.yml` / `release-canary.yml` / `release-workspace-server.yml` | — |
@@ -156,7 +156,7 @@ running (doctor reports it). See
   `node --experimental-strip-types scripts/release/verify-language-servers.ts --executable
   <binary> --resources <resources-directory>` from the app directory.
 - Linux packaging keeps `extraMetadata.desktopName` aligned with the installed
-  `.desktop` filename via `linux.syncDesktopName`. The desktop IDs are `Emdash`
+  `.desktop` filename via `linux.syncDesktopName`. The desktop IDs are `ply`
   (stable) and `emdash-canary` (canary); preserve them across upgrades for dock pins.
   Electron 40 uses this metadata for Wayland's `app_id`, but uses the product name
   for X11's `WM_CLASS`, so `linux.desktop.entry.StartupWMClass` remains the product
@@ -183,7 +183,7 @@ doctor lists any that are active.
 | --- | --- |
 | `EMDASH_DB_FILE` | Point the app (and `db:reset`) at an isolated database file |
 | `EMDASH_USER_DATA_DIR` | Use an isolated profile directory (database, secrets, logs) |
-| `EMDASH_AUTH_SERVER_URL` | Development builds only: use another Emdash auth server, e.g. a local one; pair it with `EMDASH_USER_DATA_DIR` so its session stays separate |
+| `EMDASH_AUTH_SERVER_URL` | Development builds only: use another ply auth server, e.g. a local one; pair it with `EMDASH_USER_DATA_DIR` so its session stays separate |
 | `EMDASH_SKIP_ELECTRON_REBUILD=1` | Skip the Electron-ABI rebuild in postinstall (CI sets this implicitly via `--ignore-scripts`) |
 | `EMDASH_DISABLE_NATIVE_DB=1` | Run without the native better-sqlite3 (also skips its rebuild) |
 | `EMDASH_DISABLE_PTY=1` | Run without PTY support |

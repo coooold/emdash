@@ -18,7 +18,7 @@ import type {
   SetSessionModeRequest,
   SetSessionModeResponse,
 } from '@agentclientprotocol/sdk';
-import { definePluginCapability } from '@emdash/shared/plugins';
+import { definePluginCapability } from '@ply/shared/plugins';
 import z from 'zod';
 import type { EnrichHook } from '#primitives/acp-transcript/api';
 import type { CommandSpec } from '#primitives/exec/api';

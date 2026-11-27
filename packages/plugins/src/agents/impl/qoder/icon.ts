@@ -1,4 +1,4 @@
-import type { PluginIconAsset } from '@emdash/shared/plugins';
+import type { PluginIconAsset } from '@ply/shared/plugins';
 
 export const icon: PluginIconAsset = {
   kind: 'svg',

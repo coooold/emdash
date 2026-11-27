@@ -32,7 +32,7 @@ export type ConversationConfig = z.infer<typeof conversationConfigSchema>;
 
 /** One host conversation record (spec §3.2). */
 export const conversationRecordSchema = z.object({
-  /** Emdash-minted UUID; primary key; client-supplied on create; never changes, never reused. */
+  /** ply-minted UUID; primary key; client-supplied on create; never changes, never reused. */
   conversationId: z.string().min(1),
   provider: z.string().min(1),
   type: conversationTypeSchema,

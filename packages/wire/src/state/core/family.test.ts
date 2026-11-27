@@ -1,5 +1,5 @@
-import { createScope } from '@emdash/shared/concurrency';
-import { createManualClock } from '@emdash/shared/testing';
+import { createScope } from '@ply/shared/concurrency';
+import { createManualClock } from '@ply/shared/testing';
 import { describe, expect, it } from 'vitest';
 import { query } from '../query';
 import { settleAsync } from '../testing';

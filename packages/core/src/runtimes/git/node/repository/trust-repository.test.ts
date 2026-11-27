@@ -3,8 +3,8 @@ import { access, appendFile, mkdir, mkdtemp, realpath, rm } from 'node:fs/promis
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
-import { ok } from '@emdash/shared';
-import { client, connect, memoryTransportPair, serve } from '@emdash/wire/rpc';
+import { ok } from '@ply/shared';
+import { client, connect, memoryTransportPair, serve } from '@ply/wire/rpc';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { safeDirectoryCommand } from '#primitives/git/api';
 import { gitContract } from '#runtimes/git/api';

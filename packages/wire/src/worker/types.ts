@@ -1,7 +1,7 @@
-import type { Unsubscribe } from '@emdash/shared';
-import type { Scope } from '@emdash/shared/concurrency';
-import type { Logger } from '@emdash/shared/logger';
-import type { Clock, RetrySchedule } from '@emdash/shared/scheduling';
+import type { Unsubscribe } from '@ply/shared';
+import type { Scope } from '@ply/shared/concurrency';
+import type { Logger } from '@ply/shared/logger';
+import type { Clock, RetrySchedule } from '@ply/shared/scheduling';
 import type { ContractClient } from '../api/client';
 import type { Contract, ContractDefinitions } from '../api/define';
 import type { WireInstrumentation } from '../api/instrumentation';

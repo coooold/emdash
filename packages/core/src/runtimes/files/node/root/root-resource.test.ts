@@ -1,8 +1,8 @@
 import { mkdtemp, realpath, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { err, ok, type Result } from '@emdash/shared';
-import { deferred } from '@emdash/shared/testing';
+import { err, ok, type Result } from '@ply/shared';
+import { deferred } from '@ply/shared/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 import { resolveRootIdentity, type RootIdentity } from '#runtimes/files/node/allocation/identity';
 import { relativePath, runtimeRoot } from '#runtimes/files/node/testing/paths';

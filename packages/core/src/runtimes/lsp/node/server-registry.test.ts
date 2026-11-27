@@ -2,7 +2,7 @@ import { mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { err, ok } from '@emdash/shared';
+import { err, ok } from '@ply/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { parseNativeAbsolute } from '#primitives/path/api';
 import {

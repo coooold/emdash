@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { noopLogger, type Logger } from '@emdash/shared/logger';
-import { systemClock, type Clock, type TimerHandle } from '@emdash/shared/scheduling';
+import { noopLogger, type Logger } from '@ply/shared/logger';
+import { systemClock, type Clock, type TimerHandle } from '@ply/shared/scheduling';
 import {
   automationRunConfigSnapshotSchema,
   type AutomationDeployment,

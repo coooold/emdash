@@ -1,11 +1,11 @@
 {
-  "name": "@emdash/core",
+  "name": "@ply/core",
   "version": "1.0.0",
-  "description": "Transport-agnostic core runtime primitives for Emdash",
+  "description": "Transport-agnostic core runtime primitives for ply",
   "license": "Apache-2.0",
   "author": {
-    "name": "Emdash Contributors",
-    "email": "support@emdash.sh"
+    "name": "ply contributors",
+    "url": "https://github.com/coooold/ply"
   },
   "files": [
     "dist"
@@ -400,7 +400,7 @@
   "scripts": {
     "dev": "tsdown --watch",
     "build": "tsdown",
-    "test": "pnpm exec nx test @emdash/core",
+    "test": "pnpm exec nx test @ply/core",
     "lint": "oxlint .",
     "format": "oxfmt",
     "format:check": "oxfmt --check",
@@ -412,9 +412,9 @@
   },
   "dependencies": {
     "@agentclientprotocol/sdk": "^1.1.0",
-    "@emdash/shared": "workspace:*",
-    "@emdash/wire": "workspace:*",
     "@parcel/watcher": "^2.5.6",
+    "@ply/shared": "workspace:*",
+    "@ply/wire": "workspace:*",
     "better-sqlite3": "^13.2.0",
     "croner": "^10.0.1",
     "drizzle-orm": "^0.45.4",

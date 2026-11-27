@@ -1,6 +1,10 @@
 {
-  "name": "emdash-monorepo",
+  "name": "ply-monorepo",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coooold/ply.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "nx run-many -t dev --all --parallel=10",
@@ -12,7 +16,7 @@
     "typecheck": "nx run-many -t typecheck --all",
     "affected": "nx affected -t lint typecheck test",
     "check": "node tooling/scripts/check.mjs",
-    "doctor": "pnpm --dir apps/emdash-desktop run doctor",
+    "doctor": "pnpm --dir apps/ply-desktop run doctor",
     "prune:boundary-allowlists": "node tooling/oxlint/scripts/prune-boundary-allowlists.mjs",
     "graph": "nx graph"
   },
@@ -20,16 +24,16 @@
     "nx": "^24.0.6",
     "tsx": "^4.22.4"
   },
-  "engines": {
-    "node": ">=24.0.0",
-    "pnpm": ">=10.28.0"
-  },
   "devEngines": {
     "runtime": {
       "name": "node",
       "version": "24.14.0",
       "onFail": "download"
     }
+  },
+  "engines": {
+    "node": ">=24.0.0",
+    "pnpm": ">=10.28.0"
   },
   "packageManager": "pnpm@10.28.2",
   "pnpm": {

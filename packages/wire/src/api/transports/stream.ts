@@ -1,4 +1,4 @@
-import type { Unsubscribe } from '@emdash/shared';
+import type { Unsubscribe } from '@ply/shared';
 import { isWireMessage, type WireMessage, type WireTransport } from '../protocol';
 
 type ReadableLike = {

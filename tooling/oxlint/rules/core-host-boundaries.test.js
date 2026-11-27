@@ -11,7 +11,7 @@ const repoRoot = path.resolve(import.meta.dirname, '../../..');
 test('classifies forbidden host and feature imports', () => {
   assert.equal(isCoreHostSpecifier('@main/lib/logger'), true);
   assert.equal(isCoreHostSpecifier('@renderer/lib/ui/button'), true);
-  assert.equal(isCoreHostSpecifier('@emdash/shared/logger'), false);
+  assert.equal(isCoreHostSpecifier('@ply/shared/logger'), false);
   assert.equal(isMainCoreFeatureSpecifier('@core/features/tasks/node'), true);
   assert.equal(isMainCoreFeatureSpecifier('@core/primitives/tasks/api'), false);
 });

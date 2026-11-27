@@ -36,23 +36,23 @@ describe('formatCommandLine', () => {
     expect(
       formatCommandLine(
         {
-          command: '/opt/Emdash Server/bin/emdash',
+          command: '/opt/ply Server/bin/emdash',
           args: ['start', '--socket', '/tmp/emdash socket'],
         },
         'posix'
       )
-    ).toBe("'/opt/Emdash Server/bin/emdash' start --socket '/tmp/emdash socket'");
+    ).toBe("'/opt/ply Server/bin/emdash' start --socket '/tmp/emdash socket'");
   });
 
   it('uses the PowerShell invocation operator', () => {
     expect(
       formatCommandLine(
         {
-          command: 'C:\\Program Files\\Emdash\\emdash.exe',
+          command: 'C:\\Program Files\\ply\\emdash.exe',
           args: ['start', '--name', "David's task"],
         },
         'powershell'
       )
-    ).toBe("& 'C:\\Program Files\\Emdash\\emdash.exe' start --name 'David''s task'");
+    ).toBe("& 'C:\\Program Files\\ply\\emdash.exe' start --name 'David''s task'");
   });
 });

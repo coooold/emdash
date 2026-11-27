@@ -1,4 +1,4 @@
-import { noopLogger } from '@emdash/shared/logger';
+import { noopLogger } from '@ply/shared/logger';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { FetchLike } from '../../helpers/oauth-device';
 import { createGitHubAuthBehavior, GITHUB_OAUTH_CLIENT_ID, provider } from './index';

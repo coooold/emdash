@@ -49,7 +49,7 @@ describe('charm provider', () => {
     });
   });
 
-  it('does not pass Emdash ids as Crush session ids', () => {
+  it('does not pass ply ids as Crush session ids', () => {
     const command = provider.behavior.prompt!.buildCommand({
       ...baseContext,
       isResuming: true,

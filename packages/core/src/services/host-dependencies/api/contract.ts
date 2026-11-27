@@ -1,11 +1,4 @@
-import {
-  defineContract,
-  fallible,
-  liveJob,
-  liveModel,
-  liveState,
-  mutation,
-} from '@emdash/wire/rpc';
+import { defineContract, fallible, liveJob, liveModel, liveState, mutation } from '@ply/wire/rpc';
 import { z } from 'zod';
 import {
   dependencyIdSchema,

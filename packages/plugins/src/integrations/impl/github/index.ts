@@ -1,8 +1,5 @@
-import {
-  isGitHubDotComHost,
-  normalizeRepositoryHost,
-} from '@emdash/core/primitives/repository/api';
-import { ok } from '@emdash/shared';
+import { isGitHubDotComHost, normalizeRepositoryHost } from '@ply/core/primitives/repository/api';
+import { ok } from '@ply/shared';
 import type { OAuthAccessToken, VerifyResult } from '../../capabilities/auth';
 import { startDeviceAuthorizationSession, type FetchLike } from '../../helpers/oauth-device';
 import { defineIntegrationPlugin, registerIntegrationPluginBehavior } from '../../plugin';

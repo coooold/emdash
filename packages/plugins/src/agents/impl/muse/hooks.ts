@@ -1,5 +1,5 @@
 import path from 'node:path';
-import type { PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import {
   buildNestedJsonHookConfig,
   configRoots,
@@ -10,7 +10,7 @@ import {
   readJsonConfig,
   writeJsonConfig,
   xdgConfigRoot,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 
 export const MUSE_SETTINGS_PATH = 'settings.json';
 export const MUSE_HOOKS_PATH = 'emdash-hooks.json';
@@ -27,7 +27,7 @@ async function readSettings(fs: PluginFs) {
   }
   const hooksPath = settings.managed_hooks_path ?? MUSE_HOOKS_PATH;
   // PluginFs is confined to the provider config root. Never replace an external
-  // managed hook source or copy its contents into an Emdash-owned file.
+  // managed hook source or copy its contents into an ply-owned file.
   if (
     typeof hooksPath !== 'string' ||
     !hooksPath.trim() ||

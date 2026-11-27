@@ -1,4 +1,4 @@
-import { log } from '@emdash/shared/logger';
+import { log } from '@ply/shared/logger';
 import { createConcurrencyLimiter, type ConcurrencyLimiter } from './concurrency-limiter';
 
 export type KeyedLanes = {

@@ -375,14 +375,14 @@ function thinkingText(rng: () => number): string {
 const FILE_PATHS = [
   'packages/chat-ui/src/components/execute/Execute.tsx',
   'packages/chat-ui/src/components/file-op/FileOperation.tsx',
-  'apps/emdash-desktop/src/core/features/conversations/browser/chat/chat-store.ts',
+  'apps/ply-desktop/src/core/features/conversations/browser/chat/chat-store.ts',
   'packages/ui/src/theme/theme.css',
   'packages/chat-ui/src/state/transcript.ts',
-  'apps/emdash-desktop/src/main/core/acp/acp-session-manager.ts',
+  'apps/ply-desktop/src/main/core/acp/acp-session-manager.ts',
   'packages/chat-ui/src/model.ts',
   'packages/chat-ui/src/components/thinking/Thinking.tsx',
   'packages/chat-ui/src/ChatRoot.tsx',
-  'apps/emdash-desktop/src/core/features/workbench/browser/tabs/tab-manager-store.ts',
+  'apps/ply-desktop/src/core/features/workbench/browser/tabs/tab-manager-store.ts',
 ];
 
 const COMMANDS = [
@@ -391,7 +391,7 @@ const COMMANDS = [
   'pnpm run build',
   'find . -name "*.ts" -type f',
   'git diff --stat HEAD~1',
-  'pnpm --filter @emdash/chat-ui run typecheck',
+  'pnpm --filter @ply/chat-ui run typecheck',
   'node scripts/db-migrate.js',
   'git log --oneline -20',
 ];

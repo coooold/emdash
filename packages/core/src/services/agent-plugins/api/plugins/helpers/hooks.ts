@@ -15,7 +15,7 @@ export const EMDASH_HOOK_POSIX_GUARD =
 const WINDOWS_ENCODED_COMMAND = /-EncodedCommand ([A-Za-z0-9+/]+={0,2})/g;
 
 /**
- * Whether serialized hook config carries the Emdash marker, either in plain text (POSIX and
+ * Whether serialized hook config carries the ply marker, either in plain text (POSIX and
  * legacy Windows commands) or inside a Windows encoded command, whose script is opaque base64.
  */
 function hasEmdashMarker(serialized: string): boolean {

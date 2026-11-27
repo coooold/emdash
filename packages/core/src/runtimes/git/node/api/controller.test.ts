@@ -3,8 +3,8 @@ import { mkdtemp, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
-import { ok, type Result } from '@emdash/shared';
-import { createLiveJobReplicaCache } from '@emdash/wire/live';
+import { ok, type Result } from '@ply/shared';
+import { createLiveJobReplicaCache } from '@ply/wire/live';
 import {
   client,
   connect,
@@ -13,7 +13,7 @@ import {
   memoryTransportPair,
   serve,
   type LiveUpdate,
-} from '@emdash/wire/rpc';
+} from '@ply/wire/rpc';
 import { describe, expect, it } from 'vitest';
 import { gitContract } from '#runtimes/git/api';
 import { GitRuntime } from '#runtimes/git/node/git-runtime';

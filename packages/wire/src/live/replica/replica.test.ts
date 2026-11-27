@@ -1,5 +1,5 @@
-import { ok } from '@emdash/shared';
-import { createManualClock } from '@emdash/shared/testing';
+import { ok } from '@ply/shared';
+import { createManualClock } from '@ply/shared/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { z } from 'zod';
 import type { LiveClientHandle, LiveModelClientHandle } from '../../api/client';

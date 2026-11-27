@@ -1,4 +1,4 @@
-import { definePluginCapability } from '@emdash/shared/plugins';
+import { definePluginCapability } from '@ply/shared/plugins';
 import z from 'zod';
 
 export type ISessionsBehavior = {

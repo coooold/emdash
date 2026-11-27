@@ -3,9 +3,9 @@ import {
   createChildProcessTreeTerminator,
   planExecutableLaunch,
   toChildProcessLaunch,
-} from '@emdash/core/primitives/exec/node';
-import type { UsageProbeContext } from '@emdash/core/services/agent-plugins/api/plugins';
-import { runWithTimeout } from '@emdash/shared/scheduling';
+} from '@ply/core/primitives/exec/node';
+import type { UsageProbeContext } from '@ply/core/services/agent-plugins/api/plugins';
+import { runWithTimeout } from '@ply/shared/scheduling';
 
 export function percent(value: number | null | undefined): number | null {
   return typeof value === 'number' && Number.isFinite(value)

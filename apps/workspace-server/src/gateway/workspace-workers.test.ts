@@ -1,19 +1,19 @@
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { parseAbsolute } from '@emdash/core/primitives/path/api';
-import type * as HostDependenciesModule from '@emdash/core/services/host-dependencies/node';
-import type { ShellEnvManager } from '@emdash/core/services/shell-env/node';
-import { ok } from '@emdash/shared';
-import { createScope } from '@emdash/shared/concurrency';
-import { deferred } from '@emdash/shared/testing';
-import type * as WireWorkerModule from '@emdash/wire/worker';
+import { parseAbsolute } from '@ply/core/primitives/path/api';
+import type * as HostDependenciesModule from '@ply/core/services/host-dependencies/node';
+import type { ShellEnvManager } from '@ply/core/services/shell-env/node';
+import { ok } from '@ply/shared';
+import { createScope } from '@ply/shared/concurrency';
+import { deferred } from '@ply/shared/testing';
+import type * as WireWorkerModule from '@ply/wire/worker';
 import { describe, expect, it, onTestFinished, vi } from 'vitest';
 import { createWorkspaceServerRuntimeHost } from './workspace-workers';
 
 const mocks = vi.hoisted(() => ({ ready: vi.fn<(name: string) => Promise<unknown>>() }));
 
-vi.mock('@emdash/wire/worker', async (importOriginal) => ({
+vi.mock('@ply/wire/worker', async (importOriginal) => ({
   ...(await importOriginal<typeof WireWorkerModule>()),
   createWireWorkerHost: () => ({
     create: (_component: unknown, options: { name: string }) => ({
@@ -23,7 +23,7 @@ vi.mock('@emdash/wire/worker', async (importOriginal) => ({
   }),
 }));
 
-vi.mock('@emdash/core/services/host-dependencies/node', async (importOriginal) => ({
+vi.mock('@ply/core/services/host-dependencies/node', async (importOriginal) => ({
   ...(await importOriginal<typeof HostDependenciesModule>()),
   createHostDependenciesComponent: () => ({ create: () => ({ client: { resolver: {} } }) }),
 }));

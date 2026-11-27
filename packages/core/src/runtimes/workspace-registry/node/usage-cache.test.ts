@@ -1,5 +1,5 @@
-import { err, ok } from '@emdash/shared';
-import { deferred, ManualClock, type Deferred } from '@emdash/shared/testing';
+import { err, ok } from '@ply/shared';
+import { deferred, ManualClock, type Deferred } from '@ply/shared/testing';
 import { describe, expect, it } from 'vitest';
 import type { WorkspaceUsage } from '../api/schemas';
 import type { MeasureWorkspaceUsageError, MeasureWorkspaceUsageOptions } from './measure-usage';

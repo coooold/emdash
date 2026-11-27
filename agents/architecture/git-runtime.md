@@ -73,7 +73,7 @@ owned by `BoundExec`, so repository scoping and dynamic executable selection app
 
 ## Live Models
 
-Wire's `expose()` (from `@emdash/wire/state`) adapts keyed, externally authoritative resources to
+Wire's `expose()` (from `@ply/wire/state`) adapts keyed, externally authoritative resources to
 live models as a `LeasedLiveModelProvider`. It owns generic resource acquisition, keyed state
 retention, mutation idempotency, typed handler dispatch, and settled cursor construction.
 
@@ -129,7 +129,7 @@ as a change inside that namespace.
 
 Releases before this profile registered common Git directories as Watchman roots. Watchman keeps
 roots across daemon restarts until it reaps an idle root (one without triggers or subscriptions)
-after `idle_reap_age_seconds`. Emdash never removes Watchman roots, because other clients may share
+after `idle_reap_age_seconds`. ply never removes Watchman roots, because other clients may share
 the daemon and the root. Once nothing else uses a stale root, `watchman watch-del <git-common-dir>`
 removes it.
 
@@ -154,5 +154,5 @@ callback bugs keep throwing and are recorded by Wire as causes.
   and checkout operations.
 - `exec/` contains Git process construction and scoping, operation context, and transfer progress.
 
-Only runtime and component composition are exported from `@emdash/core/runtimes/git/node`.
+Only runtime and component composition are exported from `@ply/core/runtimes/git/node`.
 Allocation, resources, and command drivers remain implementation details.

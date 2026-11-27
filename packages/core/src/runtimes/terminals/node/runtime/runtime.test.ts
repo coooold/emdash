@@ -1,6 +1,6 @@
-import { createScope } from '@emdash/shared/concurrency';
-import { noopLogger } from '@emdash/shared/logger';
-import { createManualClock } from '@emdash/shared/testing';
+import { createScope } from '@ply/shared/concurrency';
+import { noopLogger } from '@ply/shared/logger';
+import { createManualClock } from '@ply/shared/testing';
 import { describe, expect, it, vi } from 'vitest';
 import type { IExecutionContext } from '#primitives/exec/api';
 import { LOCAL_HOST_REF } from '#primitives/host/api';

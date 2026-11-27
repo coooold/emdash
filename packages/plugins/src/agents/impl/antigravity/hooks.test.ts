@@ -2,7 +2,7 @@ import { Buffer } from 'node:buffer';
 import { exec } from 'node:child_process';
 import { createServer } from 'node:http';
 import { promisify } from 'node:util';
-import type { PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import { describe, expect, it } from 'vitest';
 import { buildAntigravityHookConfig } from './hooks';
 import { provider } from './index';

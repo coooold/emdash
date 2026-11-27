@@ -1,5 +1,5 @@
-import { err, type Serializable } from '@emdash/shared';
-import { deferred } from '@emdash/shared/testing';
+import { err, type Serializable } from '@ply/shared';
+import { deferred } from '@ply/shared/testing';
 import { describe, expect, it, vi } from 'vitest';
 import { makeAcpHarness, makeStartInput } from '#runtimes/acp/node/acp-test-support';
 import { createMemorySessionIntentStore } from '#services/session-intents/api';

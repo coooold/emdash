@@ -1,7 +1,7 @@
 # Workspace Server Packaging
 
 The workspace server is distributed as a self-contained archive for each supported operating
-system and architecture. A remote machine does not need Node.js, npm, pnpm, or the Emdash
+system and architecture. A remote machine does not need Node.js, npm, pnpm, or the ply
 monorepo installed.
 
 ## Supported Targets

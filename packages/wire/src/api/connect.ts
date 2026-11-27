@@ -1,5 +1,5 @@
-import type { Unsubscribe } from '@emdash/shared';
-import { systemClock, type Clock, type TimerHandle } from '@emdash/shared/scheduling';
+import type { Unsubscribe } from '@ply/shared';
+import { systemClock, type Clock, type TimerHandle } from '@ply/shared/scheduling';
 import {
   createBlobConsumer,
   createBlobProducer,

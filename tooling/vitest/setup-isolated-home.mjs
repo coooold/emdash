@@ -21,7 +21,7 @@ import { isolateHomeEnv } from './isolated-home.mjs';
 const home = realpathSync(mkdtempSync(join(tmpdir(), 'emdash-test-home-')));
 writeFileSync(
   join(home, '.gitconfig'),
-  '[user]\n\tname = Emdash Tests\n\temail = tests@emdash.invalid\n'
+  '[user]\n\tname = ply Tests\n\temail = tests@emdash.invalid\n'
 );
 isolateHomeEnv(process.env, home, process.platform);
 

@@ -30,7 +30,7 @@ unless noted.
 - Level-based, not edge-based: the system drives toward the most recent spec "regardless
   of previous versions", explicitly "not required to 'touch base'" at intermediate values.
   Restated later: "The system is level-based rather than edge-triggered, and should assume
-  an Open World." Emdash's snapshot sync borrows exactly this property (missed
+  an Open World." ply's snapshot sync borrows exactly this property (missed
   intermediate states don't matter), just pointed the other way.
 - The record is existence-authoritative: "If the specification is deleted, the object will
   be purged from the system." Deleting the record deletes the world — again inverted from
@@ -207,7 +207,7 @@ separate channel rather than diffing against a stored desired state.
 - From **git worktree**: nearly the whole shape — filesystem authoritative, admin records
   as the registry, auto-prune of records for vanished directories with a grace period,
   lock-with-reason protecting records that matter (≈ emdash annotations), repair-not-
-  recreate, and stale records guarding path identity. Emdash's outbox commands are the
+  recreate, and stale records guarding path identity. ply's outbox commands are the
   one element with no git analogue (git's `remove` is synchronous); Terraform's plan/apply
   of destroy actions and K8s finalizer-gated deletion are the closest precedents for
   durable, idempotent teardown commands.

@@ -14,7 +14,7 @@ Workspaces (repos, worktrees, directories) live on hosts that emdash shares with
 
 The Kubernetes-style spec/status model (record is desired state; controllers converge the world toward it) was explicitly rejected, for three reasons:
 
-1. **Emdash is a guest on the host, not the owner.** A convergence controller would fight the user — recreating worktrees they deleted, removing worktrees they made by hand. What the user does to the host is fact, not drift.
+1. **ply is a guest on the host, not the owner.** A convergence controller would fight the user — recreating worktrees they deleted, removing worktrees they made by hand. What the user does to the host is fact, not drift.
 2. **Convergence assumes an always-on controller colocated with the truth.** The desktop is intermittently connected and sometimes permanently gone. The only standing loop we keep (orphaned-session GC) runs host-side for exactly this reason.
 3. **Multi-writer desired state is incoherent.** Both emdash and users create worktrees; a spec model would need desired state backfilled for artifacts emdash never asked for. In our model creation provenance is optional (`config` is NULL for adopted workspaces).
 

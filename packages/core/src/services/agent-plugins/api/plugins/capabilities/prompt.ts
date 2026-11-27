@@ -1,4 +1,4 @@
-import { definePluginCapability } from '@emdash/shared/plugins';
+import { definePluginCapability } from '@ply/shared/plugins';
 import z from 'zod';
 
 export type CommandContext = {
@@ -6,7 +6,7 @@ export type CommandContext = {
   extraArgs?: string[]; // user-configured in settings
   autoApprove: boolean;
   initialPrompt?: string;
-  /** Emdash conversation UUID — used as the session token for providers that track their
+  /** ply conversation UUID — used as the session token for providers that track their
    * own session across the emdash lifetime (e.g. claude --session-id, opencode --session). */
   sessionId?: string;
   /** Provider-native session identifier stored by the agent classifier. When present, used

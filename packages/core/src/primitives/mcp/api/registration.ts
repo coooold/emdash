@@ -18,7 +18,7 @@ export type McpServerRegistration = {
   [key: string]: unknown;
 };
 
-/** Convert a plugin registration to the canonical Emdash McpServer shape. */
+/** Convert a plugin registration to the canonical ply McpServer shape. */
 export function registrationToMcpServer(
   reg: McpServerRegistration,
   providers: string[]
@@ -52,7 +52,7 @@ export function registrationToMcpServer(
   };
 }
 
-/** Convert a canonical Emdash McpServer to the plugin registration shape. */
+/** Convert a canonical ply McpServer to the plugin registration shape. */
 export function mcpServerToRegistration(server: McpServer): McpServerRegistration {
   return {
     name: server.name,

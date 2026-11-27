@@ -1,5 +1,5 @@
-import type { Unsubscribe } from '@emdash/shared';
-import type { Scope } from '@emdash/shared/concurrency';
+import type { Unsubscribe } from '@ply/shared';
+import type { Scope } from '@ply/shared/concurrency';
 import type { Readable, Snapshot } from './node';
 
 export type ObserveOptions = {

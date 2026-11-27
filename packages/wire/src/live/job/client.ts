@@ -1,6 +1,6 @@
-import { createEmitter, type SerializedError, type Unsubscribe } from '@emdash/shared';
-import type { Logger } from '@emdash/shared/logger';
-import { systemClock, type Clock } from '@emdash/shared/scheduling';
+import { createEmitter, type SerializedError, type Unsubscribe } from '@ply/shared';
+import type { Logger } from '@ply/shared/logger';
+import { systemClock, type Clock } from '@ply/shared/scheduling';
 import type { z } from 'zod';
 import type { LiveCursor, LiveSnapshot, LiveUpdate } from '../../api/channel';
 import type { WireInstrumentation } from '../../api/instrumentation';

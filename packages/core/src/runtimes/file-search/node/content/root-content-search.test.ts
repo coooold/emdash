@@ -1,9 +1,9 @@
 import { mkdtemp, realpath, rm } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { ok } from '@emdash/shared';
-import { createConcurrencyLimiter, createScope } from '@emdash/shared/concurrency';
-import { deferred } from '@emdash/shared/testing';
+import { ok } from '@ply/shared';
+import { createConcurrencyLimiter, createScope } from '@ply/shared/concurrency';
+import { deferred } from '@ply/shared/testing';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { ContentSearchResult } from '#runtimes/file-search/api';
 import type { RegisteredRoot } from '../root/registered-root';

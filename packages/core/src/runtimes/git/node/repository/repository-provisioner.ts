@@ -1,7 +1,7 @@
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
-import { ok, type Result } from '@emdash/shared';
-import { KeyedMutex } from '@emdash/shared/concurrency';
+import { ok, type Result } from '@ply/shared';
+import { KeyedMutex } from '@ply/shared/concurrency';
 import {
   isGitDiscoveryMiss,
   parseGitDubiousOwnership,

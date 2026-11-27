@@ -81,13 +81,13 @@ const NEW_SESSION_HINT = 'open a new terminal or agent session';
  * stays quiet.
  *
  * `platform` is the one git runs the helper on. Channels only exist for the
- * local host, so node-side callers pass the platform Emdash runs on.
+ * local host, so node-side callers pass the platform ply runs on.
  */
 export function gitCredentialHelperCommand(platform: LoopbackCurlPlatform): string {
   return (
     '!f() { case "$1" in get|erase) ' +
     `if [ -z "${HELPER_PORT}" ] || [ -z "${HELPER_NONCE}" ]; then ` +
-    `[ "$1" = get ] && echo "emdash: this session has no Emdash Git credential channel; ` +
+    `[ "$1" = get ] && echo "ply: this session has no ply Git credential channel; ` +
     `${NEW_SESSION_HINT}." >&2; return 1; fi; ` +
     loopbackCurlCommand(
       GIT_CREDENTIAL_NONCE_ENV_VAR,
@@ -97,11 +97,11 @@ export function gitCredentialHelperCommand(platform: LoopbackCurlPlatform): stri
     ) +
     ' || { rc=$?; ' +
     '[ "$1" = get ] && case $rc in ' +
-    `7) echo "emdash: cannot reach the Emdash Git credential service at 127.0.0.1:${HELPER_PORT}; ` +
-    `if Emdash restarted since this session started, ${NEW_SESSION_HINT}." >&2;; ` +
-    '22) echo "emdash: Emdash did not return a Git credential for this session; ' +
+    `7) echo "ply: cannot reach the ply Git credential service at 127.0.0.1:${HELPER_PORT}; ` +
+    `if ply restarted since this session started, ${NEW_SESSION_HINT}." >&2;; ` +
+    '22) echo "ply: ply did not return a Git credential for this session; ' +
     `check the GitHub or GitLab account in the project settings, or ${NEW_SESSION_HINT}." >&2;; ` +
-    '*) echo "emdash: the Git credential request to Emdash failed (curl exit $rc)." >&2;; ' +
+    '*) echo "ply: the Git credential request to ply failed (curl exit $rc)." >&2;; ' +
     'esac; return $rc; };; esac; }; f'
   );
 }

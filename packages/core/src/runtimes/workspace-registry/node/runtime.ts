@@ -1,12 +1,12 @@
 import crypto from 'node:crypto';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { err, ok, type Result } from '@emdash/shared';
-import { KeyedMutex } from '@emdash/shared/concurrency';
-import { noopLogger, type Logger } from '@emdash/shared/logger';
-import { systemClock, type Clock } from '@emdash/shared/scheduling';
-import { stableStringify } from '@emdash/shared/util';
-import { type LeasedLiveModelProvider } from '@emdash/wire/rpc';
+import { err, ok, type Result } from '@ply/shared';
+import { KeyedMutex } from '@ply/shared/concurrency';
+import { noopLogger, type Logger } from '@ply/shared/logger';
+import { systemClock, type Clock } from '@ply/shared/scheduling';
+import { stableStringify } from '@ply/shared/util';
+import { type LeasedLiveModelProvider } from '@ply/wire/rpc';
 import {
   cell,
   expose,
@@ -16,7 +16,7 @@ import {
   type Cell,
   type Family,
   type Query,
-} from '@emdash/wire/state';
+} from '@ply/wire/state';
 import type { EnvSource } from '#primitives/exec/api';
 import type { PathProfile } from '#primitives/path/api';
 import type { StoreHandle } from '#primitives/sqlite-store/api';

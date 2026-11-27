@@ -1,5 +1,5 @@
-import { err, ok, type Unsubscribe } from '@emdash/shared';
-import { deferred, waitFor } from '@emdash/shared/testing';
+import { err, ok, type Unsubscribe } from '@ply/shared';
+import { deferred, waitFor } from '@ply/shared/testing';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import type { LiveSource, LiveUpdate } from '../api/channel';

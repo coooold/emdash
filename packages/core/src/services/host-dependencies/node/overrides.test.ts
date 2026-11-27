@@ -1,7 +1,7 @@
 import { chmod, mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { err } from '@emdash/shared';
+import { err } from '@ply/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { IExecutionContext } from '#primitives/exec/api';
 import { createMemoryKeyValueStore } from '#primitives/kv/api';

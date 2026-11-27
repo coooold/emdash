@@ -14,7 +14,7 @@ const available = { kind: 'available' } as const;
 
 export const fixtureProject: CreateTaskProjectOption = {
   id: 'emdash',
-  label: 'Emdash',
+  label: 'ply',
   path: '~/Code/emdash',
   location: { kind: 'local' },
   availability: available,

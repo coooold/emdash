@@ -1,6 +1,6 @@
 import { spawn as spawnProcess } from 'node:child_process';
 import type { ChildProcessWithoutNullStreams, SpawnOptionsWithoutStdio } from 'node:child_process';
-import { classifySpawnPurpose, recordSpawn } from '@emdash/shared/perf';
+import { classifySpawnPurpose, recordSpawn } from '@ply/shared/perf';
 import type { EnvSource } from '#primitives/exec/api';
 import {
   createChildProcessTreeTerminator,
@@ -44,7 +44,7 @@ type StdoutSink =
 
 /**
  * Every child is a background process with piped stdio, so it is always spawned with
- * `windowsHide`. Emdash has no console on Windows; without the flag each console program
+ * `windowsHide`. ply has no console on Windows; without the flag each console program
  * (git, cmd.exe for `.cmd` shims, where, ...) gets its own console window, which Windows 11
  * shows as a Windows Terminal tab that stays open when the command fails.
  */

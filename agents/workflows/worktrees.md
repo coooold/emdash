@@ -67,7 +67,7 @@ Host-local project settings are stored by the workspace registry and are not wri
 `.emdash.json`:
 
 - `env` (variables injected into new task terminals, lifecycle scripts, and TUI/ACP agent
-  processes; Emdash-owned `EMDASH_*` task metadata takes precedence)
+  processes; ply-owned `EMDASH_*` task metadata takes precedence)
 
 Host-level defaults (`shellSetup`, `worktreeRoot`, `tmux`) live in the host-settings
 runtime (`packages/core/src/runtimes/host-settings/`), stored as a JSON file in the

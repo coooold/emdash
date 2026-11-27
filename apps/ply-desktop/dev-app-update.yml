@@ -1,0 +1,4 @@
+provider: github
+owner: coooold
+repo: ply
+updaterCacheDirName: ply-updater

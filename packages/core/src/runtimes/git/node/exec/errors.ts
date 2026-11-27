@@ -1,5 +1,5 @@
-import type { Err } from '@emdash/shared';
-import { redactSecrets } from '@emdash/shared/logger';
+import type { Err } from '@ply/shared';
+import { redactSecrets } from '@ply/shared/logger';
 import { gitErr, type GitCommandError, type PushError } from '#runtimes/git/api';
 import { ExecError } from '#services/exec/api';
 

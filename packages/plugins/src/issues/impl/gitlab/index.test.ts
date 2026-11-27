@@ -1,4 +1,4 @@
-import { noopLogger } from '@emdash/shared/logger';
+import { noopLogger } from '@ply/shared/logger';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ConnectedIntegrationHostContext } from '../../../integrations/host';
 import * as gitLabClient from '../../../integrations/impl/gitlab/client';

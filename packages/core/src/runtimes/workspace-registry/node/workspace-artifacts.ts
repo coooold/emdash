@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { err, ok, type Result } from '@emdash/shared';
+import { err, ok, type Result } from '@ply/shared';
 import { EMDASH_CONFIG_FILE } from '#primitives/emdash-config/api';
 import {
   absoluteEquals,

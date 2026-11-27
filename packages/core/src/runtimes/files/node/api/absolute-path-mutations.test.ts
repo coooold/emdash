@@ -1,8 +1,8 @@
 import { mkdir, mkdtemp, readFile, realpath, rm, stat, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { ok } from '@emdash/shared';
-import { client, connect, memoryTransportPair, serve } from '@emdash/wire/rpc';
+import { ok } from '@ply/shared';
+import { client, connect, memoryTransportPair, serve } from '@ply/wire/rpc';
 import { afterEach, describe, expect, it } from 'vitest';
 import { filesContract, listingEntryName } from '#runtimes/files/api';
 import { FilesRuntime, type FilesRuntimeOptions } from '#runtimes/files/node/files-runtime';

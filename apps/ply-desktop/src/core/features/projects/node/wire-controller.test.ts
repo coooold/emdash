@@ -1,0 +1,300 @@
+import { hostRef, LOCAL_HOST_REF, type HostRef } from '@ply/core/primitives/host/api';
+import type { HostAbsolutePath } from '@ply/core/primitives/path/api';
+import {
+  runtimeHostUnavailable,
+  type RuntimeResolveError,
+} from '@ply/core/primitives/runtime-resolution/api';
+import type {
+  GitPathInspection,
+  InspectPathError,
+  TrustRepositoryError,
+  TrustRepositoryResult,
+} from '@ply/core/runtimes/git/api';
+import { err, ok, type Result } from '@ply/shared';
+import { createScope } from '@ply/shared/concurrency';
+import { waitFor } from '@ply/shared/testing';
+import { WireError } from '@ply/wire/rpc';
+import { cell, observe, remote, snapshot, whenReady } from '@ply/wire/state';
+import { createTestWire } from '@ply/wire/testing';
+import { describe, expect, it, vi } from 'vitest';
+import { projectsWireContract, type ProjectAttachmentState } from '@core/features/projects/api';
+import type { ProjectAttachmentManager } from '@core/features/projects/api/node/project-attachment-manager';
+import type { ProjectOperationDependencies } from './controller';
+import { getProjectPathStatus } from './operations/project-path-status';
+import { createProjectsWireController } from './wire-controller';
+
+describe('Projects Wire attachments', () => {
+  it('does not expose renderer-driven Project opening', () => {
+    expect(projectsWireContract).not.toHaveProperty('openProject');
+  });
+
+  it('leases tracked attachment state and forwards recovery through Projects ownership', async () => {
+    const state = cell<ProjectAttachmentState>({
+      kind: 'attached',
+      establishedHostGeneration: 3,
+    });
+    let leases = 0;
+    const recover = vi.fn(async () => ok());
+    const projects = {
+      track: vi.fn((_projectId, owner) => {
+        leases += 1;
+        owner.add(() => {
+          leases -= 1;
+        });
+        return state;
+      }),
+      recover,
+    } as unknown as ProjectAttachmentManager;
+    const controller = createProjectsWireController({
+      projects,
+    } as unknown as ProjectOperationDependencies);
+    const wire = createTestWire(projectsWireContract, controller.impl);
+    const scope = createScope({ label: 'projects-attachments-wire-test' });
+    const attachments = remote(projectsWireContract.attachments, wire.client.attachments, {
+      scope,
+      lingerMs: 0,
+    });
+    const member = attachments({ projectId: 'project-1' });
+    observe(member.states.state, () => {}, { scope, immediate: true });
+
+    expect((await whenReady(member.states.state, { scope })).value).toEqual({
+      kind: 'attached',
+      establishedHostGeneration: 3,
+    });
+    expect(snapshot(member.states.state).value).toEqual({
+      kind: 'attached',
+      establishedHostGeneration: 3,
+    });
+    expect(leases).toBe(1);
+
+    await expect(wire.client.recoverAttachment({ projectId: 'project-1' })).resolves.toEqual(ok());
+    expect(recover).toHaveBeenCalledWith('project-1');
+
+    await scope.dispose();
+    expect(leases).toBe(1);
+
+    const reconnectedScope = createScope({ label: 'projects-attachments-wire-reconnect-test' });
+    const reconnectedAttachments = remote(
+      projectsWireContract.attachments,
+      wire.client.attachments,
+      {
+        scope: reconnectedScope,
+        lingerMs: 0,
+      }
+    );
+    const reconnectedMember = reconnectedAttachments({ projectId: 'project-1' });
+    observe(reconnectedMember.states.state, () => {}, {
+      scope: reconnectedScope,
+      immediate: true,
+    });
+    await whenReady(reconnectedMember.states.state, { scope: reconnectedScope });
+
+    expect(projects.track).toHaveBeenCalledOnce();
+    expect(leases).toBe(1);
+
+    await reconnectedScope.dispose();
+    await wire.dispose();
+    await controller.dispose();
+    await waitFor(() => leases === 0);
+  });
+});
+
+describe('Projects Wire directory listing', () => {
+  it('browses and inspects the selected host even when the same path exists locally', async () => {
+    const root: HostAbsolutePath = { root: { kind: 'posix' }, segments: ['workspace'] };
+    const remoteHost = hostRef('remote', 'ssh-nixos');
+    function hostRuntime(directoryName: string) {
+      return {
+        files: {
+          fs: {
+            listDirectory: vi.fn(async () =>
+              ok({
+                entries: [
+                  {
+                    name: directoryName,
+                    kind: 'directory' as const,
+                    size: 0,
+                    mtimeMs: 0,
+                    isRepository: false,
+                  },
+                ],
+              })
+            ),
+            stat: vi.fn(async () => ok({ type: 'directory' as const })),
+          },
+        },
+        git: {
+          inspectPath: vi.fn(async (): Promise<Result<GitPathInspection, InspectPathError>> =>
+            ok({ kind: 'repository' as const, rootPath: root, baseRef: 'main' })
+          ),
+        },
+      };
+    }
+    const local = hostRuntime('local-folder');
+    const remote = hostRuntime('remote-folder');
+    const client = vi.fn(async (host: HostRef) => {
+      if (host.type === 'local') return ok(local);
+      expect(host).toEqual(remoteHost);
+      return ok(remote);
+    });
+    const dependencies = { runtimes: { client } } as unknown as ProjectOperationDependencies;
+    const controller = createProjectsWireController(dependencies);
+    const wire = createTestWire(projectsWireContract, controller.impl);
+    try {
+      await expect(
+        wire.client.listHostDirectory({
+          host: { type: 'ssh', connectionId: remoteHost.id },
+          path: root,
+        })
+      ).resolves.toMatchObject({
+        success: true,
+        data: { entries: [{ name: 'remote-folder', kind: 'directory' }] },
+      });
+      expect(remote.files.fs.listDirectory).toHaveBeenCalledWith({ path: root });
+      await expect(getProjectPathStatus(dependencies, remoteHost, '/workspace')).resolves.toEqual({
+        isDirectory: true,
+        isGitRepo: true,
+      });
+      expect(remote.files.fs.stat).toHaveBeenCalledOnce();
+      expect(remote.git.inspectPath).toHaveBeenCalledWith({ path: root });
+      expect(local.files.fs.listDirectory).not.toHaveBeenCalled();
+      expect(local.files.fs.stat).not.toHaveBeenCalled();
+      expect(local.git.inspectPath).not.toHaveBeenCalled();
+      expect(client).not.toHaveBeenCalledWith(LOCAL_HOST_REF);
+
+      remote.git.inspectPath.mockResolvedValueOnce(
+        err({ type: 'inspect-failed', path: root, message: 'spawn git ENOENT' })
+      );
+      await expect(getProjectPathStatus(dependencies, remoteHost, '/workspace')).resolves.toEqual({
+        isDirectory: true,
+        isGitRepo: false,
+        error: { type: 'inspect-failed', path: '/workspace', message: 'spawn git ENOENT' },
+      });
+      expect(local.git.inspectPath).not.toHaveBeenCalled();
+    } finally {
+      await wire.dispose();
+      await controller.dispose();
+    }
+  });
+});
+
+describe('Projects Wire repository trust', () => {
+  const root: HostAbsolutePath = { root: { kind: 'posix' }, segments: ['workspace'] };
+  const remoteHost = hostRef('remote', 'ssh-nixos');
+  const sshHost = { type: 'ssh' as const, connectionId: remoteHost.id };
+  const dubiousOwnership = { repositoryPath: '/workspace', safeDirectory: '/workspace' };
+  const refusal = [
+    "fatal: detected dubious ownership in repository at '/workspace'",
+    'To add an exception for this directory, call:',
+    '',
+    '\tgit config --global --add safe.directory /workspace',
+  ].join('\n');
+
+  function hostRuntime() {
+    return {
+      files: { fs: { stat: vi.fn(async () => ok({ type: 'directory' as const })) } },
+      git: {
+        inspectPath: vi.fn(async (): Promise<Result<GitPathInspection, InspectPathError>> =>
+          err({ type: 'inspect-failed', path: root, message: refusal, dubiousOwnership })
+        ),
+        trustRepository: vi.fn(
+          async (): Promise<Result<TrustRepositoryResult, TrustRepositoryError>> =>
+            ok({ added: true })
+        ),
+      },
+    };
+  }
+
+  function setup() {
+    const local = hostRuntime();
+    const remote = hostRuntime();
+    const client = vi.fn(
+      async (host: HostRef): Promise<Result<ReturnType<typeof hostRuntime>, RuntimeResolveError>> =>
+        ok(host.type === 'local' ? local : remote)
+    );
+    const dependencies = { runtimes: { client } } as unknown as ProjectOperationDependencies;
+    const controller = createProjectsWireController(dependencies);
+    const wire = createTestWire(projectsWireContract, controller.impl);
+    return {
+      local,
+      remote,
+      client,
+      dependencies,
+      wire,
+      async dispose() {
+        await wire.dispose();
+        await controller.dispose();
+      },
+    };
+  }
+
+  it("reports Git's ownership refusal and trusts the repository on the project's host", async () => {
+    const { local, remote, dependencies, wire, dispose } = setup();
+    try {
+      await expect(getProjectPathStatus(dependencies, remoteHost, '/workspace')).resolves.toEqual({
+        isDirectory: true,
+        isGitRepo: false,
+        error: { type: 'inspect-failed', path: '/workspace', message: refusal, dubiousOwnership },
+      });
+
+      await expect(
+        wire.client.trustRepository({
+          host: sshHost,
+          path: '/workspace',
+          safeDirectory: '/workspace',
+        })
+      ).resolves.toEqual(ok({ added: true }));
+      expect(remote.git.trustRepository).toHaveBeenCalledWith({
+        path: root,
+        safeDirectory: '/workspace',
+      });
+      expect(local.git.trustRepository).not.toHaveBeenCalled();
+    } finally {
+      await dispose();
+    }
+  });
+
+  it('explains when the workspace server is too old to trust repositories', async () => {
+    const { remote, wire, dispose } = setup();
+    remote.git.trustRepository.mockRejectedValueOnce(
+      new WireError('UNKNOWN_PROCEDURE', "Unknown procedure 'git.trustRepository'")
+    );
+    try {
+      await expect(
+        wire.client.trustRepository({
+          host: sshHost,
+          path: '/workspace',
+          safeDirectory: '/workspace',
+        })
+      ).resolves.toEqual({
+        success: false,
+        error: { type: 'unsupported', message: expect.stringContaining('too old') },
+      });
+    } finally {
+      await dispose();
+    }
+  });
+
+  it('passes declared trust failures and unavailable hosts through', async () => {
+    const { local, client, wire, dispose } = setup();
+    const failure: TrustRepositoryError = {
+      type: 'trust-failed',
+      reason: 'repository-changed',
+      path: root,
+      message: 'Git now asks to trust /elsewhere instead.',
+    };
+    local.git.trustRepository.mockResolvedValueOnce(err(failure));
+    try {
+      const input = { host: { type: 'local' as const }, path: '/workspace', safeDirectory: '/x' };
+      await expect(wire.client.trustRepository(input)).resolves.toEqual(err(failure));
+
+      const unavailable = runtimeHostUnavailable(remoteHost, 'offline', 'Machine is offline');
+      client.mockResolvedValueOnce(err(unavailable));
+      await expect(wire.client.trustRepository({ ...input, host: sshHost })).resolves.toEqual(
+        err(unavailable)
+      );
+    } finally {
+      await dispose();
+    }
+  });
+});

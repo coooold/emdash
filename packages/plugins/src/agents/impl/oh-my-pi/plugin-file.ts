@@ -24,7 +24,7 @@ async function notifyEmdash(
       signal: AbortSignal.timeout(2000),
     });
   } catch {
-    // Emdash may not be running when omp is launched directly; ignore hook failures.
+    // ply may not be running when omp is launched directly; ignore hook failures.
   }
 }
 

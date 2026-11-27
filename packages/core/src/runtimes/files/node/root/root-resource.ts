@@ -1,5 +1,5 @@
-import type { Unsubscribe } from '@emdash/shared';
-import { KeyedMutex } from '@emdash/shared/concurrency';
+import type { Unsubscribe } from '@ply/shared';
+import { KeyedMutex } from '@ply/shared/concurrency';
 import { Minimatch } from 'minimatch';
 import type { PortableRelativePath } from '#primitives/path/api';
 import type { RootIdentity } from '#runtimes/files/node/allocation/identity';

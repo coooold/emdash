@@ -1,7 +1,7 @@
 /**
  * Highlighter — ChatHighlighter interface + default factory.
  *
- * chat-ui defines the `ChatHighlighter` contract; consumers (emdash-desktop)
+ * chat-ui defines the `ChatHighlighter` contract; consumers (ply-desktop)
  * can inject their own implementation through ChatRootProps / MountChatOptions.
  * When no highlighter is provided, `createDefaultHighlighter()` is used, which
  * wraps a bundled Shiki singleton with the chat-ui owned em-light/em-dark themes.

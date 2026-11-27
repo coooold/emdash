@@ -16,7 +16,7 @@ Start the container from `apps/workspace-server/`:
 pnpm run run:docker-remote
 ```
 
-Use these SSH connection settings in Emdash:
+Use these SSH connection settings in ply:
 
 - Host: `localhost`
 - Port: `2223`
@@ -70,7 +70,7 @@ which expands to:
 ```bash
 EMDASH_WORKSPACE_SERVER_ARTIFACTS_URL=http://minio:9000/emdash-releases/workspace-server \
   EMDASH_WORKSPACE_SERVER_DEV_AUTO_UPDATE=1 \
-  pnpm --dir ../emdash-desktop run dev
+  pnpm --dir ../ply-desktop run dev
 ```
 
 The `minio` hostname is resolved by the `workspace-remote` container. The host can inspect the same
@@ -101,7 +101,7 @@ version, and restarts the daemon.
 Run the desktop connection smoke test against the installed daemon:
 
 ```bash
-pnpm --dir ../emdash-desktop run test:workspace-server-remote
+pnpm --dir ../ply-desktop run test:workspace-server-remote
 ```
 
 The test uses the Compose service's fixed `localhost:2223` and `devuser`/`devpass` credentials. It

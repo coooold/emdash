@@ -1,4 +1,4 @@
-import { defineWireComponent, requireContract } from '@emdash/wire/worker';
+import { defineWireComponent, requireContract } from '@ply/wire/worker';
 import { z } from 'zod';
 // oxlint-disable-next-line emdash/core-module-boundaries -- runs await the registry's plain createWorktree verb (operation-log retirement §5); the contract has no services-level home yet
 import { workspaceRegistryContract } from '#runtimes/workspace-registry/api';

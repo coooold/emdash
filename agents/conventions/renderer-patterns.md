@@ -1,6 +1,6 @@
 # Renderer Patterns
 
-All paths are relative to `apps/emdash-desktop/`.
+All paths are relative to `apps/ply-desktop/`.
 
 ## Feature `api/` Surfaces
 
@@ -95,7 +95,7 @@ Workbench layout follows a strict ownership model (see
   `src/core/primitives/chrome-stores/`.
 - **Panel visibility is store-driven conditional rendering, never programmatic panel
   writes.** Closed = unmounted. Collapsible surfaces bind through
-  `useCollapsiblePanelBinding` from `@emdash/ui` (next to `Resizable`), which turns
+  `useCollapsiblePanelBinding` from `@ply/ui` (next to `Resizable`), which turns
   drag-below-threshold into a semantic close command. No `panel.collapse()` /
   `expand()` / `resize()` / `setLayout()` calls exist in app code, and no
   `display:none` toggling of workbench surfaces.

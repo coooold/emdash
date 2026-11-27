@@ -1,8 +1,8 @@
 import { mkdir, mkdtemp, realpath, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { err, ok } from '@emdash/shared';
-import { peek } from '@emdash/wire/state';
+import { err, ok } from '@ply/shared';
+import { peek } from '@ply/wire/state';
 import { afterEach, describe, expect, it } from 'vitest';
 import { relativePath, runtimeRoot } from '#runtimes/files/node/testing/paths';
 import type { IWatchService, WatchOptions } from '#services/fs-watch/api';

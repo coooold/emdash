@@ -1,5 +1,5 @@
-import { ok } from '@emdash/shared';
-import { ManualClock } from '@emdash/shared/testing';
+import { ok } from '@ply/shared';
+import { ManualClock } from '@ply/shared/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LOCAL_HOST_REF } from '#primitives/host/api';
 import type { TempStoreHandle } from '#primitives/sqlite-store/api';

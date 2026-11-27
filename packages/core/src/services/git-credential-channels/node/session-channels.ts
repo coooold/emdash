@@ -1,4 +1,4 @@
-import type { Logger } from '@emdash/shared/logger';
+import type { Logger } from '@ply/shared/logger';
 import type { GitCredentialsSessionSpec } from '#primitives/git-credentials/api';
 
 /** Hands one credential channel back to the desktop that minted it. */

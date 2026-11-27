@@ -607,7 +607,7 @@ remoteProject.project.selection = {
   option: {
     ...fixtureProject,
     id: 'remote',
-    label: 'Remote Emdash',
+    label: 'Remote ply',
     path: '/srv/emdash',
     location: { kind: 'ssh', hostLabel: 'build-machine' },
   },

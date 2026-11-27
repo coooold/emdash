@@ -1,4 +1,4 @@
-import { systemClock, type Clock, type TimerHandle } from '@emdash/shared/scheduling';
+import { systemClock, type Clock, type TimerHandle } from '@ply/shared/scheduling';
 import type { LiveCursor } from '../../api/channel';
 
 type CursorWaiter = {

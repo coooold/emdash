@@ -1,0 +1,6 @@
+provider: github
+owner: coooold
+repo: ply
+channel: canary
+allowPrerelease: true
+updaterCacheDirName: ply-canary-updater

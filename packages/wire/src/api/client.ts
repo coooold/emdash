@@ -1,5 +1,5 @@
-import { ok, type Result, type SerializedError, type Unsubscribe } from '@emdash/shared';
-import type { RetrySchedule } from '@emdash/shared/scheduling';
+import { ok, type Result, type SerializedError, type Unsubscribe } from '@ply/shared';
+import type { RetrySchedule } from '@ply/shared/scheduling';
 import {
   createSingleUseDownloadHandle,
   normalizeUploadFile,

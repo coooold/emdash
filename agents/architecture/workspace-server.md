@@ -1,9 +1,9 @@
 # Workspace Server
 
-The Workspace Server (`apps/workspace-server/`) is a Node daemon that runs on a remote machine and exposes workspace runtimes (git, files, deps, ACP, …) to Emdash clients over the `@emdash/wire` protocol. Clients connect over an SSH-forwarded Unix socket; the daemon is independently lived and can be running when clients upgrade, downgrade, or are absent entirely.
+The Workspace Server (`apps/workspace-server/`) is a Node daemon that runs on a remote machine and exposes workspace runtimes (git, files, deps, ACP, …) to ply clients over the `@ply/wire` protocol. Clients connect over an SSH-forwarded Unix socket; the daemon is independently lived and can be running when clients upgrade, downgrade, or are absent entirely.
 
 The desktop client and managed installation flow live in
-`apps/emdash-desktop/src/core/services/hosts/node/workspace-server/`. For an SSH host, the runtime
+`apps/ply-desktop/src/core/services/hosts/node/workspace-server/`. For an SSH host, the runtime
 broker looks up a `HostService` through `Hosts` (`core/services/hosts/node/hosts.ts`) and asks
 its `runtime` service for a client. `Hosts` owns identity replacement, aggregate state/events,
 and lease rebinding. Each remote identity has one `HostService`
@@ -231,7 +231,7 @@ When majors differ, the fallible `initialize` procedure returns a typed error:
 }
 ```
 
-`action` is `'upgrade-client'` when the client major is lower (stale desktop app) and `'upgrade-server'` when the client major is higher (stale daemon). Use `protocolUpgradeMessage(action)` from `@emdash/core/workspace-server` to produce a consistent user-facing string.
+`action` is `'upgrade-client'` when the client major is lower (stale desktop app) and `'upgrade-server'` when the client major is higher (stale daemon). Use `protocolUpgradeMessage(action)` from `@ply/core/workspace-server` to produce a consistent user-facing string.
 
 ### Negotiation flow
 
@@ -281,6 +281,6 @@ The desktop forwards the read-only agent hook-status procedure to the selected h
 | [`apps/workspace-server/src/gateway/worker-paths.ts`](../../apps/workspace-server/src/gateway/worker-paths.ts) | packaged worker executable path resolution |
 | [`apps/workspace-server/src/gateway/entries/`](../../apps/workspace-server/src/gateway/entries/) | plugin-injecting ACP, agent config, and TUI-agent worker entries |
 | [`apps/workspace-server/src/index.ts`](../../apps/workspace-server/src/index.ts) | CLI and daemon entry point |
-| [`apps/emdash-desktop/src/core/services/hosts/`](../../apps/emdash-desktop/src/core/services/hosts/) | Desktop orchestration and lifecycle policy for SSH hosts |
-| [`apps/emdash-desktop/src/core/services/hosts/node/workspace-server/`](../../apps/emdash-desktop/src/core/services/hosts/node/workspace-server/) | Wire connection manager, hosted-script installer, daemon control, and provisioner |
+| [`apps/ply-desktop/src/core/services/hosts/`](../../apps/ply-desktop/src/core/services/hosts/) | Desktop orchestration and lifecycle policy for SSH hosts |
+| [`apps/ply-desktop/src/core/services/hosts/node/workspace-server/`](../../apps/ply-desktop/src/core/services/hosts/node/workspace-server/) | Wire connection manager, hosted-script installer, daemon control, and provisioner |
 | [`apps/workspace-server/install.sh`](../../apps/workspace-server/install.sh) | Remote platform detection and atomic pinned-artifact installation |

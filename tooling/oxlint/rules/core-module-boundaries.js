@@ -17,13 +17,13 @@ const ALIAS_PREFIXES = {
   '@core/primitives/': 'primitives',
   '@core/features/': 'features',
 };
-const CORE_PACKAGE_PREFIX = '@emdash/core/';
+const CORE_PACKAGE_PREFIX = '@ply/core/';
 
 const currentDir = path.dirname(fileURLToPath(import.meta.url));
 export const DEFAULT_CORE_SRC_ROOT = path.resolve(currentDir, '../../../packages/core/src');
 export const DEFAULT_DESKTOP_CORE_SRC_ROOT = path.resolve(
   currentDir,
-  '../../../apps/emdash-desktop/src/core'
+  '../../../apps/ply-desktop/src/core'
 );
 
 export function normalizePath(value) {
@@ -258,7 +258,11 @@ export const coreModuleBoundariesRule = {
     const crossSliceAllowlist = allowlists.crossSlice;
     if (
       crossSliceAllowlist !== undefined &&
-      isBoundaryFileAllowlisted(filename, crossSliceAllowlist, options.repoRoot ?? DEFAULT_REPO_ROOT)
+      isBoundaryFileAllowlisted(
+        filename,
+        crossSliceAllowlist,
+        options.repoRoot ?? DEFAULT_REPO_ROOT
+      )
     ) {
       return {};
     }

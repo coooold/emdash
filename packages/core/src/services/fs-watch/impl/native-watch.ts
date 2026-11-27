@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises';
-import type { Disposable } from '@emdash/shared/concurrency';
 import parcelWatcher from '@parcel/watcher';
+import type { Disposable } from '@ply/shared/concurrency';
 import type { WatchEvent } from '#services/fs-watch/api';
 
 const RESUBSCRIBE_DELAY_MS = 250;

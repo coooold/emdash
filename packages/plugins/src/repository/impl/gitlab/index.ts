@@ -1,5 +1,5 @@
-import { err, ok, type Result } from '@emdash/shared';
 import { AccessLevel } from '@gitbeaker/rest';
+import { err, ok, type Result } from '@ply/shared';
 import { toIntegrationError } from '../../../integrations/helpers/error';
 import type { ConnectedIntegrationHostContext } from '../../../integrations/host';
 import {

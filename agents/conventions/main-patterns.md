@@ -118,7 +118,7 @@ Run background commands through the shared launchers: `createBoundExec` / `NodeE
 with `planExecutableLaunch` (`packages/core/src/primitives/exec/node/`).
 
 **Rules:**
-- Spawn every background child with `windowsHide: true`. Emdash has no console on Windows, so a
+- Spawn every background child with `windowsHide: true`. ply has no console on Windows, so a
   console program (git, `where`, cmd.exe running a `.cmd` shim) spawned without it gets its own
   console window, which Windows 11 shows as a Windows Terminal tab.
 - Only launches of user-facing apps (open-in editors, external terminals) omit the flag, because

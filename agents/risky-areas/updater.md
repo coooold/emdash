@@ -54,6 +54,8 @@ single finalizer only after the complete supported architecture set builds and v
 
 ### Two feeds, one artifact set
 
+The standard desktop workflow publishes to GitHub Releases. Set the repository variable `R2_PUBLIC_URL` for the separate production and canary workflows when using an R2 desktop update feed.
+
 electron-builder emits channel manifests named by the **first** publish provider's `channel`:
 
 - Stable: `provider: github` has no explicit channel → defaults to `latest` → emits `latest*.yml`.

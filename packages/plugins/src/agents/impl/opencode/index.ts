@@ -1,14 +1,11 @@
-import {
-  definePlugin,
-  registerPluginBehavior,
-} from '@emdash/core/services/agent-plugins/api/plugins';
+import { definePlugin, registerPluginBehavior } from '@ply/core/services/agent-plugins/api/plugins';
 import {
   buildStandardCommand,
   createFileDropPlugin,
   npmDependency,
   opencodeMcpAdapter,
   xdgConfigRoot,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 import { connectStdioAcp } from '../../helpers/acp-stdio';
 import { opencodeAuthStatus } from './auth';
 import { OPENCODE_PLUGIN_CONTENT } from './plugin-file';

@@ -1,7 +1,7 @@
 import os from 'node:os';
-import type { PluginRegistry } from '@emdash/shared/plugins';
-import { createController } from '@emdash/wire/rpc';
-import { defineWireComponent, requireContract } from '@emdash/wire/worker';
+import type { PluginRegistry } from '@ply/shared/plugins';
+import { createController } from '@ply/wire/rpc';
+import { defineWireComponent, requireContract } from '@ply/wire/worker';
 import { z } from 'zod';
 import { AgentPluginHost, type CLIAgentPluginProvider } from '#services/agent-plugins/api/plugins';
 import { createLocalPluginFs } from '#services/agent-plugins/api/plugins/helpers';

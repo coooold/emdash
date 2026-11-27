@@ -271,7 +271,7 @@ export function createArtifactManifest(options: {
 
 export function parseAdapterAssetInfos(value: unknown): PackageAdapterAssetInfo[] {
   if (!Array.isArray(value)) {
-    throw new Error('@emdash/plugins adapter manifest did not export an adapterAssets array');
+    throw new Error('@ply/plugins adapter manifest did not export an adapterAssets array');
   }
 
   return value.map((asset) => {
@@ -280,7 +280,7 @@ export function parseAdapterAssetInfos(value: unknown): PackageAdapterAssetInfo[
       typeof asset['name'] !== 'string' ||
       (asset['format'] !== 'esm' && asset['format'] !== 'cjs')
     ) {
-      throw new Error('@emdash/plugins adapter manifest contains an invalid adapter asset');
+      throw new Error('@ply/plugins adapter manifest contains an invalid adapter asset');
     }
     return { name: asset['name'], format: asset['format'] };
   });

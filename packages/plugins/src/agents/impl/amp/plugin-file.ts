@@ -23,7 +23,7 @@ async function notifyEmdash(eventType: 'start' | 'stop' | 'session', body: Recor
       body: JSON.stringify(body),
     });
   } catch {
-    // Emdash may not be running when Amp is launched directly; ignore hook failures.
+    // ply may not be running when Amp is launched directly; ignore hook failures.
   }
 }
 

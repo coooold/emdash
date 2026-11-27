@@ -1,8 +1,8 @@
-import type { PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import type {
   CanonicalHookEvent,
   HookRegistration,
-} from '@emdash/core/services/agent-plugins/api/plugins';
+} from '@ply/core/services/agent-plugins/api/plugins';
 import {
   EMDASH_MARKER,
   EMDASH_HOOK_POSIX_GUARD,
@@ -18,7 +18,7 @@ import {
   makeStdinHookCommand,
   readJsonConfig,
   writeJsonConfig,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 
 export const GROK_HOOKS_PATH = 'hooks/emdash.json';
 

@@ -1,8 +1,5 @@
-import {
-  definePlugin,
-  registerPluginBehavior,
-} from '@emdash/core/services/agent-plugins/api/plugins';
-import { buildStandardCommand } from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+import { definePlugin, registerPluginBehavior } from '@ply/core/services/agent-plugins/api/plugins';
+import { buildStandardCommand } from '@ply/core/services/agent-plugins/api/plugins/helpers';
 import { buildAntigravityHookConfig } from './hooks';
 import { icon } from './icon';
 

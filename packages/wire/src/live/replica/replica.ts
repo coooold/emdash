@@ -1,5 +1,5 @@
-import type { PendingLease } from '@emdash/shared';
-import { stableStringify } from '@emdash/shared/util';
+import type { PendingLease } from '@ply/shared';
+import { stableStringify } from '@ply/shared/util';
 import type { LiveMutationResult, LiveSource } from '../../api/channel';
 import type {
   MutationCallOptions,

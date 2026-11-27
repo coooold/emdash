@@ -1,8 +1,8 @@
 import { mkdir, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import type { Serializable } from '@emdash/shared';
-import { deferred } from '@emdash/shared/testing';
+import type { Serializable } from '@ply/shared';
+import { deferred } from '@ply/shared/testing';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createJsonFileKeyValueStore } from './index';
 

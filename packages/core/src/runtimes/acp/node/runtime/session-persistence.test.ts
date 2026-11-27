@@ -1,9 +1,9 @@
 import { mkdir, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { err, type Serializable } from '@emdash/shared';
-import { deferred } from '@emdash/shared/testing';
-import { peek } from '@emdash/wire/state';
+import { err, type Serializable } from '@ply/shared';
+import { deferred } from '@ply/shared/testing';
+import { peek } from '@ply/wire/state';
 import { describe, expect, it, vi } from 'vitest';
 import { makeAcpHarness, makeStartInput } from '#runtimes/acp/node/acp-test-support';
 import { emptyRetainedPresentation } from '#runtimes/acp/node/state/live-models';

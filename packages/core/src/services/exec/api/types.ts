@@ -1,5 +1,5 @@
 import type { ChildProcessWithoutNullStreams } from 'node:child_process';
-import { redactSecrets } from '@emdash/shared/logger';
+import { redactSecrets } from '@ply/shared/logger';
 import type { EnvSource } from '#primitives/exec/api';
 
 export type ExecOptions = {

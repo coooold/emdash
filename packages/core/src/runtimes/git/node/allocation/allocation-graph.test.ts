@@ -1,7 +1,7 @@
-import { err, ok } from '@emdash/shared';
-import { createScope } from '@emdash/shared/concurrency';
-import { deferred } from '@emdash/shared/testing';
-import { snapshot } from '@emdash/wire/state';
+import { err, ok } from '@ply/shared';
+import { createScope } from '@ply/shared/concurrency';
+import { deferred } from '@ply/shared/testing';
+import { snapshot } from '@ply/wire/state';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { gitPath, hostPath } from '#runtimes/git/node/testing/paths';
 import type { BoundExec } from '#services/exec/api';

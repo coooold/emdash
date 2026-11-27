@@ -1,11 +1,11 @@
 /**
  * Builds the workspace packages before a flow that bypasses Nx task
- * orchestration — app-only dev (`pnpm run dev` from apps/emdash-desktop) and
+ * orchestration — app-only dev (`pnpm run dev` from apps/ply-desktop) and
  * Storybook run their underlying tool directly, so on a never-built clone the
  * workspace `dist/` outputs their imports resolve to would not exist yet.
  *
  * When the calling script is itself executed as an Nx task (root `pnpm run
- * dev`, `nx storybook @emdash/ui`, ...), Nx's `^build` dependency wiring has
+ * dev`, `nx storybook @ply/ui`, ...), Nx's `^build` dependency wiring has
  * already ordered the builds, so this exits immediately. Warm re-runs are Nx
  * cache hits and cost around a second.
  */
@@ -17,15 +17,7 @@ if (process.env.NX_TASK_TARGET_PROJECT) {
 
 const result = spawnSync(
   'pnpm',
-  [
-    'exec',
-    'nx',
-    'run-many',
-    '-t',
-    'build',
-    '--exclude',
-    '@emdash/emdash-desktop,@emdash/workspace-server',
-  ],
+  ['exec', 'nx', 'run-many', '-t', 'build', '--exclude', '@ply/ply-desktop,@ply/workspace-server'],
   { stdio: 'inherit', shell: process.platform === 'win32' }
 );
 process.exit(typeof result.status === 'number' ? result.status : 1);

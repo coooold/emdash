@@ -29,13 +29,13 @@ describe('computeRemotesState', () => {
   it('retains fetch remotes with partial-clone annotations', async () => {
     const exec = createRemoteExec(
       [
-        'origin https://github.com/generalaction/emdash (fetch) [blob:none]',
-        'origin https://github.com/generalaction/emdash (push)',
+        'origin https://github.com/coooold/ply (fetch) [blob:none]',
+        'origin https://github.com/coooold/ply (push)',
       ].join('\n')
     );
 
     await expect(computeRemotesState(exec)).resolves.toEqual({
-      remotes: [{ name: 'origin', url: 'https://github.com/generalaction/emdash' }],
+      remotes: [{ name: 'origin', url: 'https://github.com/coooold/ply' }],
     });
   });
 });

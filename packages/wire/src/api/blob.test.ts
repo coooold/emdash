@@ -1,5 +1,5 @@
-import { err, ok } from '@emdash/shared';
-import { waitFor } from '@emdash/shared/testing';
+import { err, ok } from '@ply/shared';
+import { waitFor } from '@ply/shared/testing';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import type { createController } from '../rpc/controller';

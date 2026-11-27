@@ -1,5 +1,5 @@
-import { ok } from '@emdash/shared';
-import { createController, type Controller } from '@emdash/wire/rpc';
+import { ok } from '@ply/shared';
+import { createController, type Controller } from '@ply/wire/rpc';
 import { workspaceRegistryContract } from '../../api/contract';
 import type { WorkspaceRegistryRuntime } from '../runtime';
 

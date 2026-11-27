@@ -7,7 +7,7 @@ import {
   PROTOCOL_VERSION,
   serializeChannelPointer,
   type ChannelPointer,
-} from '@emdash/core/workspace-server';
+} from '@ply/core/workspace-server';
 import { S3mini } from 's3mini';
 import {
   artifactArchiveName,

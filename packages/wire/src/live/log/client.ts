@@ -1,5 +1,5 @@
-import type { Logger } from '@emdash/shared/logger';
-import type { Clock } from '@emdash/shared/scheduling';
+import type { Logger } from '@ply/shared/logger';
+import type { Clock } from '@ply/shared/scheduling';
 import type { LiveLogSnapshotData, LiveSnapshot, LiveUpdate } from '../../api/channel';
 import type { WireInstrumentation } from '../../api/instrumentation';
 import {

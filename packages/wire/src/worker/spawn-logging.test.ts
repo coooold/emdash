@@ -1,4 +1,4 @@
-import type { Scope } from '@emdash/shared/concurrency';
+import type { Scope } from '@ply/shared/concurrency';
 import { describe, expect, it } from 'vitest';
 import { createSpawnLoggingSpawner, workerSpawnLogToggle } from './spawn-logging';
 import type { ProcessExit, WorkerProcess, WorkerProcessSpawner } from './types';

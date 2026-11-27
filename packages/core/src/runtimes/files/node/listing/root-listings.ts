@@ -1,6 +1,6 @@
-import type { PendingLease } from '@emdash/shared';
-import { createConcurrencyLimiter } from '@emdash/shared/concurrency';
-import { cell, peek, revisionOf, type Cell, type Revision } from '@emdash/wire/state';
+import type { PendingLease } from '@ply/shared';
+import { createConcurrencyLimiter } from '@ply/shared/concurrency';
+import { cell, peek, revisionOf, type Cell, type Revision } from '@ply/wire/state';
 import {
   joinAbsolute,
   joinPortableRelativePath,

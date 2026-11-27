@@ -89,7 +89,7 @@ async function main(): Promise<void> {
   }
 
   process.stdout.write('Building workspace-server package dependencies...\n');
-  for (const packageName of ['@emdash/shared', '@emdash/wire', '@emdash/core']) {
+  for (const packageName of ['@ply/shared', '@ply/wire', '@ply/core']) {
     await runCommand('pnpm', ['--filter', packageName, 'run', 'build'], {
       cwd: repositoryDirectory,
     });
@@ -97,7 +97,7 @@ async function main(): Promise<void> {
   const protocolVersion = await readProtocolVersion();
 
   process.stdout.write('Building plugin adapter assets...\n');
-  await runCommand('pnpm', ['--filter', '@emdash/plugins', 'run', 'build'], {
+  await runCommand('pnpm', ['--filter', '@ply/plugins', 'run', 'build'], {
     cwd: repositoryDirectory,
   });
   const adapterAssets = await readBuiltAdapterAssets();
@@ -244,12 +244,12 @@ async function devBuildIdentifier(): Promise<string> {
 }
 
 async function readProtocolVersion(): Promise<string> {
-  const workspaceServerModule: unknown = await import('@emdash/core/workspace-server');
+  const workspaceServerModule: unknown = await import('@ply/core/workspace-server');
   if (
     !isRecord(workspaceServerModule) ||
     typeof workspaceServerModule['PROTOCOL_VERSION'] !== 'string'
   ) {
-    throw new Error('@emdash/core/workspace-server must export a string PROTOCOL_VERSION');
+    throw new Error('@ply/core/workspace-server must export a string PROTOCOL_VERSION');
   }
   return workspaceServerModule['PROTOCOL_VERSION'];
 }
@@ -261,7 +261,7 @@ async function readBuiltAdapterAssets(): Promise<readonly PackageAdapterAssetInf
   );
   const manifestModule: unknown = await import(pathToFileURL(manifestPath).href);
   if (!isRecord(manifestModule)) {
-    throw new Error('@emdash/plugins adapter manifest did not export adapterAssets');
+    throw new Error('@ply/plugins adapter manifest did not export adapterAssets');
   }
 
   return parseAdapterAssetInfos(manifestModule['adapterAssets']);
@@ -280,7 +280,7 @@ async function validateBuiltAdapterDirectory(
     !isRecord(validationModule) ||
     typeof validationModule['validateAdapterBundleAssets'] !== 'function'
   ) {
-    throw new Error('@emdash/plugins adapter validation helper was not built');
+    throw new Error('@ply/plugins adapter validation helper was not built');
   }
   const { validateAdapterBundleAssets } = validationModule as AdapterValidationModule;
   await validateAdapterBundleAssets({ adapterDirectory, assets });

@@ -1,5 +1,5 @@
-import { defineContract } from '@emdash/wire/rpc';
-import { createTestWire } from '@emdash/wire/testing';
+import { defineContract } from '@ply/wire/rpc';
+import { createTestWire } from '@ply/wire/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { workspaceRegistryContract as registry } from './contract';
 

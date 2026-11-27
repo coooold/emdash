@@ -1,4 +1,4 @@
-import { createScope } from '@emdash/shared/concurrency';
+import { createScope } from '@ply/shared/concurrency';
 import { describe, expect, it, vi } from 'vitest';
 import type { EnvSource, ExecContextOptions, IExecutionContext } from '#primitives/exec/api';
 import type { HostDependencyResolver, Platform } from '#primitives/host-dependencies/api';

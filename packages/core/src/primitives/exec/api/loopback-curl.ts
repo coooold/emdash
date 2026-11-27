@@ -5,7 +5,7 @@
 export type LoopbackCurlPlatform = 'posix' | 'windows';
 
 /**
- * A POSIX shell command that runs `curl <args>` against an Emdash loopback endpoint,
+ * A POSIX shell command that runs `curl <args>` against an ply loopback endpoint,
  * such as the Git credential helper's or the agent hooks', authenticated by the nonce in
  * the environment variable `nonceVar`.
  *

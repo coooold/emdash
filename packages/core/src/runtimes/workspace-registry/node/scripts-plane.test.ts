@@ -1,7 +1,7 @@
-import { deferred } from '@emdash/shared/testing';
-import { createController } from '@emdash/wire/rpc';
-import { cell, expose, family, type Cell } from '@emdash/wire/state';
-import { createTestWire, type TestWire } from '@emdash/wire/testing';
+import { deferred } from '@ply/shared/testing';
+import { createController } from '@ply/wire/rpc';
+import { cell, expose, family, type Cell } from '@ply/wire/state';
+import { createTestWire, type TestWire } from '@ply/wire/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 // oxlint-disable-next-line emdash/core-module-boundaries -- the registry sequences lifecycle scripts through the scripts runtime (activation-scripts-via-terminals spec); the contract has no services-level home yet
 import { scriptsContract } from '#runtimes/scripts/api';

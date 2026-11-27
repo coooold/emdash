@@ -1,9 +1,9 @@
 import { mkdir, mkdtemp, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { ok, type PendingLease } from '@emdash/shared';
-import { deferred } from '@emdash/shared/testing';
-import { peek, revisionOf } from '@emdash/wire/state';
+import { ok, type PendingLease } from '@ply/shared';
+import { deferred } from '@ply/shared/testing';
+import { peek, revisionOf } from '@ply/wire/state';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { HostAbsolutePath } from '#primitives/path/api';
 import { listingEntryName, type FolderListing, type ListingEntry } from '#runtimes/files/api';

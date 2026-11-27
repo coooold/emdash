@@ -1,5 +1,5 @@
-import type { Unsubscribe } from '@emdash/shared';
-import type { LogFields, LogLevel, Logger } from '@emdash/shared/logger';
+import type { Unsubscribe } from '@ply/shared';
+import type { LogFields, LogLevel, Logger } from '@ply/shared/logger';
 import type { WorkerProcess } from './types';
 
 export type ForwardWorkerLogsOptions = {

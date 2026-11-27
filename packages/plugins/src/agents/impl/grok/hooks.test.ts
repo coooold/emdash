@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import type { PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import { describe, expect, it } from 'vitest';
 import { GROK_HOOKS_PATH, buildGrokHookConfig } from './hooks';
 
@@ -21,7 +21,7 @@ function createMemoryFs(): PluginFs & { files: Map<string, string> } {
 
 describe('Grok hook config', () => {
   it.skipIf(process.platform === 'win32')(
-    'does not invoke its custom session hook outside Emdash',
+    'does not invoke its custom session hook outside ply',
     async () => {
       const fs = createMemoryFs();
       await buildGrokHookConfig().writeHooks(fs, []);

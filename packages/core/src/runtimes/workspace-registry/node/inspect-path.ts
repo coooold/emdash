@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import { redactSecrets } from '@emdash/shared/logger';
+import { redactSecrets } from '@ply/shared/logger';
 import type { EnvSource } from '#primitives/exec/api';
 import { isGitDiscoveryMiss } from '#primitives/git/api';
 import { createBoundExec, ExecError } from '#services/exec/api';

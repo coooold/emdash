@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import type { PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import { parse as parseToml } from 'smol-toml';
 import { describe, expect, it } from 'vitest';
 import { CODEX_CONFIG_PATH, CODEX_LEGACY_HOOKS_PATH, buildCodexHookConfig } from './hooks';
@@ -101,7 +101,7 @@ describe('buildCodexHookConfig', () => {
     await expect(fs.read(CODEX_LEGACY_HOOKS_PATH)).resolves.toBe(legacyHooks);
   });
 
-  it('preserves Codex hook trust state while installing and deleting Emdash hooks', async () => {
+  it('preserves Codex hook trust state while installing and deleting ply hooks', async () => {
     const trustKey = '/home/user/.codex/config.toml:stop:0:0';
     const fs = createMemoryFs({
       [CODEX_CONFIG_PATH]: `[hooks.state."${trustKey}"]
@@ -186,7 +186,7 @@ invalid = true
     }
   );
 
-  it('deletes Emdash hooks from both current and legacy Codex hook config', async () => {
+  it('deletes ply hooks from both current and legacy Codex hook config', async () => {
     const emdashHook = {
       hooks: [
         {

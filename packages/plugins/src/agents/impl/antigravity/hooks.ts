@@ -1,4 +1,4 @@
-import type { CanonicalHookEvent, PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { CanonicalHookEvent, PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import {
   configRoots,
   EMDASH_MARKER,
@@ -8,11 +8,11 @@ import {
   makeStdinHookCommand,
   readJsonConfig,
   writeJsonConfig,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 
 const MANIFEST_PATH = 'plugins/emdash/plugin.json';
 const HOOKS_PATH = 'plugins/emdash/hooks.json';
-const MANIFEST = { name: 'emdash', description: 'Emdash lifecycle hooks for Antigravity sessions' };
+const MANIFEST = { name: 'emdash', description: 'ply lifecycle hooks for Antigravity sessions' };
 
 // Antigravity consumes stdout as hook decisions. Never expose the transport's
 // HTTP response as a decision, and never ask the agent to continue executing.
@@ -32,7 +32,7 @@ function buildHooks(opts: HookCommandOptions) {
 async function readConfig(fs: PluginFs) {
   const manifest = await readJsonConfig(fs, MANIFEST_PATH);
   if (manifest.name !== undefined && manifest.name !== MANIFEST.name) {
-    throw new Error('Antigravity Emdash plugin path contains another plugin');
+    throw new Error('Antigravity ply plugin path contains another plugin');
   }
   const config = await readJsonConfig(fs, HOOKS_PATH);
   const definition = config.emdash ?? {};

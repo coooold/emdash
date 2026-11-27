@@ -1,6 +1,6 @@
 # Path System
 
-`@emdash/core/primitives/path/api` is the source of truth for portable file identity and lexical
+`@ply/core/primitives/path/api` is the source of truth for portable file identity and lexical
 path operations. The detailed package docs live in
 [`packages/core/docs/path/README.md`](../../packages/core/docs/path/README.md).
 
@@ -33,7 +33,7 @@ path operations. The detailed package docs live in
 ## Future Adoption Map
 
 - Core `files` path helpers can delegate lexical operations to
-  `@emdash/core/primitives/path/api`.
+  `@ply/core/primitives/path/api`.
 - Desktop `RuntimePath` and SSH path helpers can become adapters around
   structured path parsing/formatting.
 - Git models can represent repo-relative file coordinates as

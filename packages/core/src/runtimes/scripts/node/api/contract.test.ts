@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs';
-import { remote, snapshot } from '@emdash/wire/state';
-import { createTestWire, type TestWire } from '@emdash/wire/testing';
+import { remote, snapshot } from '@ply/wire/state';
+import { createTestWire, type TestWire } from '@ply/wire/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { scriptsContract, startScriptRunInputSchema } from '#runtimes/scripts/api';
 import { ScriptsRuntime } from '#runtimes/scripts/node/runtime';

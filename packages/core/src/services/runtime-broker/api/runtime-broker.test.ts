@@ -1,6 +1,6 @@
-import { err, ok } from '@emdash/shared';
-import { deferred } from '@emdash/shared/testing';
-import { WireError, type Connection } from '@emdash/wire/rpc';
+import { err, ok } from '@ply/shared';
+import { deferred } from '@ply/shared/testing';
+import { WireError, type Connection } from '@ply/wire/rpc';
 import { describe, expect, it, vi } from 'vitest';
 import { LOCAL_HOST_REF, hostRef } from '../../../primitives/host/api';
 import {

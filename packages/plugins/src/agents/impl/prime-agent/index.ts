@@ -1,14 +1,11 @@
-import type { CommandContext } from '@emdash/core/services/agent-plugins/api/plugins';
-import {
-  definePlugin,
-  registerPluginBehavior,
-} from '@emdash/core/services/agent-plugins/api/plugins';
+import type { CommandContext } from '@ply/core/services/agent-plugins/api/plugins';
+import { definePlugin, registerPluginBehavior } from '@ply/core/services/agent-plugins/api/plugins';
 import {
   buildStandardCommand,
   createFileDropPlugin,
   createMcpAdapter,
   envConfigRoot,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 import { createNativeAcpBehavior } from '../../helpers/acp-stdio';
 import { icon } from './icon';
 import { PRIME_AGENT_EXTENSION_CONTENT } from './plugin-file';

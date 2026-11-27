@@ -1,6 +1,6 @@
 import path from 'node:path';
-import { err, ok, type Result } from '@emdash/shared';
-import { deferred, type Deferred } from '@emdash/shared/testing';
+import { err, ok, type Result } from '@ply/shared';
+import { deferred, type Deferred } from '@ply/shared/testing';
 import { describe, expect, it, vi } from 'vitest';
 import {
   gitMetadataWatchProfile,

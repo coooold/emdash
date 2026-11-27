@@ -54,7 +54,7 @@
   },
   "overrides": [
     {
-      "files": ["apps/emdash-desktop/src/core/**/*.{ts,tsx}"],
+      "files": ["apps/ply-desktop/src/core/**/*.{ts,tsx}"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -77,15 +77,15 @@
     },
     {
       "files": [
-        "apps/emdash-desktop/src/core/features/workspaces/api/node/registry/**/*.{ts,tsx}",
-        "apps/emdash-desktop/src/core/features/conversations/api/node/registry/**/*.{ts,tsx}"
+        "apps/ply-desktop/src/core/features/workspaces/api/node/registry/**/*.{ts,tsx}",
+        "apps/ply-desktop/src/core/features/conversations/api/node/registry/**/*.{ts,tsx}"
       ],
       "rules": {
         "no-restricted-imports": "off"
       }
     },
     {
-      "files": ["apps/emdash-desktop/src/**/*.{ts,tsx}"],
+      "files": ["apps/ply-desktop/src/**/*.{ts,tsx}"],
       "rules": {
         "typescript/no-floating-promises": "warn",
         "typescript/no-misused-promises": [
@@ -101,16 +101,16 @@
     },
     {
       "files": [
-        "apps/emdash-desktop/src/entry/**/*.{ts,tsx}",
-        "apps/emdash-desktop/src/main/**/*.{ts,tsx}",
-        "apps/emdash-desktop/src/renderer/**/*.{ts,tsx}"
+        "apps/ply-desktop/src/entry/**/*.{ts,tsx}",
+        "apps/ply-desktop/src/main/**/*.{ts,tsx}",
+        "apps/ply-desktop/src/renderer/**/*.{ts,tsx}"
       ],
       "rules": {
         "emdash/no-tooling-imports": "error"
       }
     },
     {
-      "files": ["apps/emdash-desktop/src/main/**/*.{ts,tsx}"],
+      "files": ["apps/ply-desktop/src/main/**/*.{ts,tsx}"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -127,18 +127,18 @@
     },
     {
       "files": [
-        "apps/emdash-desktop/src/main/host/**/*.{ts,tsx}",
-        "apps/emdash-desktop/src/main/gateway/**/*.{ts,tsx}",
-        "apps/emdash-desktop/src/main/bootstrap/**/*.{ts,tsx}",
-        "apps/emdash-desktop/src/main/core/**/*.{ts,tsx}",
-        "apps/emdash-desktop/src/main/db/**/*.{ts,tsx}"
+        "apps/ply-desktop/src/main/host/**/*.{ts,tsx}",
+        "apps/ply-desktop/src/main/gateway/**/*.{ts,tsx}",
+        "apps/ply-desktop/src/main/bootstrap/**/*.{ts,tsx}",
+        "apps/ply-desktop/src/main/core/**/*.{ts,tsx}",
+        "apps/ply-desktop/src/main/db/**/*.{ts,tsx}"
       ],
       "rules": {
         "no-restricted-imports": "off"
       }
     },
     {
-      "files": ["apps/emdash-desktop/src/renderer/**/*.{ts,tsx}"],
+      "files": ["apps/ply-desktop/src/renderer/**/*.{ts,tsx}"],
       "rules": {
         "no-restricted-imports": [
           "error",
@@ -146,10 +146,10 @@
             "patterns": [
               {
                 "group": [
-                  "@emdash/core/services/host-dependencies/api",
-                  "@emdash/core/services/host-dependencies/api/*"
+                  "@ply/core/services/host-dependencies/api",
+                  "@ply/core/services/host-dependencies/api/*"
                 ],
-                "message": "Import dependency types from @core/primitives/agents/api instead of @emdash/core/services/host-dependencies/api*."
+                "message": "Import dependency types from @core/primitives/agents/api instead of @ply/core/services/host-dependencies/api*."
               }
             ]
           }
@@ -158,11 +158,11 @@
     },
     {
       "files": [
-        "apps/emdash-desktop/src/entry/**/*.{ts,tsx}",
-        "apps/emdash-desktop/src/main/bootstrap/**/*.{ts,tsx}",
-        "apps/emdash-desktop/src/main/host/recovery/**/*.{ts,tsx}",
-        "apps/emdash-desktop/scripts/**",
-        "apps/emdash-desktop/src/core/features/editor/browser/monaco/monaco-bootstrap.ts",
+        "apps/ply-desktop/src/entry/**/*.{ts,tsx}",
+        "apps/ply-desktop/src/main/bootstrap/**/*.{ts,tsx}",
+        "apps/ply-desktop/src/main/host/recovery/**/*.{ts,tsx}",
+        "apps/ply-desktop/scripts/**",
+        "apps/ply-desktop/src/core/features/editor/browser/monaco/monaco-bootstrap.ts",
         "apps/workspace-server/scripts/**",
         "packages/ui/src/react/components/markdown/highlight.ts"
       ],

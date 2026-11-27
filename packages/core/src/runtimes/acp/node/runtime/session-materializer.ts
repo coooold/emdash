@@ -1,9 +1,9 @@
 import type { LoadSessionRequest, NewSessionRequest } from '@agentclientprotocol/sdk';
-import type { Result } from '@emdash/shared';
-import { toSerializedError } from '@emdash/shared';
-import { acquireResourceAsResult } from '@emdash/shared/concurrency';
-import type { Scope } from '@emdash/shared/concurrency';
-import { redactSecrets, type Logger } from '@emdash/shared/logger';
+import type { Result } from '@ply/shared';
+import { toSerializedError } from '@ply/shared';
+import { acquireResourceAsResult } from '@ply/shared/concurrency';
+import type { Scope } from '@ply/shared/concurrency';
+import { redactSecrets, type Logger } from '@ply/shared/logger';
 import type { AcpStartError, ConversationNotFoundError } from '#runtimes/acp/api';
 import { acpErr } from '#runtimes/acp/api';
 import { acceptsProviderValue } from '#runtimes/acp/api/models/config';

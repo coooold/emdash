@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { err, ok, type Result } from '@emdash/shared';
-import type { ContractClient } from '@emdash/wire/rpc';
+import { err, ok, type Result } from '@ply/shared';
+import type { ContractClient } from '@ply/wire/rpc';
 import { formatAbsolute, type HostFileRef } from '#primitives/path/api';
 // oxlint-disable-next-line emdash/core-module-boundaries -- run workspaces register and activate through the registry's plain verbs (workspaceHost retirement, spec §4.1); the contract has no services-level home yet
 import type {

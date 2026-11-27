@@ -1,10 +1,10 @@
-import { ok } from '@emdash/shared';
-import { noopLogger } from '@emdash/shared/logger';
-import { createManualClock, deferred, type ManualClock } from '@emdash/shared/testing';
-import { ReplicaLog } from '@emdash/wire/live';
-import { defineContract } from '@emdash/wire/rpc';
-import { peek } from '@emdash/wire/state';
-import { createTestWire } from '@emdash/wire/testing';
+import { ok } from '@ply/shared';
+import { noopLogger } from '@ply/shared/logger';
+import { createManualClock, deferred, type ManualClock } from '@ply/shared/testing';
+import { ReplicaLog } from '@ply/wire/live';
+import { defineContract } from '@ply/wire/rpc';
+import { peek } from '@ply/wire/state';
+import { createTestWire } from '@ply/wire/testing';
 import { describe, expect, it, vi } from 'vitest';
 import type { TuiAgentStartInput } from '#runtimes/tui-agents/api';
 import { tuiAgentsContract } from '#runtimes/tui-agents/api';

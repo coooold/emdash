@@ -1,7 +1,7 @@
-import { err, ok, type Result } from '@emdash/shared';
-import type { Scope } from '@emdash/shared/concurrency';
-import type { LeasedLiveModelProvider } from '@emdash/wire/rpc';
-import { expose, type ExposedMutationContext } from '@emdash/wire/state';
+import { err, ok, type Result } from '@ply/shared';
+import type { Scope } from '@ply/shared/concurrency';
+import type { LeasedLiveModelProvider } from '@ply/wire/rpc';
+import { expose, type ExposedMutationContext } from '@ply/wire/state';
 import {
   filesContract,
   type FilesContract,

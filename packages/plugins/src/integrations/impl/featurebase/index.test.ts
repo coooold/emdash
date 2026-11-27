@@ -1,5 +1,5 @@
-import { err, ok } from '@emdash/shared';
-import { noopLogger } from '@emdash/shared/logger';
+import { err, ok } from '@ply/shared';
+import { noopLogger } from '@ply/shared/logger';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type * as FeaturebaseClient from './client';
 import { verifyFeaturebaseCredentials } from './client';

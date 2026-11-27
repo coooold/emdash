@@ -1,4 +1,4 @@
-import { createController } from '@emdash/wire/rpc';
+import { createController } from '@ply/wire/rpc';
 import { describe, expect, it } from 'vitest';
 import { gitCredentialChannelsContract } from '#services/git-credential-channels/api';
 import { createUserShellEnvController } from '#services/shell-env/node';

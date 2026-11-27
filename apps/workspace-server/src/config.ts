@@ -1,5 +1,5 @@
-import { type Result } from '@emdash/shared';
-import { formatConfigError, parseConfig, type ConfigError } from '@emdash/shared/config';
+import { type Result } from '@ply/shared';
+import { formatConfigError, parseConfig, type ConfigError } from '@ply/shared/config';
 import { z } from 'zod';
 
 const WORKSPACE_SERVER_ENV_PREFIX = 'EMDASH_WS_';

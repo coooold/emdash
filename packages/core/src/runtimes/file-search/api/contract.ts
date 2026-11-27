@@ -1,4 +1,4 @@
-import { defineContract, fallible, liveJob, liveModel, liveState } from '@emdash/wire/rpc';
+import { defineContract, fallible, liveJob, liveModel, liveState } from '@ply/wire/rpc';
 import { z } from 'zod';
 import {
   contentSearchErrorSchema,

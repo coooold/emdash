@@ -1,11 +1,6 @@
-import { createConcurrencyLimiter, type Scope } from '@emdash/shared/concurrency';
-import {
-  abortableWait,
-  abortReason,
-  runWithTimeout,
-  TimeoutError,
-} from '@emdash/shared/scheduling';
 import parcelWatcher from '@parcel/watcher';
+import { createConcurrencyLimiter, type Scope } from '@ply/shared/concurrency';
+import { abortableWait, abortReason, runWithTimeout, TimeoutError } from '@ply/shared/scheduling';
 import type { WatchBackendPreference } from '#services/fs-watch/api';
 import type { WatchBackend, WatchKey, WatchOnError } from './backend';
 import { NativeWatch, type ParcelSubscribeFn } from './native-watch';

@@ -10,7 +10,7 @@ Repo root:
 - `.oxfmtrc.json`, `.oxlintrc.json`
 - `.github/workflows/`
 
-In `apps/emdash-desktop/`:
+In `apps/ply-desktop/`:
 
 - `package.json` (app scripts and version)
 - `electron.vite.config.ts`

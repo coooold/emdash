@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { noopLogger } from '@emdash/shared/logger';
+import { noopLogger } from '@ply/shared/logger';
 import { describe, expect, it, vi } from 'vitest';
 import type { BundledMigration, MigrationInterop } from '../api';
 import { betterSqlite3Driver } from './better-sqlite3-driver';

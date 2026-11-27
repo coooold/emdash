@@ -1,4 +1,4 @@
-import type { PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { provider } from './index';
 import { OPENCODE_PLUGIN_CONTENT } from './plugin-file';

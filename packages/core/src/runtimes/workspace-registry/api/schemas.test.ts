@@ -70,7 +70,7 @@ describe('workspace registry schema exports', () => {
     }
   });
 
-  it('parses personal scripts with the shared Emdash config schema', () => {
+  it('parses personal scripts with the shared ply config schema', () => {
     const scripts = {
       prepare: 'pnpm install',
       setup: 'pnpm build',

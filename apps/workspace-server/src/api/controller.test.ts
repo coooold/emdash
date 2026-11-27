@@ -3,32 +3,32 @@ import net from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { PassThrough } from 'node:stream';
-import { parseAbsolute } from '@emdash/core/primitives/path/api';
-import type { TerminalShellResolver } from '@emdash/core/primitives/terminal-shell/api';
-import type { AcpApiContract } from '@emdash/core/runtimes/acp/api';
-import { filesContract } from '@emdash/core/runtimes/files/api';
-import { createFilesController, FilesRuntime } from '@emdash/core/runtimes/files/node';
-import { gitContract } from '@emdash/core/runtimes/git/api';
-import { createGitController, GitRuntime } from '@emdash/core/runtimes/git/node';
-import { terminalsContract } from '@emdash/core/runtimes/terminals/api';
-import { createTerminalsController, TerminalsRuntime } from '@emdash/core/runtimes/terminals/node';
+import { parseAbsolute } from '@ply/core/primitives/path/api';
+import type { TerminalShellResolver } from '@ply/core/primitives/terminal-shell/api';
+import type { AcpApiContract } from '@ply/core/runtimes/acp/api';
+import { filesContract } from '@ply/core/runtimes/files/api';
+import { createFilesController, FilesRuntime } from '@ply/core/runtimes/files/node';
+import { gitContract } from '@ply/core/runtimes/git/api';
+import { createGitController, GitRuntime } from '@ply/core/runtimes/git/node';
+import { terminalsContract } from '@ply/core/runtimes/terminals/api';
+import { createTerminalsController, TerminalsRuntime } from '@ply/core/runtimes/terminals/node';
 import {
   workspaceRegistryContract,
   type WorkspaceRecord,
-} from '@emdash/core/runtimes/workspace-registry/api';
-import type { IWatchService } from '@emdash/core/services/fs-watch/api';
-import type { PtySpawner } from '@emdash/core/services/pty/api';
-import { PROTOCOL_VERSION, workspaceWireContract } from '@emdash/core/workspace-server';
-import { ok } from '@emdash/shared';
+} from '@ply/core/runtimes/workspace-registry/api';
+import type { IWatchService } from '@ply/core/services/fs-watch/api';
+import type { PtySpawner } from '@ply/core/services/pty/api';
+import { PROTOCOL_VERSION, workspaceWireContract } from '@ply/core/workspace-server';
+import { ok } from '@ply/shared';
 import {
   client as createClient,
   connect,
   defineContract,
   serve,
   streamTransport,
-} from '@emdash/wire/rpc';
-import type { ContractClient } from '@emdash/wire/rpc';
-import { createTestWire } from '@emdash/wire/testing';
+} from '@ply/wire/rpc';
+import type { ContractClient } from '@ply/wire/rpc';
+import { createTestWire } from '@ply/wire/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createTestRuntimeClients, createTestWorkspaceWireController } from '../testing/controller';
 

@@ -80,7 +80,7 @@ export default defineConfig({
           ]),
       {
         // Performance + memory tests — informational only, excluded from `pnpm test`.
-        // Run with `pnpm --filter @emdash/chat-ui run test:perf`.
+        // Run with `pnpm --filter @ply/chat-ui run test:perf`.
         extends: true,
         test: {
           name: 'perf',

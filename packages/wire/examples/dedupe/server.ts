@@ -1,4 +1,4 @@
-import { compose, deduplicate } from '@emdash/shared/requests';
+import { compose, deduplicate } from '@ply/shared/requests';
 import {
   createController,
   client,
@@ -7,7 +7,7 @@ import {
   memoryTransportPair,
   procedure,
   serve,
-} from '@emdash/wire/rpc';
+} from '@ply/wire/rpc';
 import { z } from 'zod';
 
 const api = defineContract({

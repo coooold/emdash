@@ -24,7 +24,7 @@ const mainConfig = {
   format: ['esm'],
   dts: true,
   deps: {
-    neverBundle: ['zod', 'smol-toml', '@emdash/core', '@emdash/shared'],
+    neverBundle: ['zod', 'smol-toml', '@ply/core', '@ply/shared'],
   },
   sourcemap: true,
   clean: true,

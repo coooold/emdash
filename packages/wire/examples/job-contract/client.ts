@@ -1,5 +1,5 @@
-import { ok } from '@emdash/shared';
-import { createLiveJobReplicaCache, LiveJobCancelledError } from '@emdash/wire/live';
+import { ok } from '@ply/shared';
+import { createLiveJobReplicaCache, LiveJobCancelledError } from '@ply/wire/live';
 import {
   createController,
   client,
@@ -8,7 +8,7 @@ import {
   liveJob,
   memoryTransportPair,
   serve,
-} from '@emdash/wire/rpc';
+} from '@ply/wire/rpc';
 import { z } from 'zod';
 
 const api = defineContract({

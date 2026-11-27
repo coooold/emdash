@@ -1,11 +1,11 @@
 import { mkdtemp, mkdir, realpath, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
-import { err, ok, type Result } from '@emdash/shared';
-import { createScope, type Scope } from '@emdash/shared/concurrency';
-import { retrySchedules } from '@emdash/shared/scheduling';
-import { deferred } from '@emdash/shared/testing';
-import { observe, type Readable } from '@emdash/wire/state';
+import { err, ok, type Result } from '@ply/shared';
+import { createScope, type Scope } from '@ply/shared/concurrency';
+import { retrySchedules } from '@ply/shared/scheduling';
+import { deferred } from '@ply/shared/testing';
+import { observe, type Readable } from '@ply/wire/state';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { PortableRelativePath } from '#primitives/path/api';
 import type { PathSearchHit } from '#runtimes/file-search/api';

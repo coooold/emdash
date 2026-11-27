@@ -1,4 +1,4 @@
-import { defineContract, fallible } from '@emdash/wire/rpc';
+import { defineContract, fallible } from '@ply/wire/rpc';
 import { z } from 'zod';
 
 /**

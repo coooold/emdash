@@ -1,9 +1,9 @@
 import crypto from 'node:crypto';
-import { err, ok, type Result } from '@emdash/shared';
-import { noopLogger, type Logger } from '@emdash/shared/logger';
-import { LiveLogSource } from '@emdash/wire/live';
-import type { LeasedLiveModelProvider, LiveSource } from '@emdash/wire/rpc';
-import { cell, expose, family, peek, type Cell } from '@emdash/wire/state';
+import { err, ok, type Result } from '@ply/shared';
+import { noopLogger, type Logger } from '@ply/shared/logger';
+import { LiveLogSource } from '@ply/wire/live';
+import type { LeasedLiveModelProvider, LiveSource } from '@ply/wire/rpc';
+import { cell, expose, family, peek, type Cell } from '@ply/wire/state';
 import { createPathProfile, nativePathIdentityKey, type PathProfile } from '#primitives/path/api';
 import {
   wireTerminalUrlDetector,

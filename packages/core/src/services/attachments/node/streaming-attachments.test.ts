@@ -11,8 +11,8 @@ import {
 } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { deferred } from '@emdash/shared/testing';
-import type { WireFile } from '@emdash/wire/rpc';
+import { deferred } from '@ply/shared/testing';
+import type { WireFile } from '@ply/wire/rpc';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { MAX_ATTACHMENT_BYTES, type AttachmentOwner } from '../api';
 import { LocalAttachmentStore } from './local-attachment-store';

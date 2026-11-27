@@ -1,6 +1,6 @@
-import { ok } from '@emdash/shared';
-import { createScope } from '@emdash/shared/concurrency';
-import { createManualClock } from '@emdash/shared/testing';
+import { ok } from '@ply/shared';
+import { createScope } from '@ply/shared/concurrency';
+import { createManualClock } from '@ply/shared/testing';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import { z } from 'zod';
 import { liveModel, liveState, mutation, type LiveModelDef } from '../../api';

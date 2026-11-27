@@ -1,11 +1,6 @@
-import type { Unsubscribe } from '@emdash/shared';
-import { createScope, type Scope } from '@emdash/shared/concurrency';
-import {
-  retrySchedule,
-  systemClock,
-  type Clock,
-  type RetrySchedule,
-} from '@emdash/shared/scheduling';
+import type { Unsubscribe } from '@ply/shared';
+import { createScope, type Scope } from '@ply/shared/concurrency';
+import { retrySchedule, systemClock, type Clock, type RetrySchedule } from '@ply/shared/scheduling';
 import { WireError, type WireMessage, type WireTransport } from '../protocol';
 
 export type ReconnectingTransportOptions = {

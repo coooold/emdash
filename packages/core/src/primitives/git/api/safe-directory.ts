@@ -53,7 +53,7 @@ export function parseGitDubiousOwnership(failure: {
 
 /**
  * The command that adds a `safe.directory` value, for users who run it themselves. Git's own
- * suggestion uses POSIX quoting even on Windows, where cmd.exe (Emdash's default terminal there)
+ * suggestion uses POSIX quoting even on Windows, where cmd.exe (ply's default terminal there)
  * keeps single quotes as part of the value and stores an entry that never matches.
  *
  * Values Git for Windows reports (drive paths, and UNC paths behind `%(prefix)/`) are therefore

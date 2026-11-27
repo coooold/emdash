@@ -1,11 +1,4 @@
-import {
-  defineContract,
-  fallible,
-  liveLog,
-  liveModel,
-  liveState,
-  procedure,
-} from '@emdash/wire/rpc';
+import { defineContract, fallible, liveLog, liveModel, liveState, procedure } from '@ply/wire/rpc';
 import { z } from 'zod';
 import { agentAuthStatusSchema } from '#services/agent-plugins/api/plugins/capabilities/auth';
 import {

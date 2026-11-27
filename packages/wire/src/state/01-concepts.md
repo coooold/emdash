@@ -149,7 +149,7 @@ policy differs by side:
 ## 7. Ownership: Scope, not release()
 
 Every subscription, lease, and family retention is owned by a `Scope`
-(`@emdash/shared/concurrency`). Disposing the scope tears down everything
+(`@ply/shared/concurrency`). Disposing the scope tears down everything
 under it, transitively — `observe` requires a scope, `remote` leases release
 on scope disposal, `family` members are retained by the scopes observing
 them. Manual release exists only as an escape hatch. This is SolidJS's

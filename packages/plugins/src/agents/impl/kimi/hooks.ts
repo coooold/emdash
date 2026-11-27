@@ -6,7 +6,7 @@ import {
   homeConfigRoot,
   hookEntriesFromConfig,
   makeStdinHookCommand,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
 import { parse as parseTOML, stringify as stringifyTOML } from 'smol-toml';
 
 export const KIMI_CONFIG_PATH = 'config.toml';

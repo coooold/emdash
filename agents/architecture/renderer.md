@@ -1,6 +1,6 @@
 # Renderer
 
-All paths are relative to `apps/emdash-desktop/`.
+All paths are relative to `apps/ply-desktop/`.
 
 ## Main Entry Points
 

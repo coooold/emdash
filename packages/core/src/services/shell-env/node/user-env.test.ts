@@ -16,11 +16,11 @@ describe('buildUserShellEnvSeed', () => {
         EMDASH_DB_FILE: '/tmp/app.db',
         EMDASH_LOG_FILE: '/tmp/app.log',
         npm_lifecycle_event: 'dev',
-        npm_package_name: '@emdash/emdash-desktop',
+        npm_package_name: '@ply/ply-desktop',
         NX_TASK_TARGET_TARGET: 'dev',
         NX_NO_CLOUD: 'true',
         PNPM_HOME: '/home/test/.local/share/pnpm',
-        PNPM_PACKAGE_NAME: '@emdash/emdash-desktop',
+        PNPM_PACKAGE_NAME: '@ply/ply-desktop',
         DISABLE_AUTO_UPDATE: 'true',
       })
     ).toEqual({

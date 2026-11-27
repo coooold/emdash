@@ -1,4 +1,4 @@
-import { buildJsonConfigTrustBehavior } from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+import { buildJsonConfigTrustBehavior } from '@ply/core/services/agent-plugins/api/plugins/helpers';
 
 export const BOB_TRUSTED_FOLDERS_PATH = '.bob/trustedFolders.json';
 

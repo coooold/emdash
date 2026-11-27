@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
-import { err, ok, type Result } from '@emdash/shared';
-import type { ContractClient } from '@emdash/wire/rpc';
-import { cell, expose } from '@emdash/wire/state';
-import { createTestWire } from '@emdash/wire/testing';
+import { err, ok, type Result } from '@ply/shared';
+import type { ContractClient } from '@ply/wire/rpc';
+import { cell, expose } from '@ply/wire/state';
+import { createTestWire } from '@ply/wire/testing';
 import { describe, expect, it } from 'vitest';
 import { LOCAL_HOST_REF } from '#primitives/host/api';
 import { hostFileRef, parseAbsolute } from '#primitives/path/api';

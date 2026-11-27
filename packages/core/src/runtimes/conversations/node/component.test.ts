@@ -1,9 +1,9 @@
 import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { createScope } from '@emdash/shared/concurrency';
-import { FakeWorkerProcessSpawner } from '@emdash/wire/testing';
-import { createWireWorkerHost, runWireComponentWorker } from '@emdash/wire/worker';
+import { createScope } from '@ply/shared/concurrency';
+import { FakeWorkerProcessSpawner } from '@ply/wire/testing';
+import { createWireWorkerHost, runWireComponentWorker } from '@ply/wire/worker';
 import { describe, expect, it, vi } from 'vitest';
 import { conversationsComponent, conversationsComponentConfigSchema } from './component';
 

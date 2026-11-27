@@ -1,4 +1,4 @@
-import { err, ok } from '@emdash/shared';
+import { err, ok } from '@ply/shared';
 import { describe, expect, it } from 'vitest';
 import { z } from 'zod';
 import { createController } from '../rpc/controller';

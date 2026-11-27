@@ -1,0 +1,230 @@
+import {
+  CollectionToolbar,
+  CollectionView,
+  PageLayout,
+  useQueryListSource,
+} from '@ply/ui/react/patterns';
+import { Button, DropdownMenu, toast } from '@ply/ui/react/primitives';
+import { EllipsisIcon, LibraryIcon, Pencil, Plus, Trash2 } from 'lucide-react';
+import { observer } from 'mobx-react-lite';
+import { useState } from 'react';
+import { usePromptLibrary } from '@core/features/library/api/browser/prompts/use-prompt-library';
+import { useOpenModal } from '@core/manifests/browser/modal-api';
+import { useSearchFocusHotkeys } from '@core/primitives/keybindings/browser';
+import type { PromptLibraryPrompt } from '@core/primitives/prompt-library/api';
+import {
+  createPromptLibraryListView,
+  type PromptLibraryListViewModel,
+} from './prompt-library-list-model';
+
+function createPromptId() {
+  return globalThis.crypto?.randomUUID?.() ?? `prompt-${Date.now()}`;
+}
+
+/** Row content (two-line text + tiered actions) — the CollectionView shell owns interaction. */
+function PromptRow({
+  item,
+  disabled,
+  onEdit,
+  onDelete,
+}: {
+  item: PromptLibraryPrompt;
+  disabled: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <div className="group flex w-full items-center">
+      <div className="min-w-0 flex-1">
+        <div className="text-md truncate text-foreground">{item.title}</div>
+        <div className="mt-1 line-clamp-1 text-xs leading-relaxed text-foreground-muted">
+          {item.prompt}
+        </div>
+      </div>
+      {/* Trailing actions are explicit controls — clicks must not reach the row. */}
+      <div
+        onClick={(e) => e.stopPropagation()}
+        onPointerDown={(e) => e.stopPropagation()}
+        className="flex shrink-0 items-center gap-1 opacity-100 sm:opacity-0 sm:transition-opacity sm:group-focus-within:opacity-100 sm:group-hover:opacity-100"
+      >
+        <Button
+          variant="ghost"
+          size="xs"
+          icon
+          onClick={onEdit}
+          disabled={disabled}
+          aria-label={`编辑「${item.title}」`}
+        >
+          <Pencil />
+        </Button>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger
+            render={
+              <Button
+                type="button"
+                variant="ghost"
+                size="xs"
+                icon
+                disabled={disabled}
+                aria-label={`「${item.title}」的操作`}
+              />
+            }
+          >
+            <EllipsisIcon className="size-3.5" />
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content align="end">
+            <DropdownMenu.Item onClick={onEdit}>
+              <Pencil />
+              编辑…
+            </DropdownMenu.Item>
+            <DropdownMenu.Separator />
+            <DropdownMenu.Item variant="destructive" onClick={onDelete}>
+              <Trash2 />
+              删除…
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      </div>
+    </div>
+  );
+}
+
+export function PromptLibraryView() {
+  const {
+    value: promptLibrary,
+    update: updatePromptLibrary,
+    isLoading: isPromptLibraryLoading,
+    isSaving: isPromptLibrarySaving,
+  } = usePromptLibrary();
+  const openPromptModal = useOpenModal('promptModal');
+  const openConfirm = useOpenModal('confirmActionModal');
+
+  const isDisabled = isPromptLibraryLoading || isPromptLibrarySaving;
+
+  // The prompt-library hook swallows query errors (optimistic updates roll
+  // back instead), so only data and loading are mirrored into the view. While
+  // loading, `value` is a fresh `[]` each render — pass undefined instead so
+  // the snapshot stays stable.
+  const source = useQueryListSource(
+    {
+      data: isPromptLibraryLoading ? undefined : promptLibrary,
+      isLoading: isPromptLibraryLoading,
+      isError: false,
+      error: null,
+    },
+    (rows: PromptLibraryPrompt[]) => rows
+  );
+  const [view] = useState(() => createPromptLibraryListView(source));
+
+  const upsertPrompt = (prompt: PromptLibraryPrompt, successTitle: string) => {
+    const exists = promptLibrary.some((item) => item.id === prompt.id);
+    const nextPrompts = exists
+      ? promptLibrary.map((item) => (item.id === prompt.id ? prompt : item))
+      : [...promptLibrary, prompt];
+    updatePromptLibrary(nextPrompts, {
+      onSuccess: () => toast(successTitle),
+    });
+  };
+
+  const createPrompt = () => {
+    void openPromptModal().then((outcome) => {
+      if (!outcome.success) return;
+      upsertPrompt({ id: createPromptId(), ...outcome.data }, '已添加提示词');
+    });
+  };
+
+  const editPrompt = (prompt: PromptLibraryPrompt) => {
+    void openPromptModal({
+      initialPrompt: prompt,
+    }).then((outcome) => {
+      if (!outcome.success) return;
+      upsertPrompt({ ...prompt, ...outcome.data }, '已更新提示词');
+    });
+  };
+
+  const deletePrompt = (prompt: PromptLibraryPrompt) => {
+    void openConfirm({
+      title: '删除提示词？',
+      description: `将从提示词库移除「${prompt.title}」。`,
+      confirmLabel: '删除',
+    }).then((outcome) => {
+      if (!outcome.success) return;
+      updatePromptLibrary(
+        promptLibrary.filter((item) => item.id !== prompt.id),
+        {
+          onSuccess: () => toast('已删除提示词'),
+        }
+      );
+    });
+  };
+
+  return (
+    <div className="flex min-h-0 flex-col gap-8 text-foreground">
+      <PageLayout.Header sticky title="提示词" description="管理可从任务菜单中发送的常用提示词。" />
+      <view.Root>
+        <CollectionView
+          view={view}
+          renderRow={(prompt) => (
+            <PromptRow
+              item={prompt}
+              disabled={isDisabled}
+              onEdit={() => editPrompt(prompt)}
+              onDelete={() => deletePrompt(prompt)}
+            />
+          )}
+          toolbar={<PromptsToolbar view={view} onNewPrompt={createPrompt} disabled={isDisabled} />}
+          onItemClick={(prompt) => {
+            if (!isDisabled) editPrompt(prompt);
+          }}
+          emptySlot={<PromptsEmptyState hasPrompts={promptLibrary.length > 0} />}
+        />
+      </view.Root>
+    </div>
+  );
+}
+
+const PromptsToolbar = observer(function PromptsToolbar({
+  view,
+  onNewPrompt,
+  disabled,
+}: {
+  view: PromptLibraryListViewModel;
+  onNewPrompt: () => void;
+  disabled: boolean;
+}) {
+  const search = view.useSearch();
+  const searchRef = useSearchFocusHotkeys();
+  return (
+    <CollectionToolbar.Root>
+      <CollectionToolbar.Search
+        ref={searchRef}
+        value={search.query}
+        onValueChange={search.setQuery}
+        placeholder="搜索提示词…"
+      />
+      <CollectionToolbar.Spacer />
+      <CollectionToolbar.Group>
+        <Button variant="primary" onClick={onNewPrompt} disabled={disabled} aria-label="新建提示词">
+          <Plus className="size-4" />
+          <span className="[@container(max-width:520px)]:hidden">新建提示词</span>
+        </Button>
+      </CollectionToolbar.Group>
+    </CollectionToolbar.Root>
+  );
+});
+
+// Icon-bearing empty state — `EmptyState` has no icon slot, so this stays
+// custom under the rich-states carve-out.
+function PromptsEmptyState({ hasPrompts }: { hasPrompts: boolean }) {
+  return (
+    <div className="flex min-h-48 flex-col items-center justify-center p-8 text-center">
+      <LibraryIcon className="mb-3 size-8 text-foreground-passive" />
+      <div className="text-sm text-foreground">
+        {hasPrompts ? '没有匹配的提示词' : '暂无提示词'}
+      </div>
+      <p className="mt-1 max-w-sm text-xs text-foreground-passive">
+        {hasPrompts ? '请尝试其他标题或提示词内容。' : '添加常用提示词后，可从任务菜单中重复使用。'}
+      </p>
+    </div>
+  );
+}

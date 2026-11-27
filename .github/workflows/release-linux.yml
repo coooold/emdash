@@ -15,6 +15,9 @@ on:
 permissions:
   contents: write
 
+env:
+  R2_PUBLIC_URL: ${{ vars.R2_PUBLIC_URL }}
+
 jobs:
   package:
     name: Linux ${{ matrix.arch }}
@@ -59,7 +62,7 @@ jobs:
       - run: echo "NODE_OPTIONS=${NODE_OPTIONS:-not set}" && node --version
 
       - name: Build Linux ${{ matrix.arch }} packages
-        working-directory: apps/emdash-desktop
+        working-directory: apps/ply-desktop
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_ARCH: ${{ matrix.arch }}
@@ -72,10 +75,10 @@ jobs:
           --release-id "${{ inputs.release_id }}"
 
       - name: Verify Linux ${{ matrix.arch }} packages
-        working-directory: apps/emdash-desktop
+        working-directory: apps/ply-desktop
         env:
-          ARTIFACT_PREFIX: ${{ inputs.channel == 'canary' && 'emdash-canary' || 'emdash' }}
-          EXECUTABLE_NAME: ${{ inputs.channel == 'canary' && 'emdash-canary' || 'Emdash' }}
+          ARTIFACT_PREFIX: ${{ inputs.channel == 'canary' && 'ply-canary' || 'ply' }}
+          EXECUTABLE_NAME: ${{ inputs.channel == 'canary' && 'ply-canary' || 'ply' }}
           RELEASE_ARCH: ${{ matrix.arch }}
         run: >
           node --experimental-strip-types scripts/release/verify-linux.ts
@@ -83,7 +86,7 @@ jobs:
           --prefix "$ARTIFACT_PREFIX" --executable "$EXECUTABLE_NAME"
 
       - name: Upload verified Linux ${{ matrix.arch }} assets to owned draft
-        working-directory: apps/emdash-desktop
+        working-directory: apps/ply-desktop
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_CHANNEL: ${{ inputs.channel }}

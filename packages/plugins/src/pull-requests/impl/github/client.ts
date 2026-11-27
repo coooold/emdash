@@ -1,5 +1,6 @@
-import { parseRepositoryRef } from '@emdash/core/primitives/repository/api';
-import { err, ok, type Result } from '@emdash/shared';
+import { Octokit } from '@octokit/rest';
+import { parseRepositoryRef } from '@ply/core/primitives/repository/api';
+import { err, ok, type Result } from '@ply/shared';
 import {
   createRequestScheduler,
   requestPriorities,
@@ -8,9 +9,8 @@ import {
   type RateFeedback,
   type RateGate,
   type RequestScheduler,
-} from '@emdash/shared/requests';
-import { retry, retrySchedules, type RetrySchedule } from '@emdash/shared/scheduling';
-import { Octokit } from '@octokit/rest';
+} from '@ply/shared/requests';
+import { retry, retrySchedules, type RetrySchedule } from '@ply/shared/scheduling';
 import { readGitHubCredentials } from '../../../integrations/impl/github/client';
 import { isNetworkError } from '../../helpers/errors';
 import type {

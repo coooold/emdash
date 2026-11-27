@@ -6,7 +6,7 @@
  *   RangeError: Maximum call stack size exceeded
  *
  * This story replicates the REAL desktop lifecycle and the REAL ACP data shape
- * (verified from apps/emdash-desktop/.emdash-logs/emdash.log), which earlier
+ * (verified from apps/ply-desktop/.emdash-logs/emdash.log), which earlier
  * versions of this story got wrong.
  *
  * Lifecycle (matches desktop):

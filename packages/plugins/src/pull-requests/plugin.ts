@@ -1,4 +1,4 @@
-import { createPluginFramework } from '@emdash/shared/plugins';
+import { createPluginFramework } from '@ply/shared/plugins';
 import z from 'zod';
 import { pullRequestsCapability } from './capabilities/pull-requests';
 

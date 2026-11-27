@@ -1,7 +1,7 @@
 import { mkdir, mkdtemp, readFile, realpath, rm, symlink, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
-import { ok } from '@emdash/shared';
+import { ok } from '@ply/shared';
 import { afterEach, describe, expect, it } from 'vitest';
 import { FilesRuntime } from '#runtimes/files/node/files-runtime';
 import { runtimeRoot } from '#runtimes/files/node/testing/paths';

@@ -34,7 +34,7 @@ describe('hook command helpers', () => {
   });
 
   it.skipIf(process.platform === 'win32')(
-    'does not invoke curl when the Emdash hook environment is absent',
+    'does not invoke curl when the ply hook environment is absent',
     () => {
       const command = makeStdinHookCommand('stop', { platform: 'linux' });
       const shellCommand = `curl() { printf called; }; ${command}`;
@@ -116,7 +116,7 @@ describe('hook command helpers', () => {
     expect(filterUserHooks([{ command }])).toEqual([]);
   });
 
-  it('keeps user PowerShell hooks and drops legacy cmd.exe-wrapped Emdash hooks', () => {
+  it('keeps user PowerShell hooks and drops legacy cmd.exe-wrapped ply hooks', () => {
     const userEncoded = Buffer.from('Write-Output "mine"', 'utf16le').toString('base64');
     const userHook = { command: `powershell.exe -EncodedCommand ${userEncoded}` };
     const legacyHook = {

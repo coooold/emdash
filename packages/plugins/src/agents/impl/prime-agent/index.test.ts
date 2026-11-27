@@ -1,4 +1,4 @@
-import type { CommandContext, PluginFs } from '@emdash/core/services/agent-plugins/api/plugins';
+import type { CommandContext, PluginFs } from '@ply/core/services/agent-plugins/api/plugins';
 import { describe, expect, it } from 'vitest';
 import { provider } from './index';
 

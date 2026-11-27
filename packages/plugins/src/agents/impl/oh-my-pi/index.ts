@@ -1,13 +1,10 @@
-import type { CommandContext } from '@emdash/core/services/agent-plugins/api/plugins';
-import {
-  definePlugin,
-  registerPluginBehavior,
-} from '@emdash/core/services/agent-plugins/api/plugins';
+import type { CommandContext } from '@ply/core/services/agent-plugins/api/plugins';
+import { definePlugin, registerPluginBehavior } from '@ply/core/services/agent-plugins/api/plugins';
 import {
   buildStandardCommand,
   createFileDropPlugin,
-} from '@emdash/core/services/agent-plugins/api/plugins/helpers';
-import { envConfigRoot } from '@emdash/core/services/agent-plugins/api/plugins/helpers';
+} from '@ply/core/services/agent-plugins/api/plugins/helpers';
+import { envConfigRoot } from '@ply/core/services/agent-plugins/api/plugins/helpers';
 import { createNativeAcpBehavior } from '../../helpers/acp-stdio';
 import { icon } from './icon';
 import { OH_MY_PI_EXTENSION_CONTENT } from './plugin-file';

@@ -57,32 +57,11 @@ importers:
         specifier: ^4.22.4
         version: 4.22.4
 
-  apps/emdash-desktop:
+  apps/ply-desktop:
     dependencies:
       '@agentclientprotocol/sdk':
         specifier: ^1.1.0
         version: 1.1.0(zod@4.6.7)
-      '@emdash/chat-ui':
-        specifier: workspace:*
-        version: link:../../packages/chat-ui
-      '@emdash/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@emdash/plugins':
-        specifier: workspace:*
-        version: link:../../packages/plugins
-      '@emdash/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
-      '@emdash/theme':
-        specifier: workspace:*
-        version: link:../../packages/theme
-      '@emdash/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      '@emdash/wire':
-        specifier: workspace:*
-        version: link:../../packages/wire
       '@fontsource-variable/inter':
         specifier: ^5.2.8
         version: 5.2.8
@@ -104,6 +83,27 @@ importers:
       '@parcel/watcher':
         specifier: ^2.5.6
         version: 2.5.6
+      '@ply/chat-ui':
+        specifier: workspace:*
+        version: link:../../packages/chat-ui
+      '@ply/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@ply/plugins':
+        specifier: workspace:*
+        version: link:../../packages/plugins
+      '@ply/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@ply/theme':
+        specifier: workspace:*
+        version: link:../../packages/theme
+      '@ply/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@ply/wire':
+        specifier: workspace:*
+        version: link:../../packages/wire
       '@team-plain/graphql':
         specifier: ^1.0.1
         version: 1.2.0
@@ -342,21 +342,21 @@ importers:
 
   apps/workspace-server:
     dependencies:
-      '@emdash/core':
-        specifier: workspace:*
-        version: link:../../packages/core
-      '@emdash/plugins':
-        specifier: workspace:*
-        version: link:../../packages/plugins
-      '@emdash/shared':
-        specifier: workspace:*
-        version: link:../../packages/shared
-      '@emdash/wire':
-        specifier: workspace:*
-        version: link:../../packages/wire
       '@parcel/watcher':
         specifier: 2.5.6
         version: 2.5.6
+      '@ply/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@ply/plugins':
+        specifier: workspace:*
+        version: link:../../packages/plugins
+      '@ply/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
+      '@ply/wire':
+        specifier: workspace:*
+        version: link:../../packages/wire
       better-sqlite3:
         specifier: 13.2.0
         version: 13.2.0
@@ -403,18 +403,18 @@ importers:
       '@chenglou/pretext':
         specifier: ^0.0.8
         version: 0.0.8
-      '@emdash/core':
-        specifier: workspace:*
-        version: link:../core
-      '@emdash/shared':
-        specifier: workspace:*
-        version: link:../shared
       '@fontsource-variable/inter':
         specifier: ^5.2.8
         version: 5.2.8
       '@fontsource-variable/jetbrains-mono':
         specifier: 5.2.8
         version: 5.2.8
+      '@ply/core':
+        specifier: workspace:*
+        version: link:../core
+      '@ply/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@shikijs/langs':
         specifier: ^4.2.0
         version: 4.2.0
@@ -527,15 +527,15 @@ importers:
       '@agentclientprotocol/sdk':
         specifier: ^1.1.0
         version: 1.1.0(zod@4.6.7)
-      '@emdash/shared':
-        specifier: workspace:*
-        version: link:../shared
-      '@emdash/wire':
-        specifier: workspace:*
-        version: link:../wire
       '@parcel/watcher':
         specifier: ^2.5.6
         version: 2.5.6
+      '@ply/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@ply/wire':
+        specifier: workspace:*
+        version: link:../wire
       better-sqlite3:
         specifier: ^13.2.0
         version: 13.2.0
@@ -615,12 +615,6 @@ importers:
       '@anthropic-ai/claude-agent-sdk':
         specifier: 0.3.329
         version: 0.3.329(@anthropic-ai/sdk@0.106.0(zod@4.6.7))(@modelcontextprotocol/sdk@1.32.2(zod@4.6.7))(zod@4.6.7)
-      '@emdash/core':
-        specifier: workspace:*
-        version: link:../core
-      '@emdash/shared':
-        specifier: workspace:*
-        version: link:../shared
       '@gitbeaker/rest':
         specifier: ^43.8.0
         version: 43.8.0
@@ -645,6 +639,12 @@ importers:
       '@octokit/rest':
         specifier: ^22.0.1
         version: 22.0.1
+      '@ply/core':
+        specifier: workspace:*
+        version: link:../core
+      '@ply/shared':
+        specifier: workspace:*
+        version: link:../shared
       '@team-plain/graphql':
         specifier: ^1.0.1
         version: 1.2.0
@@ -756,18 +756,18 @@ importers:
       '@base-ui/react':
         specifier: ^1.3.0
         version: 1.5.0(@types/react@19.2.17)(date-fns@4.4.0)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
-      '@emdash/chat-ui':
-        specifier: workspace:*
-        version: link:../chat-ui
-      '@emdash/shared':
-        specifier: workspace:*
-        version: link:../shared
-      '@emdash/theme':
-        specifier: workspace:*
-        version: link:../theme
       '@fontsource-variable/jetbrains-mono':
         specifier: 5.2.8
         version: 5.2.8
+      '@ply/chat-ui':
+        specifier: workspace:*
+        version: link:../chat-ui
+      '@ply/shared':
+        specifier: workspace:*
+        version: link:../shared
+      '@ply/theme':
+        specifier: workspace:*
+        version: link:../theme
       '@shikijs/langs':
         specifier: ^4.2.0
         version: 4.2.0
@@ -922,7 +922,7 @@ importers:
 
   packages/wire:
     dependencies:
-      '@emdash/shared':
+      '@ply/shared':
         specifier: workspace:*
         version: link:../shared
       immer:

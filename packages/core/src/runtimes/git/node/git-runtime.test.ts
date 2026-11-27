@@ -3,7 +3,7 @@ import { chmod, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promi
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { promisify } from 'node:util';
-import { ok } from '@emdash/shared';
+import { ok } from '@ply/shared';
 import { describe, expect, it, vi } from 'vitest';
 import { gitContract } from '#runtimes/git/api';
 import { hostPath } from '#runtimes/git/node/testing/paths';

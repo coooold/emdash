@@ -85,8 +85,8 @@ export default defineConfig({
     alwaysBundle: [/^#/],
     neverBundle: [
       '@agentclientprotocol/sdk',
-      '@emdash/shared',
-      '@emdash/wire',
+      '@ply/shared',
+      '@ply/wire',
       '@parcel/watcher',
       'drizzle-kit',
       'glob',
